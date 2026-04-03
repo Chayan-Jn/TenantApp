@@ -6,7 +6,7 @@ import { registerSchema, loginSchema } from './auth.schema.js'
 
 const router = Router()
 
-router.post('/register', register)
+router.post('/register', validate(registerSchema), register)
 router.post('/login', login)
 router.post('/logout', logout)
 router.post('/register', validate(registerSchema), register)

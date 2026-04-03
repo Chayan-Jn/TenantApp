@@ -7,6 +7,8 @@ import unitRoutes from './modules/unit/unit.routes.js'
 import tenantRoutes from './modules/tenant/tenant.routes.js'
 import rentRoutes from './modules/rent/rent.routes.js'
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
+import ownerRoutes from './modules/owner/owner.routes.js'
+
 
 
 const app = express();
@@ -21,9 +23,7 @@ app.use('/properties', propertyRoutes)
 app.use('/units', unitRoutes)
 app.use('/tenants', tenantRoutes)
 app.use('/rent', rentRoutes)
-
-
-
+app.use('/owner', ownerRoutes)
 
 
 

@@ -1,0 +1,4 @@
+ALTER TABLE owners ADD COLUMN username TEXT UNIQUE;
+UPDATE owners SET username = email WHERE username IS NULL;
+ALTER TABLE owners ALTER COLUMN username SET NOT NULL;
+ALTER TABLE owners ALTER COLUMN email DROP NOT NULL;
