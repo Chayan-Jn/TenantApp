@@ -8,13 +8,27 @@ import tenantRoutes from './modules/tenant/tenant.routes.js'
 import rentRoutes from './modules/rent/rent.routes.js'
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
 import ownerRoutes from './modules/owner/owner.routes.js'
+import cors from 'cors'
+import { env } from './config/env.js'
 
 
 
 const app = express();
+const allowedOrigins = env.FRONTEND_URLS.split(',');
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true 
+}));
+
 app.use(globalLimiter)
 app.use('/auth', authLimiter)
 
