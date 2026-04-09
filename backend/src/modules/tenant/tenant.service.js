@@ -98,3 +98,20 @@ export const removeTenant = async (id, owner_id) => {
     throw err
   }
 }
+
+export const getTenantById = async (id, owner_id) => {
+  try {
+    const result = await pool.query(
+      `SELECT t.*, u.label, u.rent, p.name as property_name 
+       FROM tenants t
+       JOIN units u ON t.unit_id = u.id
+       JOIN properties p ON u.property_id = p.id
+       WHERE t.id = $1 AND p.owner_id = $2`,
+      [id, owner_id]
+    )
+    if (!result.rows.length) throw new Error('Tenant not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}

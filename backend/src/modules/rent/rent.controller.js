@@ -43,3 +43,12 @@ export const getOverdueRents = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
+
+export const markRentUnpaid = async (req, res) => {
+  try {
+    const rent = await rentService.markRentUnpaid(req.params.id, req.owner.id)
+    res.status(200).json({ success: true, data: rent })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}

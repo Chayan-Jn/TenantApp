@@ -1,24 +1,12 @@
-const variants = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
-    danger: 'bg-red-600 hover:bg-red-700 text-white',
-    ghost: 'bg-transparent hover:bg-gray-100 text-gray-700',
-    outline: 'border border-gray-300 hover:bg-gray-50 text-gray-700'
-  }
-  
-  const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base'
-  }
-  
-  export default function Button({ children, variant = 'primary', size = 'md', loading, className = '', ...props }) {
-    return (
-      <button
-        className={`inline-flex items-center justify-center font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
-        disabled={loading || props.disabled}
+export default function Input({ label, error, className = '', ...props }) {
+  return (
+    <div className="flex flex-col gap-1">
+      {label && <label className="text-sm font-medium text-gray-700">{label}</label>}
+      <input
+        className={`border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 min-h-10 bg-white text-gray-900 ${error ? 'border-red-500' : ''} ${className}`}
         {...props}
-      >
-        {loading ? 'Loading...' : children}
-      </button>
-    )
-  }
+      />
+      {error && <span className="text-xs text-red-500">{error}</span>}
+    </div>
+  )
+}

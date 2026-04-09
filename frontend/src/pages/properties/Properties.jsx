@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import { getProperties, createProperty } from '../../api/property.api.js'
 
+const TYPE_LABELS = { flat: 'Flats', pg: 'PGs', commercial: 'Commercial' }
+
 export default function Properties() {
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  
-  // Modal state - Added 'type' with a default value
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form, setForm] = useState({ name: '', address: '', type: 'flat' })
   const [creating, setCreating] = useState(false)
@@ -32,21 +32,24 @@ export default function Properties() {
     setCreating(true)
     try {
       await createProperty(form)
-      setForm({ name: '', address: '', type: 'flat' }) // reset form
-      setIsModalOpen(false) // close modal
-      fetchProperties() // refresh the list
+      setForm({ name: '', address: '', type: 'flat' })
+      setIsModalOpen(false)
+      fetchProperties()
     } catch (err) {
-      // If it's an array of errors from the backend, you might need to format it, 
-      // but this will catch standard message strings
       alert(err.message || 'Failed to create property')
     } finally {
       setCreating(false)
     }
   }
 
+  const grouped = properties.reduce((acc, p) => {
+    if (!acc[p.type]) acc[p.type] = []
+    acc[p.type].push(p)
+    return acc
+  }, {})
+
   return (
     <div className="space-y-6">
-      {/* Header section */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
@@ -61,12 +64,9 @@ export default function Properties() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
-          {error}
-        </div>
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">{error}</div>
       )}
 
-      {/* Properties Grid */}
       {loading ? (
         <p className="text-gray-500">Loading properties...</p>
       ) : properties.length === 0 ? (
@@ -75,37 +75,41 @@ export default function Properties() {
           <p className="text-gray-500 mt-1">Get started by adding your first property.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <Link 
-              key={property.id} 
-              to={`/properties/${property.id}`}
-              className="block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:border-blue-500 hover:shadow-md transition-all relative"
-            >
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-bold text-gray-900 pr-4">{property.name}</h3>
-                {/* Type Badge */}
-                <span className="capitalize bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-md border border-blue-100">
-                  {property.type}
-                </span>
+        <div className="flex flex-col gap-8">
+          {Object.entries(grouped).map(([type, list]) => (
+            <div key={type}>
+              <h2 className="text-base font-semibold text-gray-700 mb-3">{TYPE_LABELS[type]}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {list.map((property) => (
+                  <Link
+                    key={property.id}
+                    to={`/properties/${property.id}`}
+                    className="block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:border-blue-500 hover:shadow-md transition-all"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-bold text-gray-900 pr-4">{property.name}</h3>
+                      <span className="capitalize bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-md border border-blue-100">
+                        {property.type}
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-2 line-clamp-2">{property.address}</p>
+                    <div className="mt-4 pt-4 border-t border-gray-100 text-sm text-blue-600 font-medium">
+                      Manage Units &rarr;
+                    </div>
+                  </Link>
+                ))}
               </div>
-              <p className="text-gray-500 text-sm mt-2 line-clamp-2">{property.address}</p>
-              
-              <div className="mt-4 pt-4 border-t border-gray-100 text-sm text-blue-600 font-medium flex justify-between items-center">
-                <span>Manage Units &rarr;</span>
-              </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
 
-      {/* Add Property Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900">Add New Property</h2>
-              <button 
+              <button
                 onClick={() => setIsModalOpen(false)}
                 className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
               >
@@ -126,7 +130,6 @@ export default function Properties() {
                 />
               </div>
 
-              {/* NEW: Property Type Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
                 <select
@@ -152,7 +155,7 @@ export default function Properties() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
                 />
               </div>
-              
+
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"

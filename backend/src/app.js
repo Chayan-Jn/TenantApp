@@ -9,6 +9,8 @@ import rentRoutes from './modules/rent/rent.routes.js'
 import { globalLimiter, authLimiter } from './middlewares/rateLimiter.js'
 import ownerRoutes from './modules/owner/owner.routes.js'
 import cors from 'cors'
+import dashboardRoutes from './modules/dashboard/dashboard.routes.js'
+import paymentsRoutes from './modules/payments/payments.routes.js'
 import { env } from './config/env.js'
 
 
@@ -38,6 +40,8 @@ app.use('/units', unitRoutes)
 app.use('/tenants', tenantRoutes)
 app.use('/rent', rentRoutes)
 app.use('/owner', ownerRoutes)
+app.use('/dashboard', dashboardRoutes)
+app.use('/payments', paymentsRoutes)
 
 
 

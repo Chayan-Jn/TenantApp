@@ -10,6 +10,8 @@ import UnitDetail from './pages/units/UnitDetail.jsx'
 import TenantDetail from './pages/tenants/TenantDetail.jsx'
 import Overdue from './pages/rent/Overdue.jsx'
 import Settings from './pages/settings/Settings.jsx'
+import Payments from './pages/payments/Payments.jsx'
+
 
 const authLoader = async () => {
   try {
@@ -50,7 +52,15 @@ const router = createBrowserRouter([
       {
         path: 'dashboard',
         Component: Dashboard,
-        loader: authLoader
+        loader: async () => {
+          const { api } = await import('./api/client.js')
+          try {
+            const stats = await api('/dashboard/stats')
+            return { stats: stats.data }
+          } catch {
+            return { stats: null }
+          }
+        }
       },
       {
         path: 'properties',
@@ -88,9 +98,13 @@ const router = createBrowserRouter([
         Component: TenantDetail,
         loader: async ({ params }) => {
           const { getRentByTenant } = await import('./api/rent.api.js')
+          const { api } = await import('./api/client.js')
           try {
-            const rents = await getRentByTenant(params.id)
-            return { rents: rents.data, tenant_id: params.id }
+            const [tenant, rents] = await Promise.all([
+              api(`/tenants/${params.id}`),
+              getRentByTenant(params.id)
+            ])
+            return { tenant: tenant.data, rents: rents.data, tenant_id: params.id }
           } catch {
             return redirect('/properties')
           }
@@ -99,13 +113,35 @@ const router = createBrowserRouter([
       {
         path: 'rent/overdue',
         Component: Overdue,
-        loader: authLoader
+        loader: async () => {
+          const { getProperties } = await import('./api/property.api.js')
+          try {
+            const properties = await getProperties()
+            return { properties: properties.data }
+          } catch {
+            return { properties: [] }
+          }
+        }
       },
       {
         path: 'settings',
         Component: Settings,
         loader: authLoader
+      },
+      {
+        path: 'payments',
+        Component: Payments,
+        loader: async () => {
+          const { getProperties } = await import('./api/property.api.js')
+          try {
+            const properties = await getProperties()
+            return { properties: properties.data }
+          } catch {
+            return { properties: [] }
+          }
+        }
       }
+      
     ]
   }
 ])

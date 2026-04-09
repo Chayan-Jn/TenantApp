@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@layer base {
+  input {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+  }
+}
