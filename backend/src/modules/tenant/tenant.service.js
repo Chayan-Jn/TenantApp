@@ -102,12 +102,50 @@ export const removeTenant = async (id, owner_id) => {
 export const getTenantById = async (id, owner_id) => {
   try {
     const result = await pool.query(
-      `SELECT t.*, u.label, u.rent, p.name as property_name 
+      `SELECT t.*, u.label, u.rent, u.id as unit_id, p.name as property_name, p.id as property_id
        FROM tenants t
        JOIN units u ON t.unit_id = u.id
        JOIN properties p ON u.property_id = p.id
        WHERE t.id = $1 AND p.owner_id = $2`,
       [id, owner_id]
+    )
+    if (!result.rows.length) throw new Error('Tenant not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getTenantsByPropertyFull = async (property_id, owner_id) => {
+  try {
+    const result = await pool.query(
+      `SELECT t.*, u.label as unit_label, u.rent
+       FROM tenants t
+       JOIN units u ON t.unit_id = u.id
+       JOIN properties p ON u.property_id = p.id
+       WHERE p.id = $1 AND p.owner_id = $2
+       AND t.leave_date IS NULL
+       ORDER BY u.label ASC, t.name ASC`,
+      [property_id, owner_id]
+    )
+    return result.rows
+  } catch (err) {
+    throw err
+  }
+}
+
+export const updateTenant = async (id, { name, phone }, owner_id) => {
+  try {
+    const result = await pool.query(
+      `UPDATE tenants SET name = $1, phone = $2
+       WHERE id = $3
+       AND unit_id IN (
+         SELECT u.id FROM units u
+         JOIN properties p ON u.property_id = p.id
+         WHERE p.owner_id = $4
+       )
+       RETURNING *`,
+      [name, phone, id, owner_id]
     )
     if (!result.rows.length) throw new Error('Tenant not found or unauthorized')
     return result.rows[0]

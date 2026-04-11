@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLoaderData } from 'react-router'
 import { getPayments } from '../../api/payments.api.js'
-import { markRentPaid, markRentUnpaid } from '../../api/rent.api.js'
+import { markRentPaid, markRentUnpaid, generateMonthlyRent } from '../../api/rent.api.js'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
@@ -31,6 +31,7 @@ export default function Payments() {
   const [propertyId, setPropertyId] = useState('all')
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
   const fetchData = async () => {
     const res = await getPayments({ month, year, property_id: propertyId })
@@ -63,6 +64,28 @@ export default function Payments() {
       await fetchData()
     } catch (err) {
       alert(err.message)
+    }
+  }
+
+  const handleGenerate = async () => {
+    if (propertyId === 'all') {
+      alert('Please select a specific property to generate rent')
+      return
+    }
+    if (!window.confirm(`Generate rent for all active tenants for ${MONTHS[month - 1]} ${year}?`)) return
+    setGenerating(true)
+    try {
+      const res = await generateMonthlyRent({
+        property_id: Number(propertyId),
+        month,
+        year
+      })
+      alert(`Generated: ${res.data.generated} records, Skipped: ${res.data.skipped} already existing`)
+      await fetchData()
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -120,7 +143,18 @@ export default function Payments() {
           <Button onClick={handleFetch} loading={loading}>
             Fetch
           </Button>
+          <Button
+            variant="outline"
+            onClick={handleGenerate}
+            loading={generating}
+            disabled={propertyId === 'all'}
+          >
+            Generate Rent
+          </Button>
         </div>
+        {propertyId === 'all' && (
+          <p className="text-xs text-gray-400 mt-2">Select a specific property to generate rent</p>
+        )}
       </Card>
 
       {data && (

@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { useLoaderData, useNavigate, Link } from 'react-router'
 import { createTenant, removeTenant } from '../../api/tenant.api.js'
+import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
+
+
+
 
 export default function UnitDetail() {
-  const { tenants: initialTenants, unit_id } = useLoaderData()
+  const { tenants: initialTenants, unit_id,property_id } = useLoaderData()
   const navigate = useNavigate()
 
   const [tenants, setTenants] = useState(initialTenants || [])
@@ -55,9 +59,11 @@ export default function UnitDetail() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <button onClick={() => navigate(-1)} className="text-sm text-blue-600 hover:underline mb-1 inline-block">
-            &larr; Back to Property Units
-          </button>
+        <Breadcrumb crumbs={[
+          { label: 'Properties', to: '/properties' },
+          { label: 'Units', to: `/properties/${property_id}` },
+          { label: 'Tenants' }
+        ]} />
           <h1 className="text-2xl font-bold text-gray-900">Unit Tenants</h1>
           <p className="text-gray-500 mt-1">Manage the people living in this unit</p>
         </div>

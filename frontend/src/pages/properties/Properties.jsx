@@ -81,11 +81,10 @@ export default function Properties() {
               <h2 className="text-base font-semibold text-gray-700 mb-3">{TYPE_LABELS[type]}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {list.map((property) => (
-                  <Link
+                    <div
                     key={property.id}
-                    to={`/properties/${property.id}`}
-                    className="block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:border-blue-500 hover:shadow-md transition-all"
-                  >
+                    className="block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-all"
+                    >
                     <div className="flex justify-between items-start">
                       <h3 className="text-lg font-bold text-gray-900 pr-4">{property.name}</h3>
                       <span className="capitalize bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-md border border-blue-100">
@@ -93,10 +92,21 @@ export default function Properties() {
                       </span>
                     </div>
                     <p className="text-gray-500 text-sm mt-2 line-clamp-2">{property.address}</p>
-                    <div className="mt-4 pt-4 border-t border-gray-100 text-sm text-blue-600 font-medium">
-                      Manage Units &rarr;
+                    <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                      <Link
+                        to={`/properties/${property.id}`}
+                        className="text-sm text-blue-600 font-medium hover:text-blue-700"
+                      >
+                        Manage Units &rarr;
+                      </Link>
+                      <Link
+                        to={`/properties/${property.id}/tenants`}
+                        className="text-sm text-gray-500 font-medium hover:text-gray-700"
+                      >
+                        View Tenants &rarr;
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

@@ -29,3 +29,21 @@ export const deleteProperty = async (req, res) => {
       res.status(400).json({ success: false, message: err.message })
     }
   }
+
+export const updateProperty = async (req, res) => {
+  try {
+    const property = await propertyService.updateProperty(req.params.id, req.body, req.owner.id)
+    res.status(200).json({ success: true, data: property })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}
+
+export const getPropertyById = async (req, res) => {
+  try {
+    const property = await propertyService.getPropertyById(req.params.id, req.owner.id)
+    res.status(200).json({ success: true, data: property })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}

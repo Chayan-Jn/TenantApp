@@ -11,6 +11,7 @@ import TenantDetail from './pages/tenants/TenantDetail.jsx'
 import Overdue from './pages/rent/Overdue.jsx'
 import Settings from './pages/settings/Settings.jsx'
 import Payments from './pages/payments/Payments.jsx'
+import PropertyTenants from './pages/properties/PropertyTenants.jsx'
 
 
 const authLoader = async () => {
@@ -72,9 +73,13 @@ const router = createBrowserRouter([
         Component: PropertyDetail,
         loader: async ({ params }) => {
           const { getUnits } = await import('./api/unit.api.js')
+          const { api } = await import('./api/client.js')
           try {
-            const units = await getUnits(params.id)
-            return { units: units.data, property_id: params.id }
+            const [units, property] = await Promise.all([
+              getUnits(params.id),
+              api(`/properties/${params.id}`)
+            ])
+            return { units: units.data, property_id: params.id, property: property.data }
           } catch {
             return redirect('/properties')
           }
@@ -85,9 +90,17 @@ const router = createBrowserRouter([
         Component: UnitDetail,
         loader: async ({ params }) => {
           const { getTenants } = await import('./api/tenant.api.js')
+          const { api } = await import('./api/client.js')
           try {
-            const tenants = await getTenants({ unit_id: params.id })
-            return { tenants: tenants.data, unit_id: params.id }
+            const [tenants, unit] = await Promise.all([
+              getTenants({ unit_id: params.id }),
+              api(`/units/${params.id}`)
+            ])
+            return { 
+              tenants: tenants.data, 
+              unit_id: params.id,
+              property_id: unit.data.property_id
+            }
           } catch {
             return redirect('/properties')
           }
@@ -140,7 +153,21 @@ const router = createBrowserRouter([
             return { properties: [] }
           }
         }
+      },
+      {
+        path: 'properties/:id/tenants',
+        Component: PropertyTenants,
+        loader: async ({ params }) => {
+          const { getTenants } = await import('./api/tenant.api.js')
+          try {
+            const tenants = await getTenants({ property_id: params.id })
+            return { tenants: tenants.data, property_id: params.id }
+          } catch {
+            return redirect('/properties')
+          }
+        }
       }
+
       
     ]
   }

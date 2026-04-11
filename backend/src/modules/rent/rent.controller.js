@@ -52,3 +52,21 @@ export const markRentUnpaid = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
+
+export const generateMonthlyRent = async (req, res) => {
+  try {
+    const { property_id, month, year } = req.body
+    if (!property_id || !month || !year) {
+      return res.status(400).json({ success: false, message: 'property_id, month and year are required' })
+    }
+    const result = await rentService.generateMonthlyRent({
+      property_id,
+      month,
+      year,
+      owner_id: req.owner.id
+    })
+    res.status(201).json({ success: true, data: result })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}

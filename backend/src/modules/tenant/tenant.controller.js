@@ -61,3 +61,11 @@ export const getTenantById = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
+export const updateTenant = async (req, res) => {
+  try {
+    const tenant = await tenantService.updateTenant(req.params.id, req.body, req.owner.id)
+    res.status(200).json({ success: true, data: tenant })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}

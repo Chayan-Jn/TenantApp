@@ -35,3 +35,31 @@ export const deleteProperty = async (id, owner_id) => {
       throw err
     }
   }
+
+export const updateProperty = async (id, { name, address, type }, owner_id) => {
+  try {
+    const result = await pool.query(
+      `UPDATE properties SET name = $1, address = $2, type = $3
+        WHERE id = $4 AND owner_id = $5
+        RETURNING *`,
+      [name, address, type, id, owner_id]
+    )
+    if (!result.rows.length) throw new Error('Property not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getPropertyById = async (id, owner_id) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM properties WHERE id = $1 AND owner_id = $2',
+      [id, owner_id]
+    )
+    if (!result.rows.length) throw new Error('Property not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}

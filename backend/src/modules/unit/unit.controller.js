@@ -31,3 +31,21 @@ export const deleteUnit = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
+
+export const updateUnit = async (req, res) => {
+  try {
+    const unit = await unitService.updateUnit(req.params.id, req.body, req.owner.id)
+    res.status(200).json({ success: true, data: unit })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}
+
+export const getUnitById = async (req, res) => {
+  try {
+    const unit = await unitService.getUnitById(req.params.id, req.owner.id)
+    res.status(200).json({ success: true, data: unit })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}

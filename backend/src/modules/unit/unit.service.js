@@ -48,3 +48,42 @@ export const deleteUnit = async (id, owner_id) => {
     throw err
   }
 }
+
+export const updateUnit = async (id, { label, rent }, owner_id) => {
+  try {
+    await verifyPropertyOwner_byUnit(id, owner_id)
+    const result = await pool.query(
+      'UPDATE units SET label = $1, rent = $2 WHERE id = $3 RETURNING *',
+      [label, rent, id]
+    )
+    if (!result.rows.length) throw new Error('Unit not found')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
+
+const verifyPropertyOwner_byUnit = async (unit_id, owner_id) => {
+  const result = await pool.query(
+    `SELECT u.id FROM units u
+     JOIN properties p ON u.property_id = p.id
+     WHERE u.id = $1 AND p.owner_id = $2`,
+    [unit_id, owner_id]
+  )
+  if (!result.rows.length) throw new Error('Unit not found or unauthorized')
+}
+
+export const getUnitById = async (id, owner_id) => {
+  try {
+    const result = await pool.query(
+      `SELECT u.* FROM units u
+       JOIN properties p ON u.property_id = p.id
+       WHERE u.id = $1 AND p.owner_id = $2`,
+      [id, owner_id]
+    )
+    if (!result.rows.length) throw new Error('Unit not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
