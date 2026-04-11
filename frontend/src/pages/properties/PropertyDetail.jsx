@@ -21,6 +21,8 @@ export default function PropertyDetail() {
   const [creating, setCreating] = useState(false)
   const [updating, setUpdating] = useState(false)
   const [updatingProperty, setUpdatingProperty] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
 
   const handleCreateUnit = async (e) => {
     e.preventDefault()
@@ -36,31 +38,43 @@ export default function PropertyDetail() {
       setForm({ label: '', rent: '' })
       setIsModalOpen(false)
     } catch (err) {
-      alert(err.message || 'Failed to create unit')
+      setErrorMsg(err.message || 'Failed to create unit')
     } finally {
       setCreating(false)
     }
   }
 
-  const handleDeleteUnit = async (unitId, e) => {
+  const handleDeleteUnit = (unitId, e) => {
     e.preventDefault()
-    if (!window.confirm('Are you sure you want to delete this unit?')) return
-    try {
-      await deleteUnit(unitId)
-      setUnits(units.filter(u => u.id !== unitId))
-    } catch (err) {
-      alert(err.message || 'Failed to delete unit')
-    }
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Unit',
+      message: 'Are you sure you want to delete this unit?',
+      onConfirm: async () => {
+        try {
+          await deleteUnit(unitId)
+          setUnits(units.filter(u => u.id !== unitId))
+        } catch (err) {
+          setErrorMsg(err.message || 'Failed to delete unit')
+        }
+      }
+    })
   }
 
-  const handleDeleteProperty = async () => {
-    if (!window.confirm('WARNING: Are you sure you want to delete this entire property and all its units? This cannot be undone.')) return
-    try {
-      await deleteProperty(property_id)
-      navigate('/properties')
-    } catch (err) {
-      alert(err.message || 'Failed to delete property')
-    }
+  const handleDeleteProperty = () => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Property',
+      message: 'WARNING: Are you sure you want to delete this entire property and all its units? This cannot be undone.',
+      onConfirm: async () => {
+        try {
+          await deleteProperty(property_id)
+          navigate('/properties')
+        } catch (err) {
+          setErrorMsg(err.message || 'Failed to delete property')
+        }
+      }
+    })
   }
 
   const openEditModal = (unit, e) => {
@@ -82,7 +96,7 @@ export default function PropertyDetail() {
       setEditModal(false)
       setEditingUnit(null)
     } catch (err) {
-      alert(err.message || 'Failed to update unit')
+      setErrorMsg(err.message || 'Failed to update unit')
     } finally {
       setUpdating(false)
     }
@@ -96,7 +110,7 @@ export default function PropertyDetail() {
       setCurrentProperty(res.data)
       setEditPropertyModal(false)
     } catch (err) {
-      alert(err.message || 'Failed to update property')
+      setErrorMsg(err.message || 'Failed to update property')
     } finally {
       setUpdatingProperty(false)
     }
@@ -168,14 +182,13 @@ export default function PropertyDetail() {
               </div>
               <p className="text-gray-500 text-sm mb-4">Rent: ₹{unit.rent}</p>
               <div className="pt-4 border-t border-gray-100 text-sm text-blue-600 font-medium">
-                Manage Tenants &rarr;
+                Manage Tenants 
               </div>
             </Link>
           ))}
         </div>
       )}
 
-      {/* Add Unit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
@@ -201,7 +214,6 @@ export default function PropertyDetail() {
         </div>
       )}
 
-      {/* Edit Unit Modal */}
       {editModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
@@ -227,7 +239,6 @@ export default function PropertyDetail() {
         </div>
       )}
 
-      {/* Edit Property Modal */}
       {editPropertyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
@@ -257,6 +268,44 @@ export default function PropertyDetail() {
                 <button type="submit" disabled={updatingProperty} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">{updatingProperty ? 'Saving...' : 'Save Changes'}</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
+            <p className="text-gray-600 mb-6">{errorMsg}</p>
+            <div className="flex justify-end">
+              <button onClick={() => setErrorMsg('')} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDialog.isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{confirmDialog.title}</h2>
+            <p className="text-gray-600 mb-6">{confirmDialog.message}</p>
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
+                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  confirmDialog.onConfirm()
+                  setConfirmDialog({ ...confirmDialog, isOpen: false })
+                }} 
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}

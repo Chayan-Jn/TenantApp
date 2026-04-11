@@ -92,14 +92,20 @@ const router = createBrowserRouter([
           const { getTenants } = await import('./api/tenant.api.js')
           const { api } = await import('./api/client.js')
           try {
+
             const [tenants, unit] = await Promise.all([
               getTenants({ unit_id: params.id }),
               api(`/units/${params.id}`)
             ])
+            
+            const property = await api(`/properties/${unit.data.property_id}`)
+
             return { 
               tenants: tenants.data, 
               unit_id: params.id,
-              property_id: unit.data.property_id
+              property_id: unit.data.property_id,
+              unit_name: unit.data.label,      
+              property_name: property.data.name 
             }
           } catch {
             return redirect('/properties')
@@ -159,9 +165,22 @@ const router = createBrowserRouter([
         Component: PropertyTenants,
         loader: async ({ params }) => {
           const { getTenants } = await import('./api/tenant.api.js')
+
+          const { api } = await import('./api/client.js') 
           try {
-            const tenants = await getTenants({ property_id: params.id })
-            return { tenants: tenants.data, property_id: params.id }
+
+            const [tenants, property] = await Promise.all([
+              getTenants({ property_id: params.id }),
+              api(`/properties/${params.id}`)
+            ])
+            
+            console.log("Fetched property:", property.data) 
+            
+            return { 
+              tenants: tenants.data, 
+              property_id: params.id,
+              property_name: property.data.name
+            }
           } catch {
             return redirect('/properties')
           }

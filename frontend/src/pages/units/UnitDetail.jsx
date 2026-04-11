@@ -2,16 +2,16 @@ import { useState } from 'react'
 import { useLoaderData, useNavigate, Link } from 'react-router'
 import { createTenant, removeTenant } from '../../api/tenant.api.js'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
-
-
-
+import { FiTrash2 } from 'react-icons/fi'
 
 export default function UnitDetail() {
-  const { tenants: initialTenants, unit_id,property_id } = useLoaderData()
+  const { tenants: initialTenants, unit_id, property_id, unit_name, property_name } = useLoaderData()
   const navigate = useNavigate()
 
   const [tenants, setTenants] = useState(initialTenants || [])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
   
   const [form, setForm] = useState({ 
     name: '', 
@@ -37,33 +37,38 @@ export default function UnitDetail() {
       setForm({ name: '', phone: '', join_date: '' })
       setIsModalOpen(false)
     } catch (err) {
-      alert(err.message || 'Failed to add tenant')
+      setErrorMsg(err.message || 'Failed to add tenant')
     } finally {
       setCreating(false)
     }
   }
 
-  const handleDeleteTenant = async (tenantId, e) => {
+  const handleDeleteTenant = (tenantId, e) => {
     e.preventDefault() 
-    if (!window.confirm('Are you sure you want to remove this tenant?')) return
-    
-    try {
-      await removeTenant(tenantId)
-      setTenants(tenants.filter(t => t.id !== tenantId))
-    } catch (err) {
-      alert(err.message || 'Failed to remove tenant')
-    }
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Remove Tenant',
+      message: 'Are you sure you want to remove this tenant? This action cannot be undone.',
+      onConfirm: async () => {
+        try {
+          await removeTenant(tenantId)
+          setTenants(tenants.filter(t => t.id !== tenantId))
+        } catch (err) {
+          setErrorMsg(err.message || 'Failed to remove tenant')
+        }
+      }
+    })
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-        <Breadcrumb crumbs={[
-          { label: 'Properties', to: '/properties' },
-          { label: 'Units', to: `/properties/${property_id}` },
-          { label: 'Tenants' }
-        ]} />
+          <Breadcrumb crumbs={[
+            { label: 'Properties', to: '/properties' },
+            { label: property_name || 'Property', to: `/properties/${property_id}` },
+            { label: unit_name || 'Unit' }
+          ]} />
           <h1 className="text-2xl font-bold text-gray-900">Unit Tenants</h1>
           <p className="text-gray-500 mt-1">Manage the people living in this unit</p>
         </div>
@@ -89,18 +94,19 @@ export default function UnitDetail() {
               to={`/tenants/${tenant.id}`}
               className="group block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:border-blue-500 hover:shadow-md transition-all relative"
             >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-bold text-gray-900 pr-6">
+              <div className="flex justify-between items-start mb-2 pr-10">
+                <h3 className="text-lg font-bold text-gray-900 truncate">
                   {tenant.name}
                 </h3>
-                <button 
-                  onClick={(e) => handleDeleteTenant(tenant.id, e)}
-                  className="text-gray-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition-opacity absolute top-4 right-4"
-                  title="Remove Tenant"
-                >
-                  &times;
-                </button>
               </div>
+              
+              <button 
+                onClick={(e) => handleDeleteTenant(tenant.id, e)}
+                className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4 hover:cursor-pointer"
+                title="Remove Tenant"
+              >
+                <FiTrash2 size={18} />
+              </button>
               
               <div className="text-sm text-gray-600 space-y-1 mb-4">
                 <p>{tenant.phone}</p>
@@ -187,6 +193,44 @@ export default function UnitDetail() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Notice</h2>
+            <p className="text-gray-600 mb-6">{errorMsg}</p>
+            <div className="flex justify-end">
+              <button onClick={() => setErrorMsg('')} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDialog.isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{confirmDialog.title}</h2>
+            <p className="text-gray-600 mb-6">{confirmDialog.message}</p>
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
+                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  confirmDialog.onConfirm()
+                  setConfirmDialog({ ...confirmDialog, isOpen: false })
+                }} 
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}
