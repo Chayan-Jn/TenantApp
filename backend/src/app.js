@@ -11,6 +11,9 @@ import ownerRoutes from './modules/owner/owner.routes.js'
 import cors from 'cors'
 import dashboardRoutes from './modules/dashboard/dashboard.routes.js'
 import paymentsRoutes from './modules/payments/payments.routes.js'
+import billsRoutes from './modules/bills/bills.routes.js'
+import ledgerRoutes from './modules/ledger/ledger.routes.js'
+
 import { env } from './config/env.js'
 
 
@@ -42,6 +45,8 @@ app.use('/rent', rentRoutes)
 app.use('/owner', ownerRoutes)
 app.use('/dashboard', dashboardRoutes)
 app.use('/payments', paymentsRoutes)
+app.use('/bills', billsRoutes)
+app.use('/ledger', ledgerRoutes)
 
 
 

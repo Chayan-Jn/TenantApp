@@ -273,7 +273,7 @@ export default function PropertyDetail() {
       )}
 
       {errorMsg && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
             <p className="text-gray-600 mb-6">{errorMsg}</p>
@@ -285,7 +285,7 @@ export default function PropertyDetail() {
       )}
 
       {confirmDialog.isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-2">{confirmDialog.title}</h2>
             <p className="text-gray-600 mb-6">{confirmDialog.message}</p>

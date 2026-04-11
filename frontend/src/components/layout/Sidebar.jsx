@@ -1,16 +1,19 @@
 import { NavLink } from 'react-router'
+
 import { 
   MdOutlineSpaceDashboard, 
   MdOutlineDomain, 
   MdOutlineWarningAmber, 
   MdOutlineCreditCard, 
   MdOutlineSettings,
-  MdDomain 
+  MdDomain,
+  MdOutlineReceiptLong
 } from 'react-icons/md'
 
 const links = [
   { to: '/dashboard', label: 'Dashboard', icon: MdOutlineSpaceDashboard },
   { to: '/properties', label: 'Properties', icon: MdOutlineDomain },
+  { to: '/bills', label: 'Bills', icon: MdOutlineReceiptLong },
   { to: '/rent/overdue', label: 'Overdue Rent', icon: MdOutlineWarningAmber },
   { to: '/payments', label: 'Payments', icon: MdOutlineCreditCard },
   { to: '/settings', label: 'Settings', icon: MdOutlineSettings }

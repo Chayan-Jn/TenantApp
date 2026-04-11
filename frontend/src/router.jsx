@@ -12,6 +12,8 @@ import Overdue from './pages/rent/Overdue.jsx'
 import Settings from './pages/settings/Settings.jsx'
 import Payments from './pages/payments/Payments.jsx'
 import PropertyTenants from './pages/properties/PropertyTenants.jsx'
+import Bills from './pages/bills/Bills.jsx'
+
 
 
 const authLoader = async () => {
@@ -91,21 +93,25 @@ const router = createBrowserRouter([
         loader: async ({ params }) => {
           const { getTenants } = await import('./api/tenant.api.js')
           const { api } = await import('./api/client.js')
+          const { getBills } = await import('./api/bills.api.js')
           try {
-
-            const [tenants, unit] = await Promise.all([
+            const unitRes = await api(`/units/${params.id}`)
+            const unitData = unitRes.data
+            
+            const [tenants, bills, property] = await Promise.all([
               getTenants({ unit_id: params.id }),
-              api(`/units/${params.id}`)
+              getBills({ unit_id: params.id }),
+              api(`/properties/${unitData.property_id}`) 
             ])
             
-            const property = await api(`/properties/${unit.data.property_id}`)
-
-            return { 
-              tenants: tenants.data, 
+            return {
+              tenants: tenants.data,
               unit_id: params.id,
-              property_id: unit.data.property_id,
-              unit_name: unit.data.label,      
-              property_name: property.data.name 
+              property_id: unitData.property_id,
+              unit: unitData,
+              unit_name: unitData.label,
+              property_name: property.data.name,
+              bills: bills.data
             }
           } catch {
             return redirect('/properties')
@@ -183,6 +189,19 @@ const router = createBrowserRouter([
             }
           } catch {
             return redirect('/properties')
+          }
+        }
+      },
+      {
+        path: 'bills',
+        Component: Bills,
+        loader: async () => {
+          const { getProperties } = await import('./api/property.api.js')
+          try {
+            const properties = await getProperties()
+            return { properties: properties.data }
+          } catch {
+            return { properties: [] }
           }
         }
       }
