@@ -4,9 +4,9 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   const isAllProps = property_id === 'all'
   const isAllMonths = month === 'all'
   
-  // 1. Fetch Tenants
+  // Fetch active tenants and their associated units/properties
   const tenantsQuery = `
-    SELECT t.id, t.name, u.id as unit_id, u.label as unit_label, p.name as property_name
+    SELECT t.id, t.name, t.phone, u.id as unit_id, u.label as unit_label, p.name as property_name
     FROM tenants t
     JOIN units u ON t.unit_id = u.id
     JOIN properties p ON u.property_id = p.id
@@ -16,7 +16,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   const tenantsParams = isAllProps ? [owner_id] : [owner_id, property_id]
   const tenants = (await pool.query(tenantsQuery, tenantsParams)).rows
 
-  // 2. Fetch Rent 
+  // Fetch rent payments for the specified period
   const rentParams = [year]
   let rentQuery = `
     SELECT id, tenant_id, amount, status, due_date, 
@@ -30,7 +30,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   }
   const rentRecords = (await pool.query(rentQuery, rentParams)).rows
 
-  // 3. Fetch Bill Splits
+  // Fetch individual bill splits assigned to tenants
   const splitParams = [year]
   let splitQuery = `
     SELECT s.id, s.tenant_id, s.amount, s.status, b.type, b.month, b.year 
@@ -44,7 +44,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   }
   const splitRecords = (await pool.query(splitQuery, splitParams)).rows
 
-  // 4. Fetch Unit Bills
+  // Fetch direct unit bills excluding those that are split
   const unitBillsParams = isAllProps ? [year, owner_id] : [year, owner_id, property_id]
   let unitBillsQuery = `
     SELECT b.id, b.unit_id, b.amount, b.status, b.type, b.month, b.year 
@@ -61,7 +61,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   }
   const unitBillsRecords = (await pool.query(unitBillsQuery, unitBillsParams)).rows
 
-  // 5. Map them together
+  // Aggregate all fetched data into a single ledger structure
   const ledger = tenants.map(tenant => {
     const dues = [
       ...rentRecords.filter(r => r.tenant_id === tenant.id).map(r => ({
@@ -78,6 +78,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
     return {
       tenant_id: tenant.id,
       tenant_name: tenant.name,
+      phone: tenant.phone,
       unit_label: tenant.unit_label,
       property_name: tenant.property_name,
       dues,

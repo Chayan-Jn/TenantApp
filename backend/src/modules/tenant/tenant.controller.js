@@ -22,19 +22,19 @@ export const getTenants = async (req, res) => {
     const { property_id, unit_id } = req.query
 
     if (!property_id && !unit_id) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Either property_id or unit_id is required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Either property_id or unit_id is required'
       })
     }
 
-    let tenants;
+    const status = req.query.status || 'active'
+    let tenants
+
     if (unit_id) {
-      // Used by the Unit Detail frontend page
-      tenants = await tenantService.getTenantsByUnit(unit_id, req.owner.id)
+      tenants = await tenantService.getTenantsByUnitWithStatus(unit_id, req.owner.id, status)
     } else {
-      // Used by Property-wide views
-      tenants = await tenantService.getTenantsByProperty(property_id, req.owner.id)
+      tenants = await tenantService.getTenantsByProperty(property_id, req.owner.id, status)
     }
 
     res.status(200).json({ success: true, data: tenants })
@@ -42,7 +42,6 @@ export const getTenants = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
-
 
 export const removeTenant = async (req, res) => {
   try {

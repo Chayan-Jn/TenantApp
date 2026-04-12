@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router'
 import { createRent, markRentPaid, markRentUnpaid, getRentByTenant } from '../../api/rent.api.js'
 import { removeTenant, updateTenant } from '../../api/tenant.api.js'
-import { FiEdit2, FiTrash2, FiCalendar, FiCheck, FiX, FiClock, FiUser, FiMapPin, FiPhone } from 'react-icons/fi'
+import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Input from '../../components/ui/Input.jsx'
@@ -10,8 +10,9 @@ import Badge from '../../components/ui/Badge.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
 
-const statusVariant = { paid: 'emerald', pending: 'amber', overdue: 'rose' }
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
+const statusVariant = { paid: 'green', pending: 'yellow', overdue: 'red' }
+
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN') : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 const getStatus = (rent) => {
@@ -29,40 +30,53 @@ export default function TenantDetail() {
   const [rentModal, setRentModal] = useState(false)
   const [removeModal, setRemoveModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
-  
   const [loading, setLoading] = useState(false)
   const [editLoading, setEditLoading] = useState(false)
-  const [actionLoading, setActionLoading] = useState(null)
-  
+  const [error, setError] = useState('')
+  const [editError, setEditError] = useState('')
   const [form, setForm] = useState({ amount: '', due_date: '' })
-  const [editForm, setEditForm] = useState({ name: initialTenant.name, phone: initialTenant.phone })
+  const [editForm, setEditForm] = useState({ name: tenant.name, phone: tenant.phone })
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleEditChange = (e) => setEditForm({ ...editForm, [e.target.name]: e.target.value })
 
   const handleAddRent = async (e) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
     try {
-      await createRent({ tenant_id: Number(tenant_id), amount: Number(form.amount), due_date: form.due_date })
+      await createRent({
+        tenant_id: Number(tenant_id),
+        amount: Number(form.amount),
+        due_date: form.due_date
+      })
       const updated = await getRentByTenant(tenant_id)
       setRents(updated.data)
       setRentModal(false)
       setForm({ amount: '', due_date: '' })
-    } catch (err) { alert(err.message) } finally { setLoading(false) }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleMarkPaid = async (id) => {
-    setActionLoading(id)
     try {
       await markRentPaid(id)
       setRents(rents.map(r => r.id === id ? { ...r, status: 'paid', paid_date: new Date().toISOString() } : r))
-    } catch (err) { alert(err.message) } finally { setActionLoading(null) }
+    } catch (err) {
+      alert(err.message)
+    }
   }
 
   const handleMarkUnpaid = async (id) => {
-    setActionLoading(id)
     try {
       await markRentUnpaid(id)
       setRents(rents.map(r => r.id === id ? { ...r, status: 'pending', paid_date: null } : r))
-    } catch (err) { alert(err.message) } finally { setActionLoading(null) }
+    } catch (err) {
+      alert(err.message)
+    }
   }
 
   const handleRemoveTenant = async () => {
@@ -70,163 +84,164 @@ export default function TenantDetail() {
     try {
       await removeTenant(tenant_id)
       navigate(`/units/${tenant.unit_id}`)
-    } catch (err) { alert(err.message) } finally { setLoading(false) }
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleUpdateTenant = async (e) => {
     e.preventDefault()
     setEditLoading(true)
+    setEditError('')
     try {
       const res = await updateTenant(tenant_id, editForm)
       setTenant({ ...tenant, ...res.data })
       setEditModal(false)
-    } catch (err) { alert(err.message) } finally { setEditLoading(false) }
+    } catch (err) {
+      setEditError(err.message)
+    } finally {
+      setEditLoading(false)
+    }
   }
 
+  const isActive = !tenant.leave_date
+
   return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-6 p-4 text-slate-900">
+    <div className="max-w-3xl mx-auto flex flex-col gap-6">
+
       <Breadcrumb crumbs={[
         { label: 'Properties', to: '/properties' },
         { label: tenant.property_name, to: `/properties/${tenant.property_id}` },
-        { label: `Unit ${tenant.label}`, to: `/units/${tenant.unit_id}` },
+        { label: tenant.label, to: `/units/${tenant.unit_id}` },
         { label: tenant.name }
       ]} />
 
-      <header className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex gap-5 items-center">
-          <div className="h-16 w-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-slate-100">
-            <FiUser size={32} />
-          </div>
+      {/* Tenant Info */}
+      <Card>
+        <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{tenant.name}</h1>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium text-slate-500 mt-1">
-              <span className="flex items-center gap-1.5"><FiMapPin size={14} className="text-slate-400"/> {tenant.property_name} • {tenant.label}</span>
-              <span className="flex items-center gap-1.5"><FiPhone size={14} className="text-slate-400"/> {tenant.phone}</span>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-gray-900">{tenant.name}</h1>
+              <Badge variant={isActive ? 'green' : 'red'}>
+                {isActive ? 'active' : 'moved out'}
+              </Badge>
+            </div>
+            <p className="text-sm text-gray-500 mt-1">{tenant.phone}</p>
+            <p className="text-sm text-gray-500">{tenant.property_name} - {tenant.label}</p>
+            <div className="flex gap-4 mt-3 text-sm text-gray-600">
+              <span>Joined: {formatDate(tenant.join_date)}</span>
+              {isActive
+                ? <span>Rent: {formatCurrency(tenant.rent)}/mo</span>
+                : <span className="text-red-400">Left: {formatDate(tenant.leave_date)}</span>
+              }
             </div>
           </div>
+          {isActive && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setEditForm({ name: tenant.name, phone: tenant.phone })
+                  setEditModal(true)
+                }}
+                className="text-gray-400 hover:text-blue-600 p-1 cursor-pointer transition-colors"
+              >
+                <FiEdit2 size={20} />
+              </button>
+              <button
+                onClick={() => setRemoveModal(true)}
+                className="text-gray-400 hover:text-red-600 p-1 cursor-pointer transition-colors"
+              >
+                <FiTrash2 size={20} />
+              </button>
+            </div>
+          )}
         </div>
-        <div className="flex gap-3 shrink-0">
-          <button onClick={() => setEditModal(true)} className="p-2.5 cursor-pointer bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 rounded-xl transition-all border border-slate-200">
-            <FiEdit2 size={18} />
-          </button>
-          <button onClick={() => setRemoveModal(true)} className="p-2.5 cursor-pointer bg-rose-50 hover:bg-rose-100 text-rose-400 hover:text-rose-600 rounded-xl transition-all border border-rose-100">
-            <FiTrash2 size={18} />
-          </button>
-        </div>
-      </header>
+      </Card>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-slate-900 p-5 rounded-2xl shadow-md">
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Monthly Rent</p>
-          <p className="text-xl font-bold text-white">{formatCurrency(tenant.rent)}</p>
-        </div>
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl">
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Joined Since</p>
-          <p className="text-xl font-bold text-slate-800">{formatDate(tenant.join_date)}</p>
-        </div>
-        <div className="hidden md:block bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
-          <p className="text-emerald-600/70 text-[10px] font-black uppercase tracking-wider mb-1">Occupancy</p>
-          <p className="text-xl font-bold text-emerald-700">Active Tenant</p>
-        </div>
+      {/* Rent Records */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">Rent History</h2>
+        {isActive && (
+          <Button size="sm" onClick={() => setRentModal(true)}>+ Add Rent</Button>
+        )}
       </div>
 
-      <div className="space-y-5">
-        <div className="flex items-center justify-between px-1">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Ledger Entries</h2>
-            <p className="text-xs text-slate-500">Financial history for this resident</p>
-          </div>
-          <Button onClick={() => setRentModal(true)} className="cursor-pointer">
-            + Add Record
-          </Button>
-        </div>
-
-        <div className="grid gap-3">
-          {rents.length === 0 ? (
-            <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-16 text-center text-slate-400 font-medium">
-              No rent records found.
-            </div>
-          ) : rents.map((rent) => {
+      {rents.length === 0 ? (
+        <Card>
+          <p className="text-sm text-gray-500 text-center">No rent records yet</p>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {rents.map((rent) => {
             const status = getStatus(rent)
-            const isPaid = status === 'paid'
-            const isProcessing = actionLoading === rent.id
-
             return (
-              <div key={rent.id} className="bg-white border border-slate-200 rounded-2xl p-6 flex items-center justify-between gap-4 transition-all hover:shadow-md">
-                <div className="flex items-center gap-6">
-                  <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 ${isPaid ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
-                    {isPaid ? <FiCheck size={28} /> : <FiClock size={28} />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl font-bold text-slate-800 tracking-tight">{formatCurrency(rent.amount)}</span>
-                      <Badge variant={statusVariant[status]} className="font-bold tracking-tight">{status.toUpperCase()}</Badge>
-                    </div>
-                    <div className="flex flex-wrap gap-x-5 gap-y-0.5 text-xs text-slate-500 mt-2 font-medium">
-                      <span className="flex items-center gap-1.5 text-slate-400"><FiCalendar size={13}/> Due: {formatDate(rent.due_date)}</span>
-                      {isPaid && <span className="text-emerald-600 flex items-center gap-1.5"><FiCheck size={13}/> Paid: {formatDate(rent.paid_date)}</span>}
-                    </div>
-                  </div>
+              <Card key={rent.id} className="flex items-center justify-between py-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-gray-900">
+                    {formatCurrency(rent.amount)}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    Due: {formatDate(rent.due_date)}
+                    {rent.paid_date && ` · Paid: ${formatDate(rent.paid_date)}`}
+                  </span>
                 </div>
-
-                <div className="shrink-0">
-                  {!isPaid ? (
-                    <button 
-                      disabled={isProcessing}
-                      onClick={() => handleMarkPaid(rent.id)}
-                      className={`px-8 py-3 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm ${isProcessing ? 'opacity-40 cursor-wait' : ''}`}
-                    >
+                <div className="flex items-center gap-3">
+                  <Badge variant={statusVariant[status]}>{status}</Badge>
+                  {status !== 'paid' ? (
+                    <Button size="sm" onClick={() => handleMarkPaid(rent.id)}>
                       Mark Paid
-                    </button>
+                    </Button>
                   ) : (
-                    <button 
-                      disabled={isProcessing}
-                      onClick={() => handleMarkUnpaid(rent.id)}
-                      className={`px-8 py-3 cursor-pointer bg-white text-slate-400 hover:text-rose-600 border border-slate-200 hover:border-rose-100 hover:bg-rose-50 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isProcessing ? 'opacity-40 cursor-wait' : ''}`}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => handleMarkUnpaid(rent.id)}>
                       Undo
-                    </button>
+                    </Button>
                   )}
                 </div>
-              </div>
+              </Card>
             )
           })}
         </div>
-      </div>
+      )}
 
-      <Modal open={rentModal} onClose={() => setRentModal(false)} title="New Rent Entry">
-        <form onSubmit={handleAddRent} className="flex flex-col gap-5 mt-4">
-          <Input label="Rent Amount (₹)" type="number" value={form.amount} onChange={(e) => setForm({...form, amount: e.target.value})} placeholder="e.g. 15000" required />
-          <Input label="Payment Due Date" type="date" value={form.due_date} onChange={(e) => setForm({...form, due_date: e.target.value})} required />
-          <div className="flex gap-3 justify-end mt-2">
-            <Button variant="ghost" className="cursor-pointer" onClick={() => setRentModal(false)}>Cancel</Button>
-            <Button type="submit" className="cursor-pointer" loading={loading}>Save Record</Button>
+      {/* Add Rent Modal */}
+      <Modal open={rentModal} onClose={() => setRentModal(false)} title="Add Rent Record">
+        <form onSubmit={handleAddRent} className="flex flex-col gap-4">
+          <Input label="Amount (₹)" name="amount" type="number" value={form.amount} onChange={handleChange} required />
+          <Input label="Due Date" name="due_date" type="date" value={form.due_date} onChange={handleChange} required />
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <div className="flex gap-2 justify-end">
+            <Button variant="ghost" type="button" onClick={() => setRentModal(false)}>Cancel</Button>
+            <Button type="submit" loading={loading}>Add</Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={editModal} onClose={() => setEditModal(false)} title="Edit Profile">
-        <form onSubmit={handleUpdateTenant} className="flex flex-col gap-5 mt-4">
-          <Input label="Resident Name" value={editForm.name} onChange={(e) => setEditForm({...editForm, name: e.target.value})} required />
-          <Input label="Phone Contact" type="tel" value={editForm.phone} onChange={(e) => setEditForm({...editForm, phone: e.target.value})} required />
-          <div className="flex gap-3 justify-end mt-2">
-            <Button variant="ghost" className="cursor-pointer" onClick={() => setEditModal(false)}>Cancel</Button>
-            <Button type="submit" className="cursor-pointer" loading={editLoading}>Update Changes</Button>
+      {/* Edit Tenant Modal */}
+      <Modal open={editModal} onClose={() => setEditModal(false)} title="Edit Tenant">
+        <form onSubmit={handleUpdateTenant} className="flex flex-col gap-4">
+          <Input label="Name" name="name" type="text" value={editForm.name} onChange={handleEditChange} required />
+          <Input label="Phone" name="phone" type="tel" value={editForm.phone} onChange={handleEditChange} required />
+          {editError && <p className="text-sm text-red-500">{editError}</p>}
+          <div className="flex gap-2 justify-end">
+            <Button variant="ghost" type="button" onClick={() => setEditModal(false)}>Cancel</Button>
+            <Button type="submit" loading={editLoading}>Save</Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={removeModal} onClose={() => setRemoveModal(false)} title="Remove Resident">
-        <div className="py-2">
-          <p className="text-slate-600 leading-relaxed text-sm">Are you sure you want to remove <b>{tenant.name}</b>? The unit records will be preserved but the tenant will be moved out.</p>
-        </div>
-        <div className="flex gap-3 justify-end mt-6">
-          <Button variant="ghost" className="cursor-pointer" onClick={() => setRemoveModal(false)}>Cancel</Button>
-          <button onClick={handleRemoveTenant} disabled={loading} className={`px-6 py-2.5 cursor-pointer bg-rose-600 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-50 ${loading ? 'opacity-50 cursor-wait' : 'hover:bg-rose-700'}`}>
-            Confirm Removal
-          </button>
+      {/* Remove Tenant Modal */}
+      <Modal open={removeModal} onClose={() => setRemoveModal(false)} title="Remove Tenant">
+        <p className="text-sm text-gray-600 mb-6">
+          Are you sure you want to remove <strong>{tenant.name}</strong>? This will mark them as moved out.
+        </p>
+        <div className="flex gap-2 justify-end">
+          <Button variant="ghost" onClick={() => setRemoveModal(false)}>Cancel</Button>
+          <Button variant="danger" loading={loading} onClick={handleRemoveTenant}>Remove</Button>
         </div>
       </Modal>
+
     </div>
   )
 }

@@ -31,22 +31,6 @@ export const createTenant = async ({ unit_id, name, phone, join_date, owner_id }
   }
 }
 
-export const getTenantsByProperty = async (property_id, owner_id) => {
-  try {
-    const result = await pool.query(
-      `SELECT t.*, u.label, u.rent FROM tenants t
-       JOIN units u ON t.unit_id = u.id
-       JOIN properties p ON u.property_id = p.id
-       WHERE p.id = $1 AND p.owner_id = $2
-       AND t.leave_date IS NULL  -- Filter out removed tenants
-       ORDER BY t.name ASC`,
-      [property_id, owner_id]
-    )
-    return result.rows
-  } catch (err) {
-    throw err
-  }
-}
 
 export const getTenantsByUnit = async (unit_id, owner_id) => {
   try {
@@ -149,6 +133,52 @@ export const updateTenant = async (id, { name, phone }, owner_id) => {
     )
     if (!result.rows.length) throw new Error('Tenant not found or unauthorized')
     return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getTenantsByUnitWithStatus = async (unit_id, owner_id, status) => {
+  try {
+    const statusFilter = status === 'active'
+      ? 'AND t.leave_date IS NULL'
+      : status === 'left'
+        ? 'AND t.leave_date IS NOT NULL'
+        : ''
+
+    const result = await pool.query(
+      `SELECT t.* FROM tenants t
+       JOIN units u ON t.unit_id = u.id
+       JOIN properties p ON u.property_id = p.id
+       WHERE u.id = $1 AND p.owner_id = $2
+       ${statusFilter}
+       ORDER BY t.name ASC`,
+      [unit_id, owner_id]
+    )
+    return result.rows
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getTenantsByProperty = async (property_id, owner_id, status = 'active') => {
+  try {
+    const statusFilter = status === 'active'
+      ? 'AND t.leave_date IS NULL'
+      : status === 'left'
+        ? 'AND t.leave_date IS NOT NULL'
+        : ''
+
+    const result = await pool.query(
+      `SELECT t.*, u.label, u.rent FROM tenants t
+       JOIN units u ON t.unit_id = u.id
+       JOIN properties p ON u.property_id = p.id
+       WHERE p.id = $1 AND p.owner_id = $2
+       ${statusFilter}
+       ORDER BY t.name ASC`,
+      [property_id, owner_id]
+    )
+    return result.rows
   } catch (err) {
     throw err
   }

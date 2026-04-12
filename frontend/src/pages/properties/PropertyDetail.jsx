@@ -134,6 +134,12 @@ export default function PropertyDetail() {
           >
             + Add Unit
           </button>
+          <Link
+            to={`/properties/${property_id}/tenants`}
+            className="bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium transition-colors border border-purple-200 flex items-center gap-2"
+          >
+            View All Tenants
+          </Link>
           <button
             onClick={() => {
               setEditPropertyForm({
