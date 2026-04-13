@@ -13,48 +13,57 @@ export default function Overdue() {
   const { properties } = useLoaderData()
   const queryClient = useQueryClient()
 
-  // 1. Initialize state from sessionStorage
   const [selectedProperty, setSelectedProperty] = useState(() => sessionStorage.getItem('overdue_property') || '')
 
-  // 2. Sync to sessionStorage whenever it changes
   useEffect(() => {
     sessionStorage.setItem('overdue_property', selectedProperty)
   }, [selectedProperty])
 
-  // 3. React Query for fetching
   const { data: overdueData, isFetching } = useQuery({
     queryKey: ['overdueRents', selectedProperty],
     queryFn: () => getOverdueRents(selectedProperty),
     enabled: !!selectedProperty,
-    staleTime: 1000 * 60 * 5 // Cache for 5 mins
+    staleTime: 1000 * 60 * 5 
   })
 
   const overdueRents = overdueData?.data || []
 
-  // 4. React Query Mutations for actions
-  const markPaidMutation = useMutation({
-    mutationFn: (id) => markRentPaid(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['overdueRents'] })
+  // COMBINED MUTATION: 1 Button transforms based on status
+  const actionMutation = useMutation({
+    mutationFn: async (rent) => {
+      // Assuming rent object has a status field. If not, it defaults to marking paid.
+      return rent.status === 'paid' ? await markRentUnpaid(rent.id) : await markRentPaid(rent.id)
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['overdueRents'] }),
+    onError: (err) => alert(err.response?.data?.message || err.message)
   })
 
-  const markUnpaidMutation = useMutation({
-    mutationFn: (id) => markRentUnpaid(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['overdueRents'] })
-  })
+  // GROUPING LOGIC: Group by Property, then sort by Unit
+  const groupedData = {}
+  if (overdueRents.length > 0) {
+    overdueRents.forEach(rent => {
+      if (!groupedData[rent.property_name]) {
+        groupedData[rent.property_name] = []
+      }
+      groupedData[rent.property_name].push(rent)
+    })
+  }
+  
+  const sortedProps = Object.keys(groupedData).sort()
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col gap-6">
+    <div className="max-w-4xl mx-auto flex flex-col gap-8 pb-16 relative">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Overdue Rent</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Overdue Rent</h1>
         <p className="text-sm text-gray-500 mt-1">Track unpaid rent across your properties</p>
       </div>
 
-      <Card>
+      <Card className="p-5 border-gray-200 shadow-sm">
         <div className="flex gap-3 items-end">
-          <div className="flex flex-col gap-1 flex-1">
-            <label className="text-sm font-medium text-gray-700">Select Property</label>
+          <div className="flex flex-col gap-1.5 flex-1 max-w-sm">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Select Property</label>
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer"
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer w-full"
               value={selectedProperty}
               onChange={(e) => setSelectedProperty(e.target.value)}
             >
@@ -65,13 +74,11 @@ export default function Overdue() {
               ))}
             </select>
           </div>
-          {/* Note: Fetch button removed for auto-fetching! */}
         </div>
       </Card>
 
-      {/* Loading State Overlay */}
       {isFetching && (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center py-4">
           <div className="animate-pulse flex items-center gap-2 text-blue-600 font-medium">
             <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <circle cx="12" cy="12" r="10" strokeWidth="4" stroke="currentColor" strokeOpacity="0.25" />
@@ -83,42 +90,76 @@ export default function Overdue() {
       )}
 
       {selectedProperty && !isFetching && overdueRents.length === 0 && (
-        <Card>
-          <p className="text-sm text-gray-500 text-center">No overdue rents</p>
+        <Card className="py-12 border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-500 text-center">No overdue rents found for this property.</p>
         </Card>
       )}
 
-      {overdueRents.length > 0 && (
-        <div className={`flex flex-col gap-3 transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-          {overdueRents.map((rent) => (
-            <Card key={rent.id} className="flex items-center justify-between py-4 bg-white">
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-gray-900">{rent.tenant_name}</span>
-                <span className="text-xs text-gray-500">{rent.property_name} - {rent.unit_label}</span>
-                <span className="text-xs text-gray-500">
-                  Due: {formatDate(rent.due_date)} · <span className="font-semibold">{formatCurrency(rent.amount)}</span>
-                </span>
+      {/* RENDER GROUPED DATA */}
+      {sortedProps.length > 0 && (
+        <div className={`flex flex-col gap-6 transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+          {sortedProps.map(propertyName => {
+            // Sort units within the property numerically/alphabetically
+            const rents = groupedData[propertyName].sort((a, b) => 
+              a.unit_label.localeCompare(b.unit_label, undefined, { numeric: true, sensitivity: 'base' })
+            )
+
+            return (
+              <div key={propertyName} className="flex flex-col gap-4">
+                <h3 className="text-lg font-bold text-gray-600 border-b border-gray-200 pb-1 mt-2">
+                  {propertyName}
+                </h3>
+                
+                <div className="flex flex-col gap-3 ml-2">
+                  {rents.map((rent) => (
+                    <Card key={rent.id} className="p-0 overflow-hidden border-gray-200 shadow-sm">
+                      <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white hover:bg-gray-50/50 transition-colors">
+                        
+                        <div className="flex flex-col gap-1">
+                          <h4 className="text-base font-bold text-gray-800">
+                            Unit {rent.unit_label} <span className="text-gray-400 font-normal mx-1">|</span> {rent.tenant_name}
+                          </h4>
+                          <span className="text-sm text-gray-500 font-medium">
+                            Due: {formatDate(rent.due_date)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <span className="text-base font-bold text-red-600 w-24 text-right">
+                            {formatCurrency(rent.amount)}
+                          </span>
+                          
+                          <div className="w-20 flex justify-center">
+                            <Badge variant={rent.status === 'paid' ? 'green' : 'red'}>
+                              {rent.status || 'overdue'}
+                            </Badge>
+                          </div>
+                          
+                          <div className="w-24 flex justify-end">
+                            <Button 
+                              type="button"
+                              size="sm" 
+                              variant={rent.status === 'paid' ? 'ghost' : 'default'}
+                              disabled={actionMutation.isPending}
+                              className={
+                                rent.status === 'paid' 
+                                  ? 'text-gray-500 hover:text-gray-800 hover:bg-gray-100 cursor-pointer disabled:opacity-50' 
+                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50'
+                              }
+                              onClick={() => actionMutation.mutate(rent)}
+                            >
+                              {rent.status === 'paid' ? 'Undo' : 'Mark Paid'}
+                            </Button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </Card>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="red">overdue</Badge>
-                <Button 
-                  size="sm" 
-                  onClick={() => markPaidMutation.mutate(rent.id)}
-                  disabled={markPaidMutation.isPending}
-                >
-                  Mark Paid
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={() => markUnpaidMutation.mutate(rent.id)}
-                  disabled={markUnpaidMutation.isPending}
-                >
-                  Undo
-                </Button>
-              </div>
-            </Card>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

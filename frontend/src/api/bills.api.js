@@ -1,4 +1,3 @@
-
 import { api } from './client.js'
 
 export const createBill = (body) => api('/bills', { method: 'POST', body })

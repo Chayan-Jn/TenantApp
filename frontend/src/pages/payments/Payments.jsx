@@ -29,7 +29,8 @@ This is a summary of pending dues for *{{monthName}} {{year}}* (Unit: {{unit_lab
 const parseTemplate = (template, tenant, monthName, year) => {
   if (!tenant.phone || tenant.total_pending <= 0) return ''
   
-  const pendingDues = tenant.dues.filter(d => d.status !== 'paid')
+  // UPDATE: Ensure we don't text the roommate asking them to pay the shared reference bill
+  const pendingDues = tenant.dues.filter(d => d.status !== 'paid' && !d.is_shared_reference)
   let duesListStr = ''
   
   pendingDues.forEach(due => { 
@@ -148,7 +149,8 @@ export default function Payments() {
         groupedData[mInt][tenant.property_name].push({
           ...tenant,
           dues: monthDues,
-          total_pending: monthDues.filter(d => d.status !== 'paid').reduce((sum, d) => sum + d.amount, 0)
+          // UPDATE: Ensure total pending doesn't include shared references on the frontend either
+          total_pending: monthDues.filter(d => d.status !== 'paid' && !d.is_shared_reference).reduce((sum, d) => sum + d.amount, 0)
         })
       })
     })
@@ -298,17 +300,17 @@ export default function Payments() {
                                   <div className="px-5 py-4 text-center text-sm text-slate-400">No dues generated for this month.</div>
                                 ) : (
                                   tenant.dues.map((due) => (
-                                    <div key={`${due.item_type}-${due.id}`} className="px-5 py-3.5 flex justify-between items-center hover:bg-slate-50/50 transition-colors">
+                                    <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex justify-between items-center transition-colors ${due.is_shared_reference ? 'bg-slate-50/30' : 'hover:bg-slate-50/50'}`}>
                                       
                                       <div className="flex flex-col gap-1">
-                                        <span className="text-sm font-semibold text-slate-700">{due.title}</span>
+                                        <span className={`text-sm font-semibold ${due.is_shared_reference ? 'text-slate-500' : 'text-slate-700'}`}>{due.title}</span>
                                         {due.due_date && (
                                           <span className="text-xs text-slate-400 font-medium">Due: {formatDate(due.due_date)}</span>
                                         )}
                                       </div>
 
                                       <div className="flex items-center gap-4">
-                                        <span className="text-sm font-bold text-slate-700 w-20 text-right">
+                                        <span className={`text-sm font-bold w-20 text-right ${due.is_shared_reference ? 'text-slate-400' : 'text-slate-700'}`}>
                                           {formatCurrency(due.amount)}
                                         </span>
                                         
@@ -316,21 +318,28 @@ export default function Payments() {
                                           <Badge variant={statusVariant[due.status] || 'yellow'}>{due.status}</Badge>
                                         </div>
                                         
-                                        <div className="w-24 flex justify-end">
-                                          <Button 
-                                            type="button"
-                                            size="sm" 
-                                            variant={due.status === 'paid' ? 'ghost' : 'default'}
-                                            disabled={actionMutation.isPending}
-                                            className={
-                                              due.status === 'paid' 
-                                                ? 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 cursor-pointer disabled:opacity-50' 
-                                                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50'
-                                            }
-                                            onClick={() => actionMutation.mutate(due)}
-                                          >
-                                            {due.status === 'paid' ? 'Undo' : 'Mark Paid'}
-                                          </Button>
+                                        {/* UPDATE: Hide button for shared reference, show text instead */}
+                                        <div className="w-28 flex justify-end">
+                                          {due.is_shared_reference ? (
+                                            <span className="text-[11px] text-slate-400 italic text-right leading-tight">
+                                              Shared with<br/><span className="font-medium text-slate-500">{due.shared_with}</span>
+                                            </span>
+                                          ) : (
+                                            <Button 
+                                              type="button"
+                                              size="sm" 
+                                              variant={due.status === 'paid' ? 'ghost' : 'default'}
+                                              disabled={actionMutation.isPending}
+                                              className={
+                                                due.status === 'paid' 
+                                                  ? 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 cursor-pointer disabled:opacity-50' 
+                                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50'
+                                              }
+                                              onClick={() => actionMutation.mutate(due)}
+                                            >
+                                              {due.status === 'paid' ? 'Undo' : 'Mark Paid'}
+                                            </Button>
+                                          )}
                                         </div>
                                       </div>
 
@@ -351,7 +360,7 @@ export default function Payments() {
         </div>
       )}
 
-      {/* NEW: Floating Action Button to edit the template */}
+      {/* Floating Action Button to edit the template */}
       <button 
         onClick={() => setIsTemplateModalOpen(true)}
         className="fixed bottom-6 right-6 h-14 w-14 bg-slate-800 hover:bg-slate-900 text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 z-40 border-none"
@@ -362,7 +371,7 @@ export default function Payments() {
         </svg>
       </button>
 
-      {/* NEW: Global Template Editor Modal */}
+      {/* Global Template Editor Modal */}
       {isTemplateModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden flex flex-col">

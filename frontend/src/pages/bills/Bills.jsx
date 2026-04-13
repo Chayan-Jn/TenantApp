@@ -5,19 +5,63 @@ import { getBills, getBillSplits, deleteBill, updateBill, updateBillStatus, upda
 import { api } from '../../api/client.js'
 import Card from '../../components/ui/Card.jsx'
 import Badge from '../../components/ui/Badge.jsx'
-import { FiTrash2, FiEdit2, FiChevronDown, FiChevronUp, FiCheckCircle } from 'react-icons/fi'
+import { FiTrash2, FiEdit2 } from 'react-icons/fi'
 
 const BILL_TYPES = ['electricity', 'water', 'gas', 'maintenance', 'parking', 'other']
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const TYPE_COLORS = { electricity: 'yellow', water: 'blue', gas: 'red', maintenance: 'gray', parking: 'gray', other: 'gray' }
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
+// --- NEW SUB-COMPONENT: Auto-fetches and displays splits for shared bills ---
+function BillSplitsList({ billId, splitStatusMutation }) {
+  const { data, isFetching } = useQuery({
+    queryKey: ['billSplits', billId],
+    queryFn: () => getBillSplits(billId),
+    staleTime: 1000 * 60 * 5
+  })
+
+  const splits = data?.data || []
+
+  if (isFetching) {
+    return <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">Loading split details...</div>
+  }
+
+  if (splits.length === 0) return null
+
+  return (
+    <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-2">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Split Details</p>
+      {splits.map(s => (
+        <div key={s.id} className="flex items-center justify-between text-sm bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-800 font-medium">{s.tenant_name}</span>
+            {s.status === 'paid' && <Badge variant="green">Paid</Badge>}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-gray-900">{formatCurrency(s.amount)}</span>
+            <button 
+              onClick={() => splitStatusMutation.mutate({ id: s.id, status: s.status === 'paid' ? 'pending' : 'paid' })} 
+              className={
+                s.status === 'paid'
+                  ? 'text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-200 bg-gray-100 border border-gray-200 px-3 py-1.5 rounded transition-colors cursor-pointer'
+                  : 'text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none px-3 py-1.5 rounded transition-colors cursor-pointer'
+              }
+            >
+              {s.status === 'paid' ? 'Undo' : 'Mark Paid'}
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+// ----------------------------------------------------------------------------
+
 export default function Bills() {
   const { properties } = useLoaderData()
   const queryClient = useQueryClient()
   const now = new Date()
 
-  // 1. Initialize state from sessionStorage (or use defaults)
   const [selectedProperty, setSelectedProperty] = useState(() => sessionStorage.getItem('bills_property') || '')
   const [selectedUnit, setSelectedUnit] = useState(() => sessionStorage.getItem('bills_unit') || '')
   const [month, setMonth] = useState(() => {
@@ -29,7 +73,6 @@ export default function Bills() {
     return saved ? Number(saved) : now.getFullYear()
   })
 
-  // 2. Sync to sessionStorage whenever these change
   useEffect(() => {
     sessionStorage.setItem('bills_property', selectedProperty)
     sessionStorage.setItem('bills_unit', selectedUnit)
@@ -38,7 +81,6 @@ export default function Bills() {
   }, [selectedProperty, selectedUnit, month, year])
 
   const [units, setUnits] = useState([])
-  const [expandedBill, setExpandedBill] = useState(null)
   const [editBillModal, setEditBillModal] = useState(false)
   const [editingBill, setEditingBill] = useState(null)
   const [editBillForm, setEditBillForm] = useState({
@@ -50,7 +92,6 @@ export default function Bills() {
 
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i)
 
-  // Fetch units automatically if a property is already selected from sessionStorage
   useEffect(() => {
     if (!selectedProperty || selectedProperty === 'all') {
       setUnits([])
@@ -81,19 +122,10 @@ export default function Bills() {
       return getBills(params)
     },
     enabled: !!selectedProperty,
-    staleTime: 1000 * 60 * 5 // Cached data stays fresh for 5 mins
+    staleTime: 1000 * 60 * 5 
   })
 
   const bills = billsData?.data || []
-
-  const { data: splitsData } = useQuery({
-    queryKey: ['billSplits', expandedBill],
-    queryFn: () => getBillSplits(expandedBill),
-    enabled: !!expandedBill,
-    staleTime: 1000 * 60 * 5
-  })
-
-  const splits = splitsData?.data || []
 
   const deleteMutation = useMutation({
     mutationFn: (id) => deleteBill(id),
@@ -117,18 +149,15 @@ export default function Bills() {
   const splitStatusMutation = useMutation({
     mutationFn: ({ id, status }) => updateSplitStatus(id, status),
     onSuccess: () => {
+      // Invalidate the main bills to update overall status, and all billSplits to refresh the sub-components
       queryClient.invalidateQueries({ queryKey: billsQueryKey })
-      queryClient.invalidateQueries({ queryKey: ['billSplits', expandedBill] })
+      queryClient.invalidateQueries({ queryKey: ['billSplits'] })
     }
   })
 
   const handlePropertyChange = (propertyId) => {
     setSelectedProperty(propertyId)
-    setSelectedUnit('') // Reset unit when property changes
-  }
-
-  const handleExpandBill = (billId) => {
-    setExpandedBill(expandedBill === billId ? null : billId)
+    setSelectedUnit('') 
   }
 
   const handleDeleteBill = async (id) => {
@@ -248,7 +277,6 @@ export default function Bills() {
         </div>
       </Card>
 
-      {/* Loading State Overlay */}
       {isFetching && (
         <div className="flex justify-center py-8">
           <div className="animate-pulse flex items-center gap-2 text-blue-600 font-medium">
@@ -279,67 +307,64 @@ export default function Bills() {
                     <div className="flex flex-col gap-3">
                       {unitBills.map((bill) => (
                         <div key={bill.id} className="border border-gray-100 rounded-lg p-4 hover:border-gray-300 transition-colors bg-white">
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col gap-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            
+                            {/* Bill Info & Names */}
+                            <div className="flex flex-col gap-1.5">
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-semibold text-gray-900 capitalize">{bill.type}</span>
                                 <Badge variant={TYPE_COLORS[bill.type]}>{bill.type}</Badge>
                                 {bill.split_type !== 'unit' && <Badge variant="blue">{bill.split_type} split</Badge>}
                                 {bill.status === 'paid' && <Badge variant="green">Paid</Badge>}
                               </div>
-                              <span className="text-xs text-gray-400">{MONTHS[bill.month - 1]} {bill.year}</span>
-                              {bill.note && <span className="text-xs text-gray-500 mt-1">{bill.note}</span>}
+                              
+                              <span className="text-sm font-medium text-gray-700">
+                                {bill.split_type === 'unit' 
+                                  ? (bill.tenant_name || 'All Unit Tenants') 
+                                  : <span className="text-gray-500 italic">Shared Bill</span>}
+                              </span>
+
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-xs text-gray-400">{MONTHS[bill.month - 1]} {bill.year}</span>
+                                {bill.note && (
+                                  <>
+                                    <span className="text-gray-300">•</span>
+                                    <span className="text-xs text-gray-500">{bill.note}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-gray-900 mr-2">{formatCurrency(bill.amount)}</span>
+
+                            {/* Actions & Amounts */}
+                            <div className="flex items-center gap-3">
+                              <span className="text-base font-bold text-gray-900 mr-2">{formatCurrency(bill.amount)}</span>
+                              
                               {bill.split_type === 'unit' && (
-                                bill.status === 'paid' ? (
-                                  <button onClick={() => billStatusMutation.mutate({ id: bill.id, status: 'pending' })} className="text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-gray-200 px-2 py-1 rounded transition-colors cursor-pointer bg-white">
-                                    Undo
-                                  </button>
-                                ) : (
-                                  <button onClick={() => billStatusMutation.mutate({ id: bill.id, status: 'paid' })} className="text-gray-400 hover:text-green-600 p-1 cursor-pointer transition-colors">
-                                    <FiCheckCircle size={18} />
-                                  </button>
-                                )
-                              )}
-                              {bill.split_type !== 'unit' && (
-                                <button onClick={() => handleExpandBill(bill.id)} className="text-gray-400 hover:text-blue-600 p-1 cursor-pointer">
-                                  {expandedBill === bill.id ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
+                                <button 
+                                  onClick={() => billStatusMutation.mutate({ id: bill.id, status: bill.status === 'paid' ? 'pending' : 'paid' })} 
+                                  className={
+                                    bill.status === 'paid' 
+                                      ? 'text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white' 
+                                      : 'text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none px-3 py-1.5 rounded-md transition-colors cursor-pointer'
+                                  }
+                                >
+                                  {bill.status === 'paid' ? 'Undo' : 'Mark Paid'}
                                 </button>
                               )}
-                              <button onClick={() => openEditBillModal(bill)} className="text-gray-400 hover:text-blue-600 p-1 cursor-pointer">
-                                <FiEdit2 size={18} />
+                              
+                              <button onClick={() => openEditBillModal(bill)} className="text-gray-400 hover:text-blue-600 p-1.5 cursor-pointer bg-gray-50 hover:bg-blue-50 rounded-md transition-colors">
+                                <FiEdit2 size={16} />
                               </button>
-                              <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 hover:text-red-600 p-1 cursor-pointer">
-                                <FiTrash2 size={18} />
+                              
+                              <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 hover:text-red-600 p-1.5 cursor-pointer bg-gray-50 hover:bg-red-50 rounded-md transition-colors">
+                                <FiTrash2 size={16} />
                               </button>
                             </div>
                           </div>
-                          {expandedBill === bill.id && splits.length > 0 && (
-                            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-2">
-                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Split Details</p>
-                              {splits.map(s => (
-                                <div key={s.id} className="flex items-center justify-between text-sm bg-gray-50 p-2 rounded-lg">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-gray-700 font-medium">{s.tenant_name}</span>
-                                    {s.status === 'paid' && <Badge variant="green">Paid</Badge>}
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="font-semibold text-gray-900">{formatCurrency(s.amount)}</span>
-                                    {s.status === 'paid' ? (
-                                      <button onClick={() => splitStatusMutation.mutate({ id: s.id, status: 'pending' })} className="text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-200 bg-gray-100 border border-gray-200 px-2 py-1 rounded transition-colors cursor-pointer">
-                                        Undo
-                                      </button>
-                                    ) : (
-                                      <button onClick={() => splitStatusMutation.mutate({ id: s.id, status: 'paid' })} className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors cursor-pointer bg-white border border-gray-200 px-2 py-1 rounded">
-                                        <FiCheckCircle size={14} /> Pay
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+
+                          {/* Auto-load Splits if it's not a standard unit bill */}
+                          {bill.split_type !== 'unit' && (
+                            <BillSplitsList billId={bill.id} splitStatusMutation={splitStatusMutation} />
                           )}
                         </div>
                       ))}
@@ -352,12 +377,13 @@ export default function Bills() {
         </div>
       )}
 
+      {/* Edit Bill Modal */}
       {editBillModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-5">
               <h2 className="text-xl font-bold text-gray-900">Edit Bill</h2>
-              <button onClick={() => setEditBillModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer">&times;</button>
+              <button onClick={() => setEditBillModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer bg-transparent border-none">&times;</button>
             </div>
             <form onSubmit={handleUpdateBill} className="space-y-4">
               <div>
@@ -393,11 +419,11 @@ export default function Bills() {
                 </select>
               </div>
               {editBillForm.split_type === 'custom' && editCustomSplits.length > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
                   <label className="text-sm font-medium text-gray-700">Custom Amounts</label>
                   {editCustomSplits.map((s, i) => (
                     <div key={s.tenant_id} className="flex items-center gap-2">
-                      <span className="text-sm text-gray-700 flex-1">{s.name}</span>
+                      <span className="text-sm text-gray-700 flex-1 font-medium">{s.name}</span>
                       <input type="number" min="0" placeholder="₹" value={s.amount}
                         onChange={(e) => {
                           const updated = [...editCustomSplits]
@@ -408,18 +434,21 @@ export default function Bills() {
                       />
                     </div>
                   ))}
-                  <p className="text-xs text-gray-400">
-                    Total: {formatCurrency(editCustomSplits.reduce((s, c) => s + (Number(c.amount) || 0), 0))} / {formatCurrency(Number(editBillForm.amount) || 0)}
-                  </p>
+                  <div className="mt-1 pt-2 border-t border-gray-200 flex justify-between items-center">
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Allocated</span>
+                    <span className={`text-sm font-bold ${editCustomSplits.reduce((s, c) => s + (Number(c.amount) || 0), 0) === Number(editBillForm.amount) ? 'text-green-600' : 'text-red-600'}`}>
+                      {formatCurrency(editCustomSplits.reduce((s, c) => s + (Number(c.amount) || 0), 0))} / {formatCurrency(Number(editBillForm.amount) || 0)}
+                    </span>
+                  </div>
                 </div>
               )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
-                <input type="text" value={editBillForm.note} onChange={(e) => setEditBillForm({ ...editBillForm, note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="text" value={editBillForm.note} onChange={(e) => setEditBillForm({ ...editBillForm, note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g., Q3 Water Tax" />
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setEditBillModal(false)} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" disabled={updateMutation.isPending} className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</button>
+              <div className="flex justify-end gap-3 mt-6 border-t border-gray-100 pt-4">
+                <button type="button" onClick={() => setEditBillModal(false)} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors border-none bg-transparent">Cancel</button>
+                <button type="submit" disabled={updateMutation.isPending} className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 border-none shadow-sm">{updateMutation.isPending ? 'Saving...' : 'Save Changes'}</button>
               </div>
             </form>
           </div>

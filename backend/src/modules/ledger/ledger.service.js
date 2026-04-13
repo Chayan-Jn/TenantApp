@@ -4,88 +4,155 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   const isAllProps = property_id === 'all'
   const isAllMonths = month === 'all'
   
-  // Fetch active tenants and their associated units/properties
-  const tenantsQuery = `
-    SELECT t.id, t.name, t.phone, u.id as unit_id, u.label as unit_label, p.name as property_name
-    FROM tenants t
+  // 1. Build Dynamic Parameters Safely
+  const baseParams = [owner_id, year]
+  let paramIndex = 3
+  let propQuery = ""
+  
+  if (!isAllProps) {
+    baseParams.push(property_id)
+    propQuery = `AND p.id = $${paramIndex}`
+    paramIndex++
+  }
+  
+  let monthQueryRent = ""
+  let monthQueryBill = ""
+  
+  if (!isAllMonths) {
+    baseParams.push(month)
+    monthQueryRent = `AND EXTRACT(MONTH FROM rp.due_date) = $${paramIndex}`
+    monthQueryBill = `AND b.month = $${paramIndex}`
+  }
+
+  // 2. Fetch Base Units & Active Tenants
+  const unitParams = [owner_id]
+  let unitPropCond = ""
+  if (!isAllProps) {
+    unitParams.push(property_id)
+    unitPropCond = "AND p.id = $2"
+  }
+  
+  const unitsData = (await pool.query(`
+    SELECT u.id as unit_id, u.label as unit_label, p.name as property_name,
+           t.id as tenant_id, t.name as tenant_name, t.phone as tenant_phone
+    FROM units u
+    JOIN properties p ON u.property_id = p.id
+    LEFT JOIN tenants t ON t.unit_id = u.id AND t.leave_date IS NULL
+    WHERE p.owner_id = $1 ${unitPropCond}
+  `, unitParams)).rows
+
+  // 3. Rent Records
+  const rentRecords = (await pool.query(`
+    SELECT rp.id, rp.tenant_id, u.id as unit_id, rp.amount, rp.status, rp.due_date, 
+           EXTRACT(MONTH FROM rp.due_date) as month, EXTRACT(YEAR FROM rp.due_date) as year,
+           t.name as tenant_name, t.phone as tenant_phone, u.label as unit_label, p.name as property_name 
+    FROM rent_payments rp
+    JOIN tenants t ON rp.tenant_id = t.id
     JOIN units u ON t.unit_id = u.id
     JOIN properties p ON u.property_id = p.id
-    WHERE p.owner_id = $1 AND t.leave_date IS NULL
-    ${isAllProps ? '' : 'AND p.id = $2'}
-  `
-  const tenantsParams = isAllProps ? [owner_id] : [owner_id, property_id]
-  const tenants = (await pool.query(tenantsQuery, tenantsParams)).rows
+    WHERE p.owner_id = $1 AND EXTRACT(YEAR FROM rp.due_date) = $2
+    ${propQuery} ${monthQueryRent}
+  `, baseParams)).rows
 
-  // Fetch rent payments for the specified period
-  const rentParams = [year]
-  let rentQuery = `
-    SELECT id, tenant_id, amount, status, due_date, 
-           EXTRACT(MONTH FROM due_date) as month, EXTRACT(YEAR FROM due_date) as year 
-    FROM rent_payments 
-    WHERE EXTRACT(YEAR FROM due_date) = $1
-  `
-  if (!isAllMonths) {
-    rentParams.push(month)
-    rentQuery += ` AND EXTRACT(MONTH FROM due_date) = $2`
-  }
-  const rentRecords = (await pool.query(rentQuery, rentParams)).rows
-
-  // Fetch individual bill splits assigned to tenants
-  const splitParams = [year]
-  let splitQuery = `
-    SELECT s.id, s.tenant_id, s.amount, s.status, b.type, b.month, b.year 
+  // 4. Bill Splits
+  const splitRecords = (await pool.query(`
+    SELECT s.id, s.tenant_id, u.id as unit_id, s.amount, s.status, b.type, b.month, b.year,
+           t.name as tenant_name, t.phone as tenant_phone, u.label as unit_label, p.name as property_name 
     FROM bill_splits s 
     JOIN bills b ON s.bill_id = b.id 
-    WHERE b.year = $1
-  `
-  if (!isAllMonths) {
-    splitParams.push(month)
-    splitQuery += ` AND b.month = $2`
-  }
-  const splitRecords = (await pool.query(splitQuery, splitParams)).rows
+    JOIN tenants t ON s.tenant_id = t.id
+    JOIN units u ON b.unit_id = u.id
+    JOIN properties p ON u.property_id = p.id
+    WHERE p.owner_id = $1 AND b.year = $2
+    ${propQuery} ${monthQueryBill}
+  `, baseParams)).rows
 
-  // Fetch direct unit bills excluding those that are split
-  const unitBillsParams = isAllProps ? [year, owner_id] : [year, owner_id, property_id]
-  let unitBillsQuery = `
-    SELECT b.id, b.unit_id, b.amount, b.status, b.type, b.month, b.year 
+  // 5. Unit Bills
+  const unitBillsRecords = (await pool.query(`
+    SELECT b.id, b.unit_id, b.amount, b.status, b.type, b.month, b.year,
+           u.label as unit_label, p.name as property_name 
     FROM bills b
     JOIN units u ON b.unit_id = u.id
     JOIN properties p ON u.property_id = p.id
-    WHERE b.year = $1 AND p.owner_id = $2
-    ${isAllProps ? '' : 'AND p.id = $3'}
-    AND NOT EXISTS (SELECT 1 FROM bill_splits bs WHERE bs.bill_id = b.id)
-  `
-  if (!isAllMonths) {
-    unitBillsParams.push(month)
-    unitBillsQuery += ` AND b.month = $${unitBillsParams.length}`
-  }
-  const unitBillsRecords = (await pool.query(unitBillsQuery, unitBillsParams)).rows
+    WHERE p.owner_id = $1 AND b.year = $2 AND b.split_type = 'unit'
+    ${propQuery} ${monthQueryBill}
+  `, baseParams)).rows
 
-  // Aggregate all fetched data into a single ledger structure
-  const ledger = tenants.map(tenant => {
-    const dues = [
-      ...rentRecords.filter(r => r.tenant_id === tenant.id).map(r => ({
-        id: r.id, item_type: 'rent', title: 'Monthly Rent', amount: Number(r.amount), status: r.status, due_date: r.due_date, month: Number(r.month), year: Number(r.year)
-      })),
-      ...splitRecords.filter(s => s.tenant_id === tenant.id).map(s => ({
-        id: s.id, item_type: 'split', title: `${s.type} Bill Split`, amount: Number(s.amount), status: s.status, due_date: null, month: Number(s.month), year: Number(s.year)
-      })),
-      ...unitBillsRecords.filter(b => b.unit_id === tenant.unit_id).map(b => ({
-        id: b.id, item_type: 'unit_bill', title: `${b.type} Bill`, amount: Number(b.amount), status: b.status, due_date: null, month: Number(b.month), year: Number(b.year)
-      }))
-    ]
+  // 6. Build Ledger Map
+  const ledgerMap = new Map()
+
+  const getBlock = (unit_id, tenant_id, defaultData) => {
+    const key = `${unit_id}_${tenant_id || 'vacant'}`
+    if (!ledgerMap.has(key)) {
+      ledgerMap.set(key, {
+        unit_id,
+        tenant_id: tenant_id || 'vacant',
+        tenant_name: defaultData.tenant_name || 'Vacant Unit',
+        phone: defaultData.tenant_phone || '-',
+        unit_label: defaultData.unit_label,
+        property_name: defaultData.property_name,
+        dues: []
+      })
+    }
+    return ledgerMap.get(key)
+  }
+
+  unitsData.forEach(u => getBlock(u.unit_id, u.tenant_id, u))
+
+  rentRecords.forEach(r => {
+    const block = getBlock(r.unit_id, r.tenant_id, r)
+    block.dues.push({
+      id: r.id, item_type: 'rent', title: 'Monthly Rent', amount: Number(r.amount), status: r.status, due_date: r.due_date, month: Number(r.month), year: Number(r.year),
+      is_shared_reference: false
+    })
+  })
+
+  splitRecords.forEach(s => {
+    const block = getBlock(s.unit_id, s.tenant_id, s)
+    block.dues.push({
+      id: s.id, item_type: 'split', title: `${s.type} Bill Split`, amount: Number(s.amount), status: s.status, due_date: null, month: Number(s.month), year: Number(s.year),
+      is_shared_reference: false
+    })
+  })
+
+  // SMART UNIT BILL ASSIGNMENT (Primary + Shared References)
+  unitBillsRecords.forEach(b => {
+    // Find all active tenants living in this unit
+    const unitBlocks = Array.from(ledgerMap.values()).filter(block => block.unit_id === b.unit_id && block.tenant_id !== 'vacant')
     
-    return {
-      tenant_id: tenant.id,
-      tenant_name: tenant.name,
-      phone: tenant.phone,
-      unit_label: tenant.unit_label,
-      property_name: tenant.property_name,
-      dues,
-      total_collected: dues.filter(d => d.status === 'paid').reduce((s, d) => s + d.amount, 0),
-      total_pending: dues.filter(d => d.status !== 'paid').reduce((s, d) => s + d.amount, 0)
+    if (unitBlocks.length === 0) {
+      // If vacant, just assign to the vacant block
+      const block = getBlock(b.unit_id, 'vacant', b)
+      block.dues.push({
+        id: b.id, item_type: 'unit_bill', title: `${b.type} Bill`, amount: Number(b.amount), status: b.status, due_date: null, month: Number(b.month), year: Number(b.year),
+        is_shared_reference: false
+      })
+    } else {
+      // Assign the real actionable bill to the first tenant (Primary)
+      const primaryBlock = unitBlocks[0]
+      primaryBlock.dues.push({
+        id: b.id, item_type: 'unit_bill', title: `${b.type} Bill`, amount: Number(b.amount), status: b.status, due_date: null, month: Number(b.month), year: Number(b.year),
+        is_shared_reference: false
+      })
+
+      // Assign reference bills to any roommates
+      for (let i = 1; i < unitBlocks.length; i++) {
+        unitBlocks[i].dues.push({
+          id: b.id, item_type: 'unit_bill', title: `${b.type} Bill`, amount: Number(b.amount), status: b.status, due_date: null, month: Number(b.month), year: Number(b.year),
+          is_shared_reference: true, // Flags this as a duplicate for UI only
+          shared_with: primaryBlock.tenant_name // Tells the UI who actually pays it
+        })
+      }
     }
   })
+
+  // 7. Calculate Totals (Strictly ignoring shared_reference dues) & Filter
+  const ledger = Array.from(ledgerMap.values()).map(block => ({
+    ...block,
+    // Note the `&& !d.is_shared_reference` to prevent duplicate math
+    total_collected: block.dues.filter(d => d.status === 'paid' && !d.is_shared_reference).reduce((s, d) => s + d.amount, 0),
+    total_pending: block.dues.filter(d => d.status !== 'paid' && !d.is_shared_reference).reduce((s, d) => s + d.amount, 0)
+  })).filter(item => item.tenant_id !== 'vacant' || item.dues.length > 0)
 
   return {
     tenants: ledger,
