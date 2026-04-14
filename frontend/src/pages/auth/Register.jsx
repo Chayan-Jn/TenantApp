@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router'
-import { register } from '../../api/auth.api.js'
+import { useNavigate, Link } from 'react-router-dom' 
+import { register, googleLogin } from '../../api/auth.api.js'
+import { GoogleLogin } from '@react-oauth/google'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -17,6 +18,7 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  // Traditional Email/Password Registration
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -30,9 +32,26 @@ export default function Register() {
     try {
       const { confirmPassword, ...data } = form
       await register(data)
-      navigate('/login')
+      navigate('/login') // Redirect to login after traditional register
     } catch (err) {
       setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Google Sign-Up Handler
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('')
+    setLoading(true)
+    try {
+      const token = credentialResponse.credential
+      // googleLogin acts as both register and login for Google users
+      await googleLogin(token) 
+      navigate('/dashboard') // Send straight to dashboard since they are logged in
+    } catch (err) {
+      setError('Google Sign-Up failed on the server.')
+      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -108,6 +127,24 @@ export default function Register() {
             {loading ? 'Creating...' : 'Create account'}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="relative flex items-center py-6">
+          <div className="grow border-t border-gray-200"></div>
+          <span className="shrink-0 mx-4 text-gray-400 text-sm">Or sign up with</span>
+          <div className="grow border-t border-gray-200"></div>
+        </div>
+
+        {/* Google Button */}
+        <div className="flex justify-center w-full">
+          <GoogleLogin 
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError('Google Sign-Up popup closed or failed.')}
+            theme="outline"
+            size="large"
+            width="100%"
+          />
+        </div>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{' '}

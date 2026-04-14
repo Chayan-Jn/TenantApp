@@ -1,7 +1,11 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { OAuth2Client } from 'google-auth-library'
 import pool from '../../config/db.js'
 import { env } from '../../config/env.js'
+
+// Initialize Google Client
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID)
 
 export const registerOwner = async ({ name, username, password }) => {
   try {
@@ -25,6 +29,7 @@ export const loginOwner = async ({ username, password }) => {
     const owner = result.rows[0]
     if (!owner) throw new Error('Invalid credentials')
 
+    // Standard Login checks the password hash
     const valid = await bcrypt.compare(password, owner.password_hash)
     if (!valid) throw new Error('Invalid credentials')
 
@@ -32,5 +37,52 @@ export const loginOwner = async ({ username, password }) => {
     return { token, owner: { id: owner.id, name: owner.name, username: owner.username } }
   } catch (err) {
     throw err
+  }
+}
+
+export const loginWithGoogle = async (googleToken) => {
+  try {
+    // 1. We let Google do the password checking. We just verify the token is authentic.
+    const ticket = await googleClient.verifyIdToken({
+      idToken: googleToken,
+      audience: env.GOOGLE_CLIENT_ID,
+    })
+    
+    const { email, name, sub: googleId } = ticket.getPayload()
+
+    // 2. Find the user by their Google email
+    const existing = await pool.query('SELECT * FROM owners WHERE email = $1', [email])
+    let owner = existing.rows[0]
+
+    // 3. If it's their first time clicking the Google button, register them silently
+    if (!owner) {
+      // Create a URL-safe username out of their email prefix
+      const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '')
+      const uniqueUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`
+
+      // Generate a dummy password purely to satisfy the DB constraint. 
+      // It is never used in bcrypt.compare because Google users always route through this function instead.
+      const dummyPassword = `GOOG_${googleId}_${Math.random().toString(36).slice(2)}`
+      const hash = await bcrypt.hash(dummyPassword, 10)
+
+      const result = await pool.query(
+        'INSERT INTO owners (name, username, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email',
+        [name, uniqueUsername, email, hash]
+      )
+      owner = result.rows[0]
+    }
+
+    const token = jwt.sign(
+      { id: owner.id, username: owner.username }, 
+      env.JWT_SECRET, 
+      { expiresIn: '7d' }
+    )
+
+    return { 
+      token, 
+      owner: { id: owner.id, name: owner.name, username: owner.username } 
+    }
+  } catch (err) {
+    throw new Error('Invalid Google token or verification failed')
   }
 }

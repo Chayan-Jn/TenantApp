@@ -32,3 +32,21 @@ export const logout = async (req, res) => {
   res.clearCookie('token')
   res.status(200).json({ success: true, message: 'Logged out' })
 }
+
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { token, owner } = await authService.loginWithGoogle(req.body.token)
+
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+
+    res.status(200).json({ success: true, data: owner })
+  } catch (err) {
+    res.status(401).json({ success: false, message: err.message })
+  }
+}

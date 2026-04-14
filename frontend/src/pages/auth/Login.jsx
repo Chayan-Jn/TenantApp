@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router'
-import { login } from '../../api/auth.api.js'
+import { useNavigate, Link } from 'react-router-dom'
+import { login, googleLogin } from '../../api/auth.api.js' 
+import { GoogleLogin } from '@react-oauth/google'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -8,6 +9,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // Standard Login
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -17,6 +19,23 @@ export default function Login() {
       navigate('/dashboard')
     } catch (err) {
       setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Google Login Handler
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('')
+    setLoading(true)
+    try {
+      // Send the Google token to your backend
+      const token = credentialResponse.credential
+      await googleLogin(token) 
+      navigate('/dashboard')
+    } catch (err) {
+      setError('Google Sign-In failed on the server.')
+      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -34,6 +53,7 @@ export default function Login() {
           </div>
         )}
 
+        {/* Traditional Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
@@ -63,6 +83,24 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="relative flex items-center py-6">
+          <div className="grow border-t border-gray-200"></div>
+          <span className="shrink-0 mx-4 text-gray-400 text-sm">Or continue with</span>
+          <div className="grow border-t border-gray-200"></div>
+        </div>
+
+        {/* Google Button */}
+        <div className="flex justify-center w-full">
+          <GoogleLogin 
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError('Google Sign-In popup closed or failed.')}
+            theme="outline"
+            size="large"
+            width="100%"
+          />
+        </div>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Don't have an account?{' '}
