@@ -21,7 +21,7 @@ import { env } from './config/env.js'
 const app = express();
 const allowedOrigins = env.FRONTEND_URLS.split(',');
 
-app.use(express.json())
+app.use(express.json({ limit: '1mb' }))
 app.use(cookieParser())
 app.use(cors({
   origin: (origin, callback) => {
