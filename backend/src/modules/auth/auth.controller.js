@@ -28,8 +28,24 @@ export const login = async (req, res) => {
   }
 }
 
+import jwt from 'jsonwebtoken'
+
 export const logout = async (req, res) => {
-  res.clearCookie('token')
+  try {
+    const token = req.cookies?.token
+    if (token) {
+      const decoded = jwt.verify(token, env.JWT_SECRET, { ignoreExpiration: true })
+      await authService.revokeTokens(decoded.id);
+    }
+  } catch (err) {
+    console.error("Error revoking tokens on logout", err);
+  }
+
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax'
+  })
   res.status(200).json({ success: true, message: 'Logged out' })
 }
 

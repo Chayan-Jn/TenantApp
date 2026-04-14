@@ -180,8 +180,7 @@ const router = createBrowserRouter([
               api(`/properties/${params.id}`)
             ])
             
-            console.log("Fetched property:", property.data) 
-            
+
             return { 
               tenants: tenants.data, 
               property_id: params.id,

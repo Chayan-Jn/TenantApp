@@ -1,0 +1,1 @@
+import pool from './src/config/db.js'; import { generateLedger } from './src/modules/ledger/ledger.service.js'; generateLedger('all', 4, 2026, 1).then(x => console.log(JSON.stringify(x, null, 2))).catch(console.error).finally(()=>process.exit(0));

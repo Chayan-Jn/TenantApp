@@ -1,5 +1,6 @@
-export const validate = (schema) => (req, res, next) => {
-    const result = schema.safeParse(req.body);
+export const validate = (schema, source = 'body') => (req, res, next) => {
+    const data = source === 'query' ? req.query : req.body;
+    const result = schema.safeParse(data);
   
     if (!result.success) {
       const messages = result.error.issues.map(e => e.message);
@@ -10,6 +11,10 @@ export const validate = (schema) => (req, res, next) => {
       });
     }
   
-    req.body = result.data;
+    if (source === 'query') {
+      req.query = result.data;
+    } else {
+      req.body = result.data;
+    }
     next();
   };

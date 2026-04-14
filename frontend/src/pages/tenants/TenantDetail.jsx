@@ -17,7 +17,14 @@ const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 const getStatus = (rent) => {
   if (rent.status === 'paid') return 'paid'
-  if (new Date(rent.due_date) < new Date()) return 'overdue'
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Ignore current time
+  
+  const dueDate = new Date(rent.due_date);
+  dueDate.setHours(0, 0, 0, 0); // Ignore time just to be safe
+  
+  if (dueDate < today) return 'overdue'
   return 'pending'
 }
 

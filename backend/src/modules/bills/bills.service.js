@@ -48,12 +48,20 @@ export const createBill = async ({ unit_id, type, amount, split_type, month, yea
     // 3. Handle Splits
     if (split_type === 'equal') {
       const tenants = await client.query('SELECT id FROM tenants WHERE unit_id = $1 AND leave_date IS NULL', [unit_id])
-      const share = Math.round(amount / tenants.rows.length)
-      for (const tenant of tenants.rows) {
-        await client.query(
-          'INSERT INTO bill_splits (bill_id, tenant_id, amount) VALUES ($1, $2, $3)',
-          [bill.id, tenant.id, share]
-        )
+      
+      const tenantsCount = tenants.rows.length;
+      if (tenantsCount > 0) {
+        const baseShare = Math.floor(amount / tenantsCount);
+        let remainder = amount % tenantsCount;
+        
+        for (const tenant of tenants.rows) {
+          const currentShare = baseShare + (remainder > 0 ? 1 : 0);
+          remainder--;
+          await client.query(
+            'INSERT INTO bill_splits (bill_id, tenant_id, amount) VALUES ($1, $2, $3)',
+            [bill.id, tenant.id, currentShare]
+          )
+        }
       }
     } else if (split_type === 'custom') {
       for (const split of splits) {
@@ -170,10 +178,15 @@ export const updateBill = async (id, { type, amount, split_type, month, year, no
         'SELECT id FROM tenants WHERE unit_id = $1 AND leave_date IS NULL',
         [result.rows[0].unit_id]
       )
-      if (tenants.rows.length > 0) {
-        const share = Math.round(amount / tenants.rows.length)
+      const tenantsCount = tenants.rows.length;
+      if (tenantsCount > 0) {
+        const baseShare = Math.floor(amount / tenantsCount);
+        let remainder = amount % tenantsCount;
+        
         for (const tenant of tenants.rows) {
-          await client.query('INSERT INTO bill_splits (bill_id, tenant_id, amount) VALUES ($1, $2, $3)', [id, tenant.id, share])
+          const currentShare = baseShare + (remainder > 0 ? 1 : 0);
+          remainder--;
+          await client.query('INSERT INTO bill_splits (bill_id, tenant_id, amount) VALUES ($1, $2, $3)', [id, tenant.id, currentShare])
         }
       }
     } else if (split_type === 'custom' && splits) {

@@ -2,7 +2,7 @@ import * as ledgerService from './ledger.service.js'
 
 export const getLedger = async (req, res) => {
   try {
-    const { property_id, month, year } = req.body
+    const { property_id, month, year } = req.query
     
     const data = await ledgerService.generateLedger(
       property_id, 

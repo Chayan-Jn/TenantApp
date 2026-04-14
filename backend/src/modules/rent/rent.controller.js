@@ -37,6 +37,9 @@ export const getOverdueRents = async (req, res) => {
   try {
     const { property_id } = req.query
     if (!property_id) return res.status(400).json({ success: false, message: 'property_id is required' })
+    if (property_id !== 'all' && isNaN(parseInt(property_id, 10))) {
+      return res.status(400).json({ success: false, message: 'property_id must be "all" or an integer' })
+    }
     const rents = await rentService.getOverdueRents(property_id, req.owner.id)
     res.status(200).json({ success: true, data: rents })
   } catch (err) {

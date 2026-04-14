@@ -6,3 +6,8 @@ export const createTenantSchema = z.object({
   phone: z.string().regex(/^[0-9]{10}$/, { message: 'Phone must be a 10 digit number' }),
   join_date: z.string().date()
 })
+
+export const updateTenantSchema = z.object({
+  name: z.string().min(2),
+  phone: z.string().regex(/^[0-9]{10}$/, { message: 'Phone must be a 10 digit number' })
+})

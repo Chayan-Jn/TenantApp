@@ -33,7 +33,7 @@ export const loginOwner = async ({ username, password }) => {
     const valid = await bcrypt.compare(password, owner.password_hash)
     if (!valid) throw new Error('Invalid credentials')
 
-    const token = jwt.sign({ id: owner.id, username: owner.username }, env.JWT_SECRET, { expiresIn: '7d' })
+    const token = jwt.sign({ id: owner.id, username: owner.username, token_version: owner.token_version }, env.JWT_SECRET, { expiresIn: '7d' })
     return { token, owner: { id: owner.id, name: owner.name, username: owner.username } }
   } catch (err) {
     throw err
@@ -56,24 +56,25 @@ export const loginWithGoogle = async (googleToken) => {
 
     // 3. If it's their first time clicking the Google button, register them silently
     if (!owner) {
-      // Create a URL-safe username out of their email prefix
+      // Create a URL-safe username out of their email prefix + short unique suffix
       const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '')
-      const uniqueUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`
+      const uniqueSuffix = crypto.randomUUID().slice(0, 8)
+      const uniqueUsername = `${baseUsername}_${uniqueSuffix}`
 
       // Generate a dummy password purely to satisfy the DB constraint. 
       // It is never used in bcrypt.compare because Google users always route through this function instead.
-      const dummyPassword = `GOOG_${googleId}_${Math.random().toString(36).slice(2)}`
+      const dummyPassword = `GOOG_${googleId}_${crypto.randomUUID()}`
       const hash = await bcrypt.hash(dummyPassword, 10)
 
       const result = await pool.query(
-        'INSERT INTO owners (name, username, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email',
+        'INSERT INTO owners (name, username, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email, token_version',
         [name, uniqueUsername, email, hash]
       )
       owner = result.rows[0]
     }
 
     const token = jwt.sign(
-      { id: owner.id, username: owner.username }, 
+      { id: owner.id, username: owner.username, token_version: owner.token_version }, 
       env.JWT_SECRET, 
       { expiresIn: '7d' }
     )
@@ -85,4 +86,8 @@ export const loginWithGoogle = async (googleToken) => {
   } catch (err) {
     throw new Error('Invalid Google token or verification failed')
   }
+}
+
+export const revokeTokens = async (ownerId) => {
+  await pool.query('UPDATE owners SET token_version = token_version + 1 WHERE id = $1', [ownerId]);
 }

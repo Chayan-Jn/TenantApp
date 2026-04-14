@@ -38,7 +38,7 @@ export const updatePassword = async (id, { current_password, new_password }) => 
     if (!valid) throw new Error('Current password is incorrect')
 
     const hash = await bcrypt.hash(new_password, 10)
-    await pool.query('UPDATE owners SET password_hash = $1 WHERE id = $2', [hash, id])
+    await pool.query('UPDATE owners SET password_hash = $1, token_version = token_version + 1 WHERE id = $2', [hash, id])
   } catch (err) {
     throw err
   }

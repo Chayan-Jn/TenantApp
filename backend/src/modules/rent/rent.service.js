@@ -148,32 +148,42 @@ export const generateMonthlyRent = async ({ property_id, month, year, owner_id }
 
     if (!tenants.rows.length) throw new Error('No active tenants found for this billing period')
 
-    const results = []
+    // 3. Prevent N+1 by bulk fetching existing rents
+    const tenantIds = tenants.rows.map(t => t.id)
+    const existing = await pool.query(
+      `SELECT tenant_id FROM rent_payments 
+       WHERE EXTRACT(MONTH FROM due_date) = $1 
+       AND EXTRACT(YEAR FROM due_date) = $2 
+       AND tenant_id = ANY($3::int[])`,
+      [month, year, tenantIds]
+    )
+    const existingIds = new Set(existing.rows.map(r => r.tenant_id))
+
+    // 4. Batch Prepare & clamp short month dates
+    const insertValues = []
+    const insertParams = []
+    const daysInMonth = new Date(year, month, 0).getDate()
+    
     for (const tenant of tenants.rows) {
-      // Use their join day for the due date (e.g., joined on the 15th -> rent due on the 15th)
-      const joinDay = new Date(tenant.join_date).getDate()
+      if (existingIds.has(tenant.id)) continue
+      
+      let joinDay = new Date(tenant.join_date).getDate()
+      joinDay = Math.min(joinDay, daysInMonth)
       const due_date = `${year}-${String(month).padStart(2, '0')}-${String(joinDay).padStart(2, '0')}`
 
-      // Check if rent is already generated for this specific month/year
-      const existing = await pool.query(
-        `SELECT id FROM rent_payments 
-         WHERE tenant_id = $1 
-         AND EXTRACT(MONTH FROM due_date) = $2 
-         AND EXTRACT(YEAR FROM due_date) = $3`,
-        [tenant.id, month, year]
-      )
-
-      if (existing.rows.length) continue
-
-      // Insert the new rent record
-      const result = await pool.query(
-        'INSERT INTO rent_payments (tenant_id, amount, due_date) VALUES ($1, $2, $3) RETURNING *',
-        [tenant.id, tenant.rent, due_date]
-      )
-      results.push(result.rows[0])
+      const offset = insertParams.length
+      insertValues.push(`($${offset + 1}, $${offset + 2}, $${offset + 3})`)
+      insertParams.push(tenant.id, tenant.rent, due_date)
     }
 
-    return { generated: results.length, skipped: tenants.rows.length - results.length }
+    if (insertValues.length > 0) {
+      await pool.query(
+        `INSERT INTO rent_payments (tenant_id, amount, due_date) VALUES ${insertValues.join(', ')}`,
+        insertParams
+      )
+    }
+
+    return { generated: insertValues.length, skipped: tenants.rows.length - insertValues.length }
   } catch (err) {
     throw err
   }

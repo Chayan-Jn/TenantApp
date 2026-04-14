@@ -2,12 +2,12 @@ import { z } from 'zod'
 
 export const getLedgerSchema = z.object({
   
-  property_id: z.union([z.number(), z.string()]), 
+  property_id: z.union([z.coerce.number(), z.string()]), 
   
   month: z.union([
-    z.number().min(1).max(12), 
+    z.coerce.number().min(1).max(12), 
     z.literal('all')
   ]),
   
-  year: z.number().min(2000)
+  year: z.coerce.number().min(2000)
 })

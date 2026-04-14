@@ -5,6 +5,10 @@ export const getPayments = async (req, res) => {
     const { month, year, property_id } = req.query
     if (!month || !year) return res.status(400).json({ success: false, message: 'month and year are required' })
 
+    if (property_id && property_id !== 'all' && isNaN(parseInt(property_id, 10))) {
+      return res.status(400).json({ success: false, message: 'property_id must be "all" or an integer' })
+    }
+
     const data = await paymentsService.getPayments({
       owner_id: req.owner.id,
       month,

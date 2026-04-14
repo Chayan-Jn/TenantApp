@@ -7,7 +7,8 @@ import {
 } from './bills.controller.js'
 import { protect } from '../auth/auth.middleware.js'
 import { validate } from '../../middlewares/validate.middleware.js'
-import { createBillSchema } from './bills.schema.js'
+import { validateId } from '../../middlewares/validateId.middleware.js'
+import { createBillSchema, updateBillSchema } from './bills.schema.js'
 
 const router = Router()
 
@@ -16,11 +17,11 @@ router.use(protect)
 router.post('/', validate(createBillSchema), createBill)
 router.get('/', getBills)
 
-router.patch('/splits/:id/status', updateSplitStatus)
+router.patch('/splits/:id/status', validateId('id'), updateSplitStatus)
 
-router.get('/:id/splits', getBillSplits)
-router.delete('/:id', deleteBill)
-router.patch('/:id', updateBill)
-router.patch('/:id/status', updateBillStatus)
+router.get('/:id/splits', validateId('id'), getBillSplits)
+router.delete('/:id', validateId('id'), deleteBill)
+router.patch('/:id', validateId('id'), validate(updateBillSchema), updateBill)
+router.patch('/:id/status', validateId('id'), updateBillStatus)
 
 export default router

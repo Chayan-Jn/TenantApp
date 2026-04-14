@@ -5,3 +5,5 @@ export const createPropertySchema = z.object({
   address: z.string().min(1),
   type: z.enum(['flat', 'pg', 'commercial'])
 })
+
+export const updatePropertySchema = createPropertySchema

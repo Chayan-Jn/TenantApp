@@ -6,6 +6,6 @@ import { getLedgerSchema } from './ledger.schema.js'
 
 const router = Router()
 
-router.post('/', protect, validate(getLedgerSchema), ledgerController.getLedger)
+router.get('/', protect, validate(getLedgerSchema, 'query'), ledgerController.getLedger)
 
 export default router

@@ -1,5 +1,6 @@
 
 import express from 'express'
+import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import authRoutes from './modules/auth/auth.routes.js'
 import propertyRoutes from './modules/property/property.routes.js'
@@ -13,14 +14,18 @@ import dashboardRoutes from './modules/dashboard/dashboard.routes.js'
 import paymentsRoutes from './modules/payments/payments.routes.js'
 import billsRoutes from './modules/bills/bills.routes.js'
 import ledgerRoutes from './modules/ledger/ledger.routes.js'
+import { errorHandler } from './middlewares/error.middleware.js'
 
 import { env } from './config/env.js'
 
 
-
 const app = express();
+
+// Trust the reverse proxy (crucial for accurate IP rate limiting behind Cloudflare/Render/AWS)
+app.set('trust proxy', 1);
 const allowedOrigins = env.FRONTEND_URLS.split(',');
 
+app.use(helmet())
 app.use(express.json({ limit: '1mb' }))
 app.use(cookieParser())
 app.use(cors({
@@ -53,5 +58,7 @@ app.use('/ledger', ledgerRoutes)
 app.get('/', (req, res) => {
   res.send('Are you sure ?');
 });
+
+app.use(errorHandler);
 
 export default app;
