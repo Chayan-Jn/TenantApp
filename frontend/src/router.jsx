@@ -13,6 +13,7 @@ import Settings from './pages/settings/Settings.jsx'
 import Payments from './pages/payments/Payments.jsx'
 import PropertyTenants from './pages/properties/PropertyTenants.jsx'
 import Bills from './pages/bills/Bills.jsx'
+import Reports from './pages/reports/Reports.jsx'
 
 
 
@@ -201,6 +202,31 @@ const router = createBrowserRouter([
             return { properties: properties.data }
           } catch {
             return { properties: [] }
+          }
+        }
+      },
+      {
+        path: 'reports',
+        Component: Reports,
+        loader: async () => {
+          const { getProperties } = await import('./api/property.api.js')
+          const { getMe } = await import('./api/owner.api.js')
+          const { api } = await import('./api/client.js')
+          try {
+            const [properties, owner, stats] = await Promise.all([
+              getProperties(),
+              getMe(),
+              api('/dashboard/stats')
+            ])
+            // Merge unit count data from dashboard stats into properties
+            const dashProps = stats.data?.properties || []
+            const merged = (properties.data || []).map(p => {
+              const dp = dashProps.find(d => d.id === p.id)
+              return { ...p, total_units: dp?.total_units || 0, occupied_units: dp?.occupied_units || 0 }
+            })
+            return { properties: merged, owner: owner.data || owner }
+          } catch {
+            return { properties: [], owner: {} }
           }
         }
       }

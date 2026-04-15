@@ -7,7 +7,8 @@ import {
   MdOutlineCreditCard, 
   MdOutlineSettings,
   MdDomain,
-  MdOutlineReceiptLong
+  MdOutlineReceiptLong,
+  MdOutlineDescription
 } from 'react-icons/md'
 
 const links = [
@@ -16,6 +17,7 @@ const links = [
   { to: '/bills', label: 'Bills', icon: MdOutlineReceiptLong },
   { to: '/rent/overdue', label: 'Overdue Rent', icon: MdOutlineWarningAmber },
   { to: '/payments', label: 'Payments', icon: MdOutlineCreditCard },
+  { to: '/reports', label: 'Reports', icon: MdOutlineDescription },
   { to: '/settings', label: 'Settings', icon: MdOutlineSettings }
 ]
 
