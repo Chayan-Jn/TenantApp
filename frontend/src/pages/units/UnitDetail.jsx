@@ -127,7 +127,7 @@ export default function UnitDetail() {
   const [updatingBill, setUpdatingBill] = useState(false)
 
   // Form States
-  const [form, setForm] = useState({ name: '', phone: '', join_date: '' })
+  const [form, setForm] = useState({ name: '', phone: '', join_date: '', security_deposit: '' })
   const [billForm, setBillForm] = useState({ type: 'electricity', amount: '', split_type: 'unit', month: now.getMonth() + 1, year: now.getFullYear(), note: '' })
   const [editBillForm, setEditBillForm] = useState({ type: 'electricity', amount: '', split_type: 'unit', month: now.getMonth() + 1, year: now.getFullYear(), note: '' })
   const [customSplits, setCustomSplits] = useState([])
@@ -171,16 +171,30 @@ export default function UnitDetail() {
     e.preventDefault()
     setCreating(true)
     try {
-      const res = await createTenant({ unit_id: parseInt(unit_id, 10), ...form })
-      setTenants([...tenants, res.data]); setForm({ name: '', phone: '', join_date: '' }); setIsModalOpen(false)
+      const res = await createTenant({ unit_id: parseInt(unit_id, 10), ...form, security_deposit: Number(form.security_deposit) || 0 })
+      setTenants([...tenants, res.data]); setForm({ name: '', phone: '', join_date: '', security_deposit: '' }); setIsModalOpen(false)
     } catch (err) { setErrorMsg(err.message || 'Failed to add tenant') } finally { setCreating(false) }
   }
 
-  const handleDeleteTenant = (tenantId, e) => {
+  // Remove tenant state
+  const [removeModal, setRemoveModal] = useState({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })
+  const [refundForm, setRefundForm] = useState({ deposit_refunded: '', deposit_note: '' })
+
+  const handleDeleteTenant = (tenant, e) => {
     e.preventDefault(); e.stopPropagation()
-    setConfirmDialog({ isOpen: true, title: 'Remove Tenant', message: 'Are you sure?', onConfirm: async () => {
-      try { await removeTenant(tenantId); setTenants(tenants.filter(t => t.id !== tenantId)) } catch (err) { setErrorMsg(err.message || 'Error') }
-    }})
+    setRemoveModal({ open: true, tenantId: tenant.id, tenantName: tenant.name, depositAmount: tenant.security_deposit || 0 })
+    setRefundForm({ deposit_refunded: String(tenant.security_deposit || 0), deposit_note: '' })
+  }
+
+  const handleConfirmRemove = async () => {
+    try {
+      await removeTenant(removeModal.tenantId, {
+        deposit_refunded: Number(refundForm.deposit_refunded) || 0,
+        deposit_note: refundForm.deposit_note
+      })
+      setTenants(tenants.filter(t => t.id !== removeModal.tenantId))
+      setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })
+    } catch (err) { setErrorMsg(err.message || 'Error') }
   }
 
   const handleCreateBill = async (e) => {
@@ -254,8 +268,11 @@ export default function UnitDetail() {
           {tenants.map((tenant) => (
             <Link key={tenant.id} to={`/tenants/${tenant.id}`} className="group block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:border-blue-500 hover:shadow-md transition-all relative">
               <h3 className="text-lg font-bold text-gray-900 truncate pr-8">{tenant.name}</h3>
-              <button onClick={(e) => handleDeleteTenant(tenant.id, e)} className="text-gray-400 hover:text-red-600 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4 cursor-pointer"><FiTrash2 size={18} /></button>
+              <button onClick={(e) => handleDeleteTenant(tenant, e)} className="text-gray-400 hover:text-red-600 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4 cursor-pointer"><FiTrash2 size={18} /></button>
               <p className="text-sm text-gray-600 mt-1">{tenant.phone}</p>
+              {tenant.security_deposit > 0 && (
+                <p className="text-xs text-gray-500 mt-1">Deposit: {formatCurrency(tenant.security_deposit)}</p>
+              )}
               <div className="pt-4 border-t border-gray-100 mt-4 text-sm text-blue-600 font-medium">View History &rarr;</div>
             </Link>
           ))}
@@ -334,6 +351,7 @@ export default function UnitDetail() {
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input type="tel" required maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Join Date</label><input type="date" required value={form.join_date} onChange={(e) => setForm({ ...form, join_date: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit (₹)</label><input type="number" min="0" placeholder="0" value={form.security_deposit} onChange={(e) => setForm({ ...form, security_deposit: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div className="flex justify-end gap-3 mt-6"><button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg">Cancel</button><button type="submit" disabled={creating} className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">{creating ? 'Adding...' : 'Add Tenant'}</button></div>
             </form>
           </div>
@@ -373,6 +391,45 @@ export default function UnitDetail() {
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-2">{confirmDialog.title}</h2><p className="text-gray-600 mb-6">{confirmDialog.message}</p>
             <div className="flex justify-end gap-3"><button onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg">Cancel</button><button onClick={() => { confirmDialog.onConfirm(); setConfirmDialog({ ...confirmDialog, isOpen: false }) }} className="px-4 py-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg">Confirm</button></div>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Tenant Modal with Deposit Refund */}
+      {removeModal.open && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Remove Tenant</h2>
+            <p className="text-sm text-gray-500 mb-4">Remove <strong>{removeModal.tenantName}</strong> from this unit?</p>
+
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                <p className="text-sm font-semibold text-gray-800 mb-3">Security Deposit: {formatCurrency(removeModal.depositAmount)}</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
+                    <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Deduction Note (optional)</label>
+                    <input type="text" placeholder="e.g. Wall damage, cleaning charges" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+                  </div>
+                  {removeModal.depositAmount > 0 && Number(refundForm.deposit_refunded) < removeModal.depositAmount && (
+                    <p className="text-xs text-amber-700 font-medium">
+                      Deducting {formatCurrency(removeModal.depositAmount - Number(refundForm.deposit_refunded || 0))} from deposit
+                    </p>
+                  )}
+                  {Number(refundForm.deposit_refunded) > removeModal.depositAmount && (
+                    <p className="text-xs text-red-600 font-medium">
+                      Refund cannot exceed the original deposit amount.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg">Cancel</button>
+              <button disabled={Number(refundForm.deposit_refunded) > removeModal.depositAmount} onClick={handleConfirmRemove} className="px-4 py-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">Remove Tenant</button>
+            </div>
           </div>
         </div>
       )}

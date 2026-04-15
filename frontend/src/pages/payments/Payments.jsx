@@ -308,11 +308,16 @@ export default function Payments() {
                                       <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
                                           <span className={`text-sm font-semibold ${due.is_shared_reference ? 'text-slate-500' : 'text-slate-700'}`}>
-                                            {due.title === 'Initial Payment' ? 'Rent' : due.title}
+                                            {due.title === 'Initial Payment' ? 'Rent' : due.title === 'Security Deposit' ? 'Deposit' : due.title}
                                           </span>
                                           {due.title === 'Initial Payment' && (
                                             <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px whitespace-nowrap">
                                               Initial Payment
+                                            </span>
+                                          )}
+                                          {due.title === 'Security Deposit' && (
+                                            <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px whitespace-nowrap">
+                                              Security Deposit
                                             </span>
                                           )}
                                         </div>

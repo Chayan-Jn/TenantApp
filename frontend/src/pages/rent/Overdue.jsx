@@ -127,6 +127,11 @@ export default function Overdue() {
                                 Initial Payment
                               </span>
                             )}
+                            {rent.title === 'Security Deposit' && (
+                              <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px whitespace-nowrap">
+                                Security Deposit
+                              </span>
+                            )}
                           </div>
                           <span className="text-sm text-gray-500 font-medium">
                             Due: {formatDate(rent.due_date)}
@@ -140,7 +145,7 @@ export default function Overdue() {
                           
                           <div className="w-20 flex justify-center">
                             <Badge variant={rent.status === 'paid' ? 'green' : 'red'}>
-                              {rent.status || 'overdue'}
+                              {rent.status === 'paid' ? 'paid' : 'overdue'}
                             </Badge>
                           </div>
                           

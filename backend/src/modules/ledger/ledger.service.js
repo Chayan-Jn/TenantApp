@@ -43,7 +43,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
 
   // 3. Rent Records
   const rentRecords = (await pool.query(`
-    SELECT rp.id, rp.tenant_id, u.id as unit_id, rp.amount, rp.status, rp.due_date, 
+    SELECT rp.id, rp.tenant_id, u.id as unit_id, rp.amount, rp.status, rp.due_date, rp.payment_type,
            EXTRACT(MONTH FROM rp.due_date) as month, EXTRACT(YEAR FROM rp.due_date) as year,
            t.name as tenant_name, t.phone as tenant_phone, t.join_date, u.label as unit_label, p.name as property_name 
     FROM rent_payments rp
@@ -101,17 +101,21 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
 
   rentRecords.forEach(r => {
     const block = getBlock(r.unit_id, r.tenant_id, r)
-    let isInitial = false
-    if (r.join_date && r.due_date) {
+
+    let title = 'Monthly Rent'
+    if (r.payment_type === 'deposit') {
+      title = 'Security Deposit'
+    } else if (r.join_date && r.due_date) {
       const jd = new Date(r.join_date)
       const dd = new Date(r.due_date)
       if (jd.getMonth() === dd.getMonth() && jd.getFullYear() === dd.getFullYear()) {
-        isInitial = true
+        title = 'Initial Payment'
       }
     }
 
     block.dues.push({
-      id: r.id, item_type: 'rent', title: isInitial ? 'Initial Payment' : 'Monthly Rent', amount: Number(r.amount), status: r.status, due_date: r.due_date, month: Number(r.month), year: Number(r.year),
+      id: r.id, item_type: 'rent', title, amount: Number(r.amount), status: r.status, due_date: r.due_date, month: Number(r.month), year: Number(r.year),
+      paid_date: r.paid_date, payment_type: r.payment_type || 'rent',
       is_shared_reference: false
     })
   })

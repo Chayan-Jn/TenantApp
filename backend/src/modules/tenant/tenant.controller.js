@@ -45,7 +45,8 @@ export const getTenants = async (req, res) => {
 
 export const removeTenant = async (req, res) => {
   try {
-    const tenant = await tenantService.removeTenant(req.params.id, req.owner.id)
+    const { deposit_refunded, deposit_note } = req.body || {}
+    const tenant = await tenantService.removeTenant(req.params.id, req.owner.id, { deposit_refunded, deposit_note })
     res.status(200).json({ success: true, data: tenant })
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })

@@ -35,6 +35,7 @@ export const getRentByTenant = async (tenant_id, owner_id) => {
           ELSE 'pending'
         END AS computed_status,
         CASE 
+          WHEN rp.payment_type = 'deposit' THEN 'Security Deposit'
           WHEN EXTRACT(MONTH FROM rp.due_date) = EXTRACT(MONTH FROM t.join_date) AND EXTRACT(YEAR FROM rp.due_date) = EXTRACT(YEAR FROM t.join_date) THEN 'Initial Payment'
           ELSE 'Monthly Rent'
         END AS title
@@ -78,6 +79,7 @@ export const getOverdueRents = async (property_id, owner_id) => {
       ? `SELECT DISTINCT ON (rp.tenant_id, rp.amount, rp.due_date) 
             rp.*, t.name as tenant_name, u.label as unit_label, p.name as property_name,
             CASE 
+              WHEN rp.payment_type = 'deposit' THEN 'Security Deposit'
               WHEN EXTRACT(MONTH FROM rp.due_date) = EXTRACT(MONTH FROM t.join_date) AND EXTRACT(YEAR FROM rp.due_date) = EXTRACT(YEAR FROM t.join_date) THEN 'Initial Payment'
               ELSE 'Monthly Rent'
             END AS title
@@ -92,6 +94,7 @@ export const getOverdueRents = async (property_id, owner_id) => {
       : `SELECT DISTINCT ON (rp.tenant_id, rp.amount, rp.due_date)
             rp.*, t.name as tenant_name, u.label as unit_label, p.name as property_name,
             CASE 
+              WHEN rp.payment_type = 'deposit' THEN 'Security Deposit'
               WHEN EXTRACT(MONTH FROM rp.due_date) = EXTRACT(MONTH FROM t.join_date) AND EXTRACT(YEAR FROM rp.due_date) = EXTRACT(YEAR FROM t.join_date) THEN 'Initial Payment'
               ELSE 'Monthly Rent'
             END AS title
@@ -169,7 +172,8 @@ export const generateMonthlyRent = async ({ property_id, month, year, owner_id }
       `SELECT tenant_id FROM rent_payments 
        WHERE EXTRACT(MONTH FROM due_date) = $1 
        AND EXTRACT(YEAR FROM due_date) = $2 
-       AND tenant_id = ANY($3::int[])`,
+       AND tenant_id = ANY($3::int[])
+       AND payment_type = 'rent'`,
       [month, year, tenantIds]
     )
     const existingIds = new Set(existing.rows.map(r => r.tenant_id))

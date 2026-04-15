@@ -38,6 +38,7 @@ export default function TenantDetail() {
   const [rentModal, setRentModal] = useState(false)
   const [removeModal, setRemoveModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
+  const [refundForm, setRefundForm] = useState({ deposit_refunded: String(initialTenant.security_deposit || 0), deposit_note: '' })
   const [loading, setLoading] = useState(false)
   const [editLoading, setEditLoading] = useState(false)
   const [error, setError] = useState('')
@@ -91,7 +92,10 @@ export default function TenantDetail() {
   const handleRemoveTenant = async () => {
     setLoading(true)
     try {
-      await removeTenant(tenant_id)
+      await removeTenant(tenant_id, {
+        deposit_refunded: Number(refundForm.deposit_refunded) || 0,
+        deposit_note: refundForm.deposit_note
+      })
       navigate(`/units/${tenant.unit_id}`)
     } catch (err) {
       setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
@@ -139,13 +143,20 @@ export default function TenantDetail() {
             </div>
             <p className="text-sm text-gray-500 mt-1">{tenant.phone}</p>
             <p className="text-sm text-gray-500">{tenant.property_name} - {tenant.label}</p>
-            <div className="flex gap-4 mt-3 text-sm text-gray-600">
+            <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-600">
               <span>Joined: {formatDate(tenant.join_date)}</span>
               {isActive
                 ? <span>Rent: {formatCurrency(tenant.rent)}/mo</span>
                 : <span className="text-red-400">Left: {formatDate(tenant.leave_date)}</span>
               }
+              <span>Deposit: {formatCurrency(tenant.security_deposit || 0)}</span>
             </div>
+            {!isActive && tenant.deposit_refunded > 0 && (
+              <div className="mt-2 text-xs text-gray-500">
+                Deposit refunded: {formatCurrency(tenant.deposit_refunded)}
+                {tenant.deposit_note && <> / {tenant.deposit_note}</>}
+              </div>
+            )}
           </div>
           {isActive && (
             <div className="flex items-center gap-2">
@@ -195,7 +206,12 @@ export default function TenantDetail() {
                         Initial Payment
                       </span>
                     )}
-                    {rent.title && rent.title !== 'Initial Payment' && rent.title !== 'Rent' && (
+                    {rent.title === 'Security Deposit' && (
+                      <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px">
+                        Security Deposit
+                      </span>
+                    )}
+                    {rent.title && rent.title !== 'Initial Payment' && rent.title !== 'Security Deposit' && rent.title !== 'Monthly Rent' && rent.title !== 'Rent' && (
                       <span className="text-xs text-gray-500 font-normal">({rent.title})</span>
                     )}
                   </span>
@@ -250,12 +266,35 @@ export default function TenantDetail() {
 
       {/* Remove Tenant Modal */}
       <Modal open={removeModal} onClose={() => setRemoveModal(false)} title="Remove Tenant">
-        <p className="text-sm text-gray-600 mb-6">
-          Are you sure you want to remove <strong>{tenant.name}</strong>? This will mark them as moved out.
+        <p className="text-sm text-gray-600 mb-4">
+          Remove <strong>{tenant.name}</strong>? This will mark them as moved out.
         </p>
+
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 space-y-3">
+            <p className="text-sm font-semibold text-gray-800">Security Deposit: {formatCurrency(tenant.security_deposit || 0)}</p>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
+              <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Deduction Note (optional)</label>
+              <input type="text" placeholder="e.g. Wall damage, cleaning" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+            </div>
+            {(tenant.security_deposit || 0) > 0 && Number(refundForm.deposit_refunded) < (tenant.security_deposit || 0) && (
+              <p className="text-xs text-amber-700 font-medium">
+                Deducting {formatCurrency((tenant.security_deposit || 0) - Number(refundForm.deposit_refunded || 0))}
+              </p>
+            )}
+            {Number(refundForm.deposit_refunded) > (tenant.security_deposit || 0) && (
+              <p className="text-xs text-red-600 font-medium">
+                Refund cannot exceed the original deposit amount.
+              </p>
+            )}
+          </div>
+
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" onClick={() => setRemoveModal(false)}>Cancel</Button>
-          <Button variant="danger" loading={loading} onClick={handleRemoveTenant}>Remove</Button>
+          <Button variant="danger" loading={loading} disabled={Number(refundForm.deposit_refunded) > (tenant.security_deposit || 0)} onClick={handleRemoveTenant}>Remove</Button>
         </div>
       </Modal>
 

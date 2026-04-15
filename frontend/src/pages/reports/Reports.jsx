@@ -261,7 +261,7 @@ function buildStatementHTML(tenant, rents, ownerName) {
         <div class="info-val">
           <strong>${tenant.property_name}</strong><br/>
           Unit ${tenant.label}<br/>
-          Monthly Rent: ${formatCurrency(tenant.rent)}
+          Monthly Rent: ${formatCurrency(tenant.rent)}${tenant.security_deposit > 0 ? `<br/>Security Deposit: ${formatCurrency(tenant.security_deposit)}` : ''}
         </div>
       </div>
     </div>
@@ -308,6 +308,7 @@ export default function Reports() {
   const [tenantInfo, setTenantInfo] = useState(null)
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [year, setYear] = useState(now.getFullYear())
+  const [showPastTenants, setShowPastTenants] = useState(false)
 
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i)
   const ownerName = owner?.name || owner?.username || 'Owner'
@@ -324,12 +325,13 @@ export default function Reports() {
     }
     const f = async () => {
       try {
-        const res = await api(`/tenants?property_id=${selectedProperty}&status=all`)
+        const status = showPastTenants ? 'all' : 'active'
+        const res = await api(`/tenants?property_id=${selectedProperty}&status=${status}`)
         setTenantList(res.data || [])
       } catch { setTenantList([]) }
     }
     f()
-  }, [selectedProperty])
+  }, [selectedProperty, showPastTenants])
 
   // Fetch ALL paid items (rents + bills) via ledger when tenant changes
   useEffect(() => {
@@ -455,7 +457,18 @@ export default function Reports() {
 
           {needsTenant && (
             <div className="flex flex-col gap-1.5 flex-1 min-w-44">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tenant</label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tenant</label>
+                <label className="flex items-center gap-1.5 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={showPastTenants}
+                    onChange={(e) => setShowPastTenants(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-600 uppercase tracking-tight transition-colors">Include Former Tenants</span>
+                </label>
+              </div>
               <select
                 className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white w-full cursor-pointer"
                 value={selectedTenant}
@@ -463,7 +476,11 @@ export default function Reports() {
                 disabled={selectedProperty === 'all'}
               >
                 <option value="">{selectedProperty === 'all' ? 'Pick a property first' : 'Select tenant...'}</option>
-                {tenantList.map(t => <option key={t.id} value={t.id}>{t.name} ({t.label || t.unit_label})</option>)}
+                {tenantList.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} ({t.label || t.unit_label}){t.leave_date ? ' (Moved Out)' : ''}
+                  </option>
+                ))}
               </select>
             </div>
           )}

@@ -13,7 +13,7 @@ const verifyUnitOwner = async (unit_id, owner_id) => {
   if (!result.rows.length) throw new Error('Unit not found or unauthorized')
 }
 
-export const createTenant = async ({ unit_id, name, phone, join_date, owner_id }) => {
+export const createTenant = async ({ unit_id, name, phone, join_date, security_deposit, owner_id }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -29,17 +29,26 @@ export const createTenant = async ({ unit_id, name, phone, join_date, owner_id }
     const unit = unitCheck.rows[0]
 
     const tenantResult = await client.query(
-      'INSERT INTO tenants (unit_id, name, phone, join_date) VALUES ($1, $2, $3, $4) RETURNING *',
-      [unit_id, name, phone, join_date]
+      'INSERT INTO tenants (unit_id, name, phone, join_date, security_deposit) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [unit_id, name, phone, join_date, security_deposit || 0]
     )
     const newTenant = tenantResult.rows[0]
 
-    // Create Initial Payment
+    // Create Initial Payment (rent)
     await client.query(
-      `INSERT INTO rent_payments (tenant_id, amount, status, due_date)
-       VALUES ($1, $2, 'pending', $3)`,
+      `INSERT INTO rent_payments (tenant_id, amount, status, due_date, payment_type)
+       VALUES ($1, $2, 'pending', $3, 'rent')`,
       [newTenant.id, unit.rent, join_date]
     )
+
+    // Create Security Deposit payment if applicable
+    if (security_deposit && security_deposit > 0) {
+      await client.query(
+        `INSERT INTO rent_payments (tenant_id, amount, status, due_date, payment_type)
+         VALUES ($1, $2, 'pending', $3, 'deposit')`,
+        [newTenant.id, security_deposit, join_date]
+      )
+    }
 
     // Mark unit as occupied now that someone is there
     await client.query('UPDATE units SET is_occupied = TRUE WHERE id = $1', [unit_id])
@@ -54,14 +63,24 @@ export const createTenant = async ({ unit_id, name, phone, join_date, owner_id }
   }
 }
 
-export const removeTenant = async (id, owner_id) => {
+export const removeTenant = async (id, owner_id, { deposit_refunded, deposit_note } = {}) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     
-    // Perform Soft Delete (set leave_date)
+    // First validate refund doesn't exceed deposit
+    const checkResult = await client.query('SELECT security_deposit FROM tenants WHERE id = $1', [id])
+    if (checkResult.rows.length > 0) {
+      if (Number(deposit_refunded || 0) > Number(checkResult.rows[0].security_deposit || 0)) {
+        throw new Error('Refund cannot exceed the original security deposit')
+      }
+    }
+
+    // Perform Soft Delete (set leave_date) + record deposit refund
     const result = await client.query(
-      `UPDATE tenants SET leave_date = NOW()
+      `UPDATE tenants SET leave_date = NOW(),
+        deposit_refunded = COALESCE($3, 0),
+        deposit_note = COALESCE($4, '')
        WHERE id = $1
        AND unit_id IN (
          SELECT u.id FROM units u
@@ -69,7 +88,7 @@ export const removeTenant = async (id, owner_id) => {
          WHERE p.owner_id = $2
        )
        RETURNING *`,
-      [id, owner_id]
+      [id, owner_id, deposit_refunded || 0, deposit_note || '']
     )
     
     if (!result.rows.length) throw new Error('Tenant not found or unauthorized')

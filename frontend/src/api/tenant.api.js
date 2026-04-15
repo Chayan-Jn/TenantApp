@@ -5,5 +5,5 @@ export const getTenants = (params) => {
     return api(`/tenants?${query}`)
   }
 export const createTenant = (body) => api('/tenants', { method: 'POST', body })
-export const removeTenant = (id) => api(`/tenants/${id}`, { method: 'DELETE' })
+export const removeTenant = (id, body = {}) => api(`/tenants/${id}`, { method: 'DELETE', body })
 export const updateTenant = (id, body) => api(`/tenants/${id}`, { method: 'PATCH', body })
