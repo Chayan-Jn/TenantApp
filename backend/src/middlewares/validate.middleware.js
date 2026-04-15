@@ -12,7 +12,7 @@ export const validate = (schema, source = 'body') => (req, res, next) => {
     }
   
     if (source === 'query') {
-      req.query = result.data;
+      Object.defineProperty(req, 'query', { value: result.data, configurable: true, enumerable: true });
     } else {
       req.body = result.data;
     }
