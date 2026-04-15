@@ -5,8 +5,10 @@ import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
+import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
+import AlertModal from '../../components/ui/AlertModal.jsx'
 
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN') : '-'
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 export default function PropertyTenants() {
@@ -15,6 +17,8 @@ export default function PropertyTenants() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('active')
   const [filterLoading, setFilterLoading] = useState(false)
+  const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
+  const [confirmRemoveId, setConfirmRemoveId] = useState(null)
 
   const handleFilterChange = async (status) => {
     setFilter(status)
@@ -23,20 +27,24 @@ export default function PropertyTenants() {
       const res = await getTenants({ property_id, status })
       setTenants(res.data)
     } catch (err) {
-      alert(err.message)
+      setAlertInfo({ open: true, message: err.message })
     } finally {
       setFilterLoading(false)
     }
   }
 
-  const handleRemove = async (id) => {
-    if (!window.confirm('Remove this tenant?')) return
+  const proceedRemove = async () => {
+    if (!confirmRemoveId) return
     try {
-      await removeTenant(id)
-      setTenants(tenants.filter(t => t.id !== id))
+      await removeTenant(confirmRemoveId)
+      setTenants(tenants.filter(t => t.id !== confirmRemoveId))
     } catch (err) {
-      alert(err.message)
+      setAlertInfo({ open: true, message: err.message })
     }
+  }
+
+  const handleRemove = (id) => {
+    setConfirmRemoveId(id)
   }
 
   const filtered = tenants.filter(t =>
@@ -132,6 +140,17 @@ export default function PropertyTenants() {
           ))}
         </div>
       )}
+
+      <ConfirmModal 
+        open={!!confirmRemoveId} 
+        onClose={() => setConfirmRemoveId(null)} 
+        onConfirm={proceedRemove} 
+        title="Remove Tenant" 
+        message="Are you sure you want to remove this tenant? This will mark them as moved out."
+        confirmText="Remove"
+        variant="danger"
+      />
+      <AlertModal open={alertInfo.open} onClose={() => setAlertInfo({ open: false, message: '' })} message={alertInfo.message} />
     </div>
   )
 }

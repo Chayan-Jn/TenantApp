@@ -9,10 +9,11 @@ import Input from '../../components/ui/Input.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
+import AlertModal from '../../components/ui/AlertModal.jsx'
 
 const statusVariant = { paid: 'green', pending: 'yellow', overdue: 'red' }
 
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN') : '-'
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 const getStatus = (rent) => {
@@ -41,6 +42,7 @@ export default function TenantDetail() {
   const [editLoading, setEditLoading] = useState(false)
   const [error, setError] = useState('')
   const [editError, setEditError] = useState('')
+  const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
   const [form, setForm] = useState({ amount: '', due_date: '' })
   const [editForm, setEditForm] = useState({ name: tenant.name, phone: tenant.phone })
 
@@ -73,7 +75,7 @@ export default function TenantDetail() {
       await markRentPaid(id)
       setRents(rents.map(r => r.id === id ? { ...r, status: 'paid', paid_date: new Date().toISOString() } : r))
     } catch (err) {
-      alert(err.message)
+      setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
     }
   }
 
@@ -82,7 +84,7 @@ export default function TenantDetail() {
       await markRentUnpaid(id)
       setRents(rents.map(r => r.id === id ? { ...r, status: 'pending', paid_date: null } : r))
     } catch (err) {
-      alert(err.message)
+      setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
     }
   }
 
@@ -92,7 +94,7 @@ export default function TenantDetail() {
       await removeTenant(tenant_id)
       navigate(`/units/${tenant.unit_id}`)
     } catch (err) {
-      alert(err.message)
+      setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
     } finally {
       setLoading(false)
     }
@@ -186,8 +188,16 @@ export default function TenantDetail() {
             return (
               <Card key={rent.id} className="flex items-center justify-between py-4">
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm font-medium text-gray-900 flex items-center gap-2">
                     {formatCurrency(rent.amount)}
+                    {rent.title === 'Initial Payment' && (
+                      <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px">
+                        Initial Payment
+                      </span>
+                    )}
+                    {rent.title && rent.title !== 'Initial Payment' && rent.title !== 'Rent' && (
+                      <span className="text-xs text-gray-500 font-normal">({rent.title})</span>
+                    )}
                   </span>
                   <span className="text-xs text-gray-500">
                     Due: {formatDate(rent.due_date)}
@@ -249,6 +259,7 @@ export default function TenantDetail() {
         </div>
       </Modal>
 
+      <AlertModal open={alertInfo.open} onClose={() => setAlertInfo({ open: false, message: '' })} message={alertInfo.message} />
     </div>
   )
 }

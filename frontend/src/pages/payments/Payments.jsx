@@ -7,8 +7,10 @@ import { updateBillStatus, updateSplitStatus } from '../../api/bills.api.js'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
+import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
+import AlertModal from '../../components/ui/AlertModal.jsx'
 
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN') : '-'
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 const MONTHS = [
@@ -68,6 +70,8 @@ export default function Payments() {
   // NEW: Template State & Session Storage
   const [messageTemplate, setMessageTemplate] = useState(() => sessionStorage.getItem('wa_template') || DEFAULT_TEMPLATE)
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
+  const [confirmGenerateOpen, setConfirmGenerateOpen] = useState(false)
+  const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
 
   useEffect(() => {
     sessionStorage.setItem('payments_month', month)
@@ -93,26 +97,25 @@ export default function Payments() {
       if (item.item_type === 'unit_bill') return await updateBillStatus(item.id, item.status === 'paid' ? 'pending' : 'paid')
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ledgerQueryKey }),
-    onError: (err) => alert(err.response?.data?.message || err.message)
+    onError: (err) => setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
   })
 
   const generateMutation = useMutation({
     mutationFn: (payload) => generateMonthlyRent(payload),
     onSuccess: (res) => {
-      alert(`Generated: ${res.data.generated} records, Skipped: ${res.data.skipped} already existing`)
+      setAlertInfo({ open: true, message: `Generated: ${res.data.generated} records, Skipped: ${res.data.skipped} already existing` })
       queryClient.invalidateQueries({ queryKey: ledgerQueryKey })
     },
-    onError: (err) => alert(err.response?.data?.message || err.message)
+    onError: (err) => setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
   })
 
   const handleGenerate = () => {
     if (month === 'all') return
-    const isAll = propertyId === 'all'
-    const promptMsg = isAll 
-      ? `Generate rent for ALL active tenants across ALL properties for ${MONTHS[month - 1]} ${year}?`
-      : `Generate rent for this specific property for ${MONTHS[month - 1]} ${year}?`
+    setConfirmGenerateOpen(true)
+  }
 
-    if (!window.confirm(promptMsg)) return
+  const proceedGenerate = () => {
+    const isAll = propertyId === 'all'
     generateMutation.mutate({ property_id: isAll ? 'all' : Number(propertyId), month, year })
   }
 
@@ -303,7 +306,16 @@ export default function Payments() {
                                     <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex justify-between items-center transition-colors ${due.is_shared_reference ? 'bg-slate-50/30' : 'hover:bg-slate-50/50'}`}>
                                       
                                       <div className="flex flex-col gap-1">
-                                        <span className={`text-sm font-semibold ${due.is_shared_reference ? 'text-slate-500' : 'text-slate-700'}`}>{due.title}</span>
+                                        <div className="flex items-center gap-2">
+                                          <span className={`text-sm font-semibold ${due.is_shared_reference ? 'text-slate-500' : 'text-slate-700'}`}>
+                                            {due.title === 'Initial Payment' ? 'Rent' : due.title}
+                                          </span>
+                                          {due.title === 'Initial Payment' && (
+                                            <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px whitespace-nowrap">
+                                              Initial Payment
+                                            </span>
+                                          )}
+                                        </div>
                                         {due.due_date && (
                                           <span className="text-xs text-slate-400 font-medium">Due: {formatDate(due.due_date)}</span>
                                         )}
@@ -425,6 +437,17 @@ export default function Payments() {
           </div>
         </div>
       )}
+
+      <ConfirmModal 
+        open={confirmGenerateOpen} 
+        onClose={() => setConfirmGenerateOpen(false)} 
+        onConfirm={proceedGenerate} 
+        title="Generate Monthly Rent" 
+        message={propertyId === 'all' ? `Generate rent for ALL active tenants across ALL properties for ${MONTHS[month - 1]} ${year}?` : `Generate rent for this specific property for ${MONTHS[month - 1]} ${year}?`}
+        confirmText="Generate"
+        variant="primary"
+      />
+      <AlertModal open={alertInfo.open} onClose={() => setAlertInfo({ open: false, message: '' })} message={alertInfo.message} />
     </div>
   )
 }

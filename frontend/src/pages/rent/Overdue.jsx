@@ -5,13 +5,15 @@ import { getOverdueRents, markRentPaid, markRentUnpaid } from '../../api/rent.ap
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Badge from '../../components/ui/Badge.jsx'
+import AlertModal from '../../components/ui/AlertModal.jsx'
 
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN') : '-'
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 export default function Overdue() {
   const { properties } = useLoaderData()
   const queryClient = useQueryClient()
+  const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
 
   const [selectedProperty, setSelectedProperty] = useState(() => sessionStorage.getItem('overdue_property') || '')
 
@@ -35,7 +37,7 @@ export default function Overdue() {
       return rent.status === 'paid' ? await markRentUnpaid(rent.id) : await markRentPaid(rent.id)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['overdueRents'] }),
-    onError: (err) => alert(err.response?.data?.message || err.message)
+    onError: (err) => setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
   })
 
   // GROUPING LOGIC: Group by Property, then sort by Unit
@@ -116,9 +118,16 @@ export default function Overdue() {
                       <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white hover:bg-gray-50/50 transition-colors">
                         
                         <div className="flex flex-col gap-1">
-                          <h4 className="text-base font-bold text-gray-800">
-                            Unit {rent.unit_label} <span className="text-gray-400 font-normal mx-1">|</span> {rent.tenant_name}
-                          </h4>
+                          <div className="text-base font-bold text-gray-800 flex items-center flex-wrap gap-2">
+                            <span>Unit {rent.unit_label}</span>
+                            <span className="text-gray-400 font-normal">|</span>
+                            <span>{rent.tenant_name}</span>
+                            {rent.title === 'Initial Payment' && (
+                              <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px whitespace-nowrap">
+                                Initial Payment
+                              </span>
+                            )}
+                          </div>
                           <span className="text-sm text-gray-500 font-medium">
                             Due: {formatDate(rent.due_date)}
                           </span>
@@ -162,6 +171,7 @@ export default function Overdue() {
           })}
         </div>
       )}
+      <AlertModal open={alertInfo.open} onClose={() => setAlertInfo({ open: false, message: '' })} message={alertInfo.message} />
     </div>
   )
 }

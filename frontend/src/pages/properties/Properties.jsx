@@ -10,6 +10,7 @@ import {
   MdPeopleAlt,
   MdOutlineDoorFront
 } from 'react-icons/md'
+import AlertModal from '../../components/ui/AlertModal.jsx'
 
 // Softened the colors significantly for a cleaner look
 const TYPE_CONFIG = { 
@@ -40,6 +41,7 @@ export default function Properties() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form, setForm] = useState({ name: '', address: '', type: 'flat' })
   const [creating, setCreating] = useState(false)
+  const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
 
   const fetchProperties = async () => {
     try {
@@ -65,7 +67,7 @@ export default function Properties() {
       setIsModalOpen(false)
       fetchProperties()
     } catch (err) {
-      alert(err.message || 'Failed to create property')
+      setAlertInfo({ open: true, message: err.message || 'Failed to create property' })
     } finally {
       setCreating(false)
     }
@@ -259,6 +261,8 @@ export default function Properties() {
           </div>
         </div>
       )}
+
+      <AlertModal open={alertInfo.open} onClose={() => setAlertInfo({ open: false, message: '' })} message={alertInfo.message} />
     </div>
   )
 }

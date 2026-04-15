@@ -5,6 +5,7 @@ import { getBills, getBillSplits, deleteBill, updateBill, updateBillStatus, upda
 import { api } from '../../api/client.js'
 import Card from '../../components/ui/Card.jsx'
 import Badge from '../../components/ui/Badge.jsx'
+import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 import { FiTrash2, FiEdit2 } from 'react-icons/fi'
 
 const BILL_TYPES = ['electricity', 'water', 'gas', 'maintenance', 'parking', 'other']
@@ -89,6 +90,7 @@ export default function Bills() {
   })
   const [editCustomSplits, setEditCustomSplits] = useState([])
   const [unitTenants, setUnitTenants] = useState([])
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
 
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i)
 
@@ -160,9 +162,14 @@ export default function Bills() {
     setSelectedUnit('') 
   }
 
-  const handleDeleteBill = async (id) => {
-    if (!window.confirm('Delete this bill?')) return
-    deleteMutation.mutate(id)
+  const proceedDeleteBill = async () => {
+    if (!confirmDeleteId) return
+    deleteMutation.mutate(confirmDeleteId)
+    setConfirmDeleteId(null)
+  }
+
+  const handleDeleteBill = (id) => {
+    setConfirmDeleteId(id)
   }
 
   const openEditBillModal = async (bill) => {
@@ -454,6 +461,16 @@ export default function Bills() {
           </div>
         </div>
       )}
+
+      <ConfirmModal 
+        open={!!confirmDeleteId} 
+        onClose={() => setConfirmDeleteId(null)} 
+        onConfirm={proceedDeleteBill} 
+        title="Delete Bill" 
+        message="Are you sure you want to delete this bill? This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+      />
     </div>
   )
 }

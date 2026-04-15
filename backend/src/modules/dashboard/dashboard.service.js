@@ -20,11 +20,15 @@ export const getDashboardStats = async (owner_id) => {
       
       // 3. Overdue Rent Count
       pool.query(
-        `SELECT COUNT(*) FROM rent_payments rp
-         JOIN tenants t ON rp.tenant_id = t.id
-         JOIN units u ON t.unit_id = u.id
-         JOIN properties p ON u.property_id = p.id
-         WHERE p.owner_id = $1 AND rp.status != 'paid' AND rp.due_date < CURRENT_DATE`,
+        `WITH UniqueOverdue AS (
+           SELECT DISTINCT ON (rp.tenant_id, rp.amount, rp.due_date) rp.id
+           FROM rent_payments rp
+           JOIN tenants t ON rp.tenant_id = t.id
+           JOIN units u ON t.unit_id = u.id
+           JOIN properties p ON u.property_id = p.id
+           WHERE p.owner_id = $1 AND rp.status != 'paid' AND rp.due_date < CURRENT_DATE
+         )
+         SELECT COUNT(*) FROM UniqueOverdue`,
         [owner_id]
       ),
       

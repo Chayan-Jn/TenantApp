@@ -18,25 +18,34 @@ export const createTenant = async ({ unit_id, name, phone, join_date, owner_id }
   try {
     await client.query('BEGIN');
 
-    // Verify ownership inside the transaction
-    const ownerCheck = await client.query(
-      `SELECT u.id FROM units u
+    // Verify ownership inside the transaction and grab the rent
+    const unitCheck = await client.query(
+      `SELECT u.id, u.rent FROM units u
        JOIN properties p ON u.property_id = p.id
        WHERE u.id = $1 AND p.owner_id = $2`,
       [unit_id, owner_id]
     )
-    if (!ownerCheck.rows.length) throw new Error('Unit not found or unauthorized')
+    if (!unitCheck.rows.length) throw new Error('Unit not found or unauthorized')
+    const unit = unitCheck.rows[0]
 
-    const result = await client.query(
+    const tenantResult = await client.query(
       'INSERT INTO tenants (unit_id, name, phone, join_date) VALUES ($1, $2, $3, $4) RETURNING *',
       [unit_id, name, phone, join_date]
+    )
+    const newTenant = tenantResult.rows[0]
+
+    // Create Initial Payment
+    await client.query(
+      `INSERT INTO rent_payments (tenant_id, amount, status, due_date)
+       VALUES ($1, $2, 'pending', $3)`,
+      [newTenant.id, unit.rent, join_date]
     )
 
     // Mark unit as occupied now that someone is there
     await client.query('UPDATE units SET is_occupied = TRUE WHERE id = $1', [unit_id])
 
     await client.query('COMMIT');
-    return result.rows[0]
+    return newTenant
   } catch (err) {
     await client.query('ROLLBACK');
     throw err

@@ -28,15 +28,20 @@ export const getRentByTenant = async (tenant_id, owner_id) => {
   try {
     await verifyTenantOwner(tenant_id, owner_id)
     const result = await pool.query(
-      `SELECT *,
+      `SELECT rp.*,
         CASE
-          WHEN status = 'paid' THEN 'paid'
-          WHEN due_date < CURRENT_DATE THEN 'overdue'
+          WHEN rp.status = 'paid' THEN 'paid'
+          WHEN rp.due_date < CURRENT_DATE THEN 'overdue'
           ELSE 'pending'
-        END AS computed_status
-       FROM rent_payments
-       WHERE tenant_id = $1
-       ORDER BY due_date DESC`,
+        END AS computed_status,
+        CASE 
+          WHEN EXTRACT(MONTH FROM rp.due_date) = EXTRACT(MONTH FROM t.join_date) AND EXTRACT(YEAR FROM rp.due_date) = EXTRACT(YEAR FROM t.join_date) THEN 'Initial Payment'
+          ELSE 'Monthly Rent'
+        END AS title
+       FROM rent_payments rp
+       JOIN tenants t ON rp.tenant_id = t.id
+       WHERE rp.tenant_id = $1
+       ORDER BY rp.due_date DESC`,
       [tenant_id]
     )
     return result.rows
@@ -70,7 +75,12 @@ export const getOverdueRents = async (property_id, owner_id) => {
   try {
     const isAll = property_id === 'all'
     const query = isAll
-      ? `SELECT rp.*, t.name as tenant_name, u.label as unit_label, p.name as property_name
+      ? `SELECT DISTINCT ON (rp.tenant_id, rp.amount, rp.due_date) 
+            rp.*, t.name as tenant_name, u.label as unit_label, p.name as property_name,
+            CASE 
+              WHEN EXTRACT(MONTH FROM rp.due_date) = EXTRACT(MONTH FROM t.join_date) AND EXTRACT(YEAR FROM rp.due_date) = EXTRACT(YEAR FROM t.join_date) THEN 'Initial Payment'
+              ELSE 'Monthly Rent'
+            END AS title
          FROM rent_payments rp
          JOIN tenants t ON rp.tenant_id = t.id
          JOIN units u ON t.unit_id = u.id
@@ -78,8 +88,13 @@ export const getOverdueRents = async (property_id, owner_id) => {
          WHERE p.owner_id = $1
          AND rp.status != 'paid'
          AND rp.due_date < CURRENT_DATE
-         ORDER BY rp.due_date ASC`
-      : `SELECT rp.*, t.name as tenant_name, u.label as unit_label, p.name as property_name
+         ORDER BY rp.tenant_id, rp.amount, rp.due_date, rp.id DESC`
+      : `SELECT DISTINCT ON (rp.tenant_id, rp.amount, rp.due_date)
+            rp.*, t.name as tenant_name, u.label as unit_label, p.name as property_name,
+            CASE 
+              WHEN EXTRACT(MONTH FROM rp.due_date) = EXTRACT(MONTH FROM t.join_date) AND EXTRACT(YEAR FROM rp.due_date) = EXTRACT(YEAR FROM t.join_date) THEN 'Initial Payment'
+              ELSE 'Monthly Rent'
+            END AS title
          FROM rent_payments rp
          JOIN tenants t ON rp.tenant_id = t.id
          JOIN units u ON t.unit_id = u.id
@@ -87,7 +102,7 @@ export const getOverdueRents = async (property_id, owner_id) => {
          WHERE p.id = $2 AND p.owner_id = $1
          AND rp.status != 'paid'
          AND rp.due_date < CURRENT_DATE
-         ORDER BY rp.due_date ASC`
+         ORDER BY rp.tenant_id, rp.amount, rp.due_date, rp.id DESC`
 
     const params = isAll ? [owner_id] : [owner_id, property_id]
     const result = await pool.query(query, params)
