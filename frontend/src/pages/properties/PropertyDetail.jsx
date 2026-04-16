@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useLoaderData, useNavigate, Link } from 'react-router'
 import { createUnit, deleteUnit, updateUnit } from '../../api/unit.api.js'
 import { deleteProperty, updateProperty } from '../../api/property.api.js'
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { FiEdit2, FiTrash2, FiCamera } from 'react-icons/fi'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
+import PhotoManagerModal from '../../components/photos/PhotoManagerModal.jsx'
 
 export default function PropertyDetail() {
   const { units: initialUnits, property_id, property } = useLoaderData()
@@ -23,6 +24,9 @@ export default function PropertyDetail() {
   const [updatingProperty, setUpdatingProperty] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
+  
+  // Photo Modal State
+  const [photoModal, setPhotoModal] = useState({ isOpen: false, unitId: null, unitName: '' })
 
   const handleCreateUnit = async (e) => {
     e.preventDefault()
@@ -178,6 +182,16 @@ export default function PropertyDetail() {
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-xl font-bold text-gray-900">{unit.label}</h3>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPhotoModal({ isOpen: true, unitId: unit.id, unitName: unit.label });
+                    }} 
+                    className="text-gray-400 hover:text-emerald-600 p-1 cursor-pointer" 
+                    title="Unit Photos"
+                  >
+                    <FiCamera size={20} />
+                  </button>
                   <button onClick={(e) => openEditModal(unit, e)} className="text-gray-400 hover:text-blue-600 p-1 cursor-pointer" title="Edit Unit">
                     <FiEdit2 size={20} />
                   </button>
@@ -315,6 +329,13 @@ export default function PropertyDetail() {
           </div>
         </div>
       )}
+
+      <PhotoManagerModal 
+        isOpen={photoModal.isOpen}
+        onClose={() => setPhotoModal({ ...photoModal, isOpen: false })}
+        unitId={photoModal.unitId}
+        unitName={photoModal.unitName}
+      />
     </div>
   )
 }

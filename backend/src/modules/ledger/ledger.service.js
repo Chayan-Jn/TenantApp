@@ -45,7 +45,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
   const rentRecords = (await pool.query(`
     SELECT rp.id, rp.tenant_id, u.id as unit_id, rp.amount, rp.status, rp.due_date, rp.payment_type,
            EXTRACT(MONTH FROM rp.due_date) as month, EXTRACT(YEAR FROM rp.due_date) as year,
-           t.name as tenant_name, t.phone as tenant_phone, t.join_date, u.label as unit_label, p.name as property_name 
+           t.name as tenant_name, t.phone as tenant_phone, t.join_date, t.leave_date, u.label as unit_label, p.name as property_name 
     FROM rent_payments rp
     JOIN tenants t ON rp.tenant_id = t.id
     JOIN units u ON t.unit_id = u.id
@@ -91,6 +91,7 @@ export const generateLedger = async (property_id, month, year, owner_id) => {
         phone: defaultData.tenant_phone || '-',
         unit_label: defaultData.unit_label,
         property_name: defaultData.property_name,
+        is_moved_out: !!defaultData.leave_date,
         dues: []
       })
     }

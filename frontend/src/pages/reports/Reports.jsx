@@ -485,7 +485,7 @@ export default function Reports() {
             </div>
           )}
 
-          {needsRentPicker && selectedTenant && paidItems.length > 0 && (
+          {needsRentPicker && selectedTenant && (
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Year</label>
               <select className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white cursor-pointer" value={year} onChange={(e) => setYear(Number(e.target.value))}>

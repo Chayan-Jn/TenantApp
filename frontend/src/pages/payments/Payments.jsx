@@ -275,8 +275,14 @@ export default function Payments() {
                               
                               <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
                                 <div>
-                                  <h4 className="text-base font-bold text-slate-800">
+                                  <h4 className="text-base font-bold text-slate-800 flex items-center gap-2">
                                     Unit {tenant.unit_label} <span className="text-slate-400 font-normal mx-1">|</span> {tenant.tenant_name}
+                                    {tenant.is_moved_out && (
+                                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">
+                                        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                        Moved Out
+                                      </span>
+                                    )}
                                   </h4>
                                   
                                   {/* UPDATE: Directly sends message using the saved template */}

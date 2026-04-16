@@ -4,7 +4,8 @@ import { createTenant, removeTenant } from '../../api/tenant.api.js'
 import { createBill, updateBill, deleteBill, getBillSplits, updateBillStatus, updateSplitStatus } from '../../api/bills.api.js'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
 import Badge from '../../components/ui/Badge.jsx'
-import { FiTrash2, FiEdit2, FiChevronDown, FiChevronUp, FiCheckCircle } from 'react-icons/fi'
+import { FiTrash2, FiEdit2, FiChevronDown, FiChevronUp, FiCheckCircle, FiCamera } from 'react-icons/fi'
+import PhotoManagerModal from '../../components/photos/PhotoManagerModal.jsx'
 
 const BILL_TYPES = ['electricity', 'water', 'gas', 'maintenance', 'parking', 'other']
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -116,6 +117,9 @@ export default function UnitDetail() {
   const [editingBill, setEditingBill] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
+  
+  // Photo Modal State
+  const [photoModalOpen, setPhotoModalOpen] = useState(false)
   
   // State for Split Data
   const [expandedBill, setExpandedBill] = useState(null)
@@ -258,6 +262,25 @@ export default function UnitDetail() {
           <p className="text-gray-500 mt-1">Rent: {formatCurrency(unit?.rent)}/mo</p>
         </div>
         <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Add Tenant</button>
+      </div>
+
+      {/* Unit Photos Section */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+            <FiCamera size={24} />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-gray-900">Unit Condition Photos</h2>
+            <p className="text-xs text-gray-500">Document the unit's state at move-in/move-out</p>
+          </div>
+        </div>
+        <button 
+          onClick={() => setPhotoModalOpen(true)} 
+          className="text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg transition-all cursor-pointer border border-emerald-100"
+        >
+          Manage Photos
+        </button>
       </div>
 
       {/* Tenant Cards */}
@@ -433,6 +456,13 @@ export default function UnitDetail() {
           </div>
         </div>
       )}
+
+      <PhotoManagerModal 
+        isOpen={photoModalOpen}
+        onClose={() => setPhotoModalOpen(false)}
+        unitId={unit_id}
+        unitName={unit_name}
+      />
     </div>
   )
 }

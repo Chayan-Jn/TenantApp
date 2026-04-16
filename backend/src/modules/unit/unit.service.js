@@ -1,4 +1,5 @@
 import pool from '../../config/db.js'
+import * as photoService from '../photo/photo.service.js'
 
 const verifyPropertyOwner = async (property_id, owner_id) => {
   const result = await pool.query(
@@ -36,6 +37,13 @@ export const getUnitsByProperty = async (property_id, owner_id) => {
 
 export const deleteUnit = async (id, owner_id) => {
   try {
+    // 1. Cleanup Photos from S3 first
+    const photos = await photoService.getPhotosByUnit(id, owner_id);
+    for (const photo of photos) {
+      await photoService.deletePhoto(photo.id, id, owner_id);
+    }
+
+    // 2. Delete the unit (Cascade will handle unit_photos DB records)
     const result = await pool.query(
       `DELETE FROM units WHERE id = $1
        AND property_id IN (SELECT id FROM properties WHERE owner_id = $2)
