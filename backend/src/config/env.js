@@ -6,7 +6,8 @@ export const env = {
     JWT_SECRET: process.env.JWT_SECRET,
     FRONTEND_URLS: process.env.FRONTEND_URLS || 'http://localhost:5173',
     NODE_ENV: process.env.NODE_ENV || 'development',
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    CA_CERT:process.env.CA_CERT 
   }
 
 

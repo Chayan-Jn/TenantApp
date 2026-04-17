@@ -5,14 +5,18 @@ const { Pool } = pg;
 import {env} from './env.js'
 
 const certPath = path.resolve(process.cwd(), 'certs/ca-certificate.crt');
+const caCert = process.env.CA_CERT 
+  ? env.CA_CERT 
+  : fs.readFileSync(certPath).toString();
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: true, 
-    ca: fs.readFileSync(certPath).toString() // Reading the digital ID badge
+    rejectUnauthorized: true,
+    ca: caCert
   }
 });
+
 export const connectToDB = async () => {
   try {
     await pool.query('SELECT 1');
