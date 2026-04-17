@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLoaderData, Link } from 'react-router'
 import { removeTenant, getTenants } from '../../api/tenant.api.js'
 import Card from '../../components/ui/Card.jsx'
@@ -15,10 +15,14 @@ export default function PropertyTenants() {
   const { tenants: initialTenants, property_id, property_name } = useLoaderData()
   const [tenants, setTenants] = useState(initialTenants || [])
   const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('active')
+  const [filter, setFilter] = useState(() => sessionStorage.getItem(`pt_filter_${property_id}`) || 'active')
   const [filterLoading, setFilterLoading] = useState(false)
   const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
   const [confirmRemoveId, setConfirmRemoveId] = useState(null)
+
+  useEffect(() => {
+    sessionStorage.setItem(`pt_filter_${property_id}`, filter)
+  }, [filter, property_id])
 
   const handleFilterChange = async (status) => {
     setFilter(status)
@@ -69,8 +73,8 @@ export default function PropertyTenants() {
           { label: property_name || 'Property', to: `/properties/${property_id}` },
           { label: 'All Tenants' }
         ]} />
-        <h1 className="text-xl font-bold text-gray-900 mt-2">All Tenants</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white mt-2 transition-colors">All Tenants</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">
           {filterLoading ? 'Loading...' : `${filtered.length} ${statusLabel}${filtered.length !== 1 ? 's' : ''}${search ? ` matching "${search}"` : ''}`}
         </p>
       </div>
@@ -81,10 +85,10 @@ export default function PropertyTenants() {
           placeholder="Search by name or phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors"
         />
         <select
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors"
           value={filter}
           onChange={(e) => handleFilterChange(e.target.value)}
         >
@@ -95,8 +99,8 @@ export default function PropertyTenants() {
       </div>
 
       {filtered.length === 0 ? (
-        <Card>
-          <p className="text-sm text-gray-500 text-center">
+        <Card className="border-gray-200 dark:border-slate-700 transition-colors">
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
             {search ? 'No tenants match your search' : `No ${filter === 'all' ? '' : filter} tenants in this property`}
           </p>
         </Card>
@@ -104,21 +108,21 @@ export default function PropertyTenants() {
         <div className="flex flex-col gap-8">
           {Object.entries(grouped).map(([unitLabel, unitTenants]) => (
             <div key={unitLabel} className="flex flex-col gap-3">
-              <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider border-b border-gray-200 pb-2 pl-1">
-                {unitLabel} <span className="text-gray-400 font-normal normal-case ml-2">({unitTenants.length})</span>
+              <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-slate-700 pb-2 pl-1 transition-colors">
+                {unitLabel} <span className="text-gray-400 dark:text-gray-500 font-normal normal-case ml-2 transition-colors">({unitTenants.length})</span>
               </h2>
               {unitTenants.map((tenant) => (
-                <Card key={tenant.id} className="flex items-center justify-between py-4">
+                <Card key={tenant.id} className="flex items-center justify-between py-4 border-gray-200 dark:border-slate-700 transition-colors">
                   <div className="flex flex-col gap-1">
-                    <Link to={`/tenants/${tenant.id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                    <Link to={`/tenants/${tenant.id}`} className="text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                       {tenant.name}
                     </Link>
-                    <span className="text-xs text-gray-500">Phone: {tenant.phone}</span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors">Phone: {tenant.phone}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors">
                       Joined: {formatDate(tenant.join_date)} · Rent: {formatCurrency(tenant.rent)}/mo
                     </span>
                     {tenant.leave_date && (
-                      <span className="text-xs text-red-400">Left: {formatDate(tenant.leave_date)}</span>
+                      <span className="text-xs text-rose-500 dark:text-rose-400 font-medium transition-colors">Left: {formatDate(tenant.leave_date)}</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3">

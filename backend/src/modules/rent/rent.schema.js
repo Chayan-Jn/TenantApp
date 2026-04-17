@@ -11,3 +11,8 @@ export const generateRentSchema = z.object({
   month: z.number().int().min(1).max(12),
   year: z.number().int().min(2000)
 })
+
+export const updateRentSchema = z.object({
+  amount: z.number().int().min(0).optional(),
+  due_date: z.string().date().optional()
+})

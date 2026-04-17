@@ -1,53 +1,54 @@
 import { useLoaderData, Link } from 'react-router'
-import { 
-  MdOutlineDomain, 
-  MdOutlineMeetingRoom, 
-  MdOutlinePeopleAlt, 
-  MdOutlineKey, 
-  MdOutlineWarningAmber,
-  MdArrowRightAlt,
-  MdOutlineAccountBalanceWallet
-} from 'react-icons/md'
+import {
+  FiHome,
+  FiHash,
+  FiUsers,
+  FiKey,
+  FiAlertCircle,
+  FiArrowRight,
+  FiCreditCard
+} from 'react-icons/fi'
 
 const TYPE_LABELS = { flat: 'Flats', pg: 'PGs', commercial: 'Commercial' }
 
 const TYPE_COLORS = {
-  flat: 'text-violet-700 bg-violet-100',
-  pg: 'text-emerald-700 bg-emerald-100',
-  commercial: 'text-amber-700 bg-amber-100'
+  flat: 'text-violet-700 bg-violet-100 dark:bg-violet-900/40 dark:text-violet-300',
+  pg: 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-300',
+  commercial: 'text-amber-700 bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300'
 }
 
 const FRAME_BG = {
-  flat: 'bg-violet-50/50 border-violet-100/50',
-  pg: 'bg-emerald-50/50 border-emerald-100/50',
-  commercial: 'bg-amber-50/50 border-amber-100/50'
+  flat: 'bg-cyan-800 text-white',
+  pg: 'bg-slate-700 text-white',
+  commercial: 'bg-stone-800 text-white'
 }
 
-const PROGRESS_COLORS = {
-  flat: 'bg-violet-500',
-  pg: 'bg-emerald-500',
-  commercial: 'bg-amber-500'
+const ACTIVE_SEGMENT = {
+  flat: 'bg-cyan-400 dark:bg-cyan-500',
+  pg: 'bg-slate-300 dark:bg-slate-400',
+  commercial: 'bg-stone-600 dark:bg-stone-300'
 }
 
 const statCards = (stats) => [
-  { label: 'Total Properties', value: stats?.total_properties || 0, icon: MdOutlineDomain, iconColor: 'text-blue-600', iconBg: 'bg-blue-100' },
-  { label: 'Total Units', value: stats?.total_units || 0, icon: MdOutlineMeetingRoom, iconColor: 'text-indigo-600', iconBg: 'bg-indigo-100' },
-  { label: 'Occupied', value: stats?.occupied_units || 0, icon: MdOutlinePeopleAlt, iconColor: 'text-emerald-600', iconBg: 'bg-emerald-100' },
-  { label: 'Vacant', value: stats?.vacant_units || 0, icon: MdOutlineKey, iconColor: 'text-amber-600', iconBg: 'bg-amber-100' },
-  { 
-    label: 'Overdue Rent', 
-    value: stats?.overdue_count || 0, 
-    icon: MdOutlineWarningAmber, 
-    sub: stats?.overdue_count > 0 ? 'Needs Attention' : null,
-    iconColor: stats?.overdue_count > 0 ? 'text-red-600' : 'text-gray-400',
-    iconBg: stats?.overdue_count > 0 ? 'bg-red-100' : 'bg-gray-100',
-    textColor: stats?.overdue_count > 0 ? 'text-red-600' : 'text-gray-900'
+  { label: 'Total Properties', value: stats?.total_properties || 0, icon: FiHome, iconBg: 'bg-slate-50 dark:bg-slate-800/50', iconColor: 'text-slate-600 dark:text-slate-400' },
+  { label: 'Total Units', value: stats?.total_units || 0, icon: FiHash, iconBg: 'bg-slate-50 dark:bg-slate-800/50', iconColor: 'text-slate-600 dark:text-slate-400' },
+  { label: 'Occupied', value: stats?.occupied_units || 0, icon: FiUsers, iconBg: 'bg-emerald-50 dark:bg-emerald-900/20', iconColor: 'text-emerald-600 dark:text-emerald-400' },
+  { label: 'Vacant', value: stats?.vacant_units || 0, icon: FiKey, iconBg: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400' },
+  {
+    label: 'Overdue Rent',
+    value: stats?.overdue_count || 0,
+    icon: FiAlertCircle,
+    sub: stats?.overdue_count > 0 ? 'Action Required' : null,
+    iconBg: stats?.overdue_count > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-slate-50 dark:bg-slate-800/50',
+    iconColor: stats?.overdue_count > 0 ? 'text-crimson' : 'text-slate-400 dark:text-slate-500',
+    textColor: stats?.overdue_count > 0 ? 'text-crimson' : 'text-slate-900 dark:text-white',
+    isAlert: stats?.overdue_count > 0
   }
 ]
 
 export default function Dashboard() {
   const loaderData = useLoaderData()
-  
+
   // SAFELY EXTRACT DATA: Handles { data: stats } from API or { stats } or direct object
   const stats = loaderData?.data || loaderData?.stats || loaderData || {}
 
@@ -59,44 +60,45 @@ export default function Dashboard() {
 
   const financials = stats?.financials || { collected: 0, pending: 0, total: 0 }
   const collectionRate = financials.total > 0 ? Math.round((financials.collected / financials.total) * 100) : 0
-  
+
   // Safe currency formatter that won't crash on null/undefined
   const formatCurrency = (n) => {
-    const num = Number(n) || 0;
+    const num = Number(n) || 0
     return `₹${num.toLocaleString('en-IN')}`
   }
 
   // Fallback while loading or if no data
   if (!loaderData) {
-    return <div className="p-6 text-gray-500">Loading dashboard data...</div>
+    return <div className="p-6 text-gray-500 dark:text-slate-400">Loading dashboard data...</div>
   }
 
   return (
     <div className="flex flex-col gap-8 pb-6 w-full">
+      {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Here is what's happening with your properties today.</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dashboard</h1>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">Here is what's happening with your properties today.</p>
       </div>
 
       {/* TOP STATS GRID */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 w-full">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
         {statCards(stats).map((card) => {
           const Icon = card.icon
           return (
-            <div key={card.label} className="bg-white rounded-xl border border-gray-200 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] p-4 flex flex-col">
-              <div className="flex justify-between items-start mb-2">
-                <div className={`p-2 rounded-lg ${card.iconBg}`}>
-                  <Icon className={`w-5 h-5 ${card.iconColor}`} />
+            <div key={card.label} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className={`p-2 rounded-lg ${card.iconBg} transition-colors`}>
+                  <Icon className={`w-5 h-5 ${card.iconColor} transition-colors`} />
                 </div>
                 {card.sub && (
-                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${card.iconBg} ${card.iconColor}`}>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${card.isAlert ? 'border-red-100 bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'border-slate-100 bg-slate-50 text-slate-500'} transition-colors`}>
                     {card.sub}
                   </span>
                 )}
               </div>
               <div>
-                <p className={`text-2xl font-extrabold ${card.textColor || 'text-gray-900'}`}>{card.value}</p>
-                <p className="text-xs font-semibold text-gray-500 mt-0.5">{card.label}</p>
+                <p className={`text-2xl font-bold tracking-tight transition-colors ${card.textColor || 'text-slate-900 dark:text-white'}`}>{card.value}</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1 transition-colors">{card.label}</p>
               </div>
             </div>
           )
@@ -104,50 +106,56 @@ export default function Dashboard() {
       </div>
 
       {/* FINANCIAL SNAPSHOT */}
-      <div className="w-full bg-white rounded-xl border border-gray-200 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] p-6 flex flex-col">
+      <div className="w-full bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col transition-all">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <MdOutlineAccountBalanceWallet className="w-5 h-5 text-emerald-600" />
-            This Month's Collections
-          </h2>
-          <Link to="/payments" className="text-sm text-blue-600 hover:text-blue-700 font-semibold transition-colors">
-            Go to Ledger
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 transition-colors">
+              <FiCreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              Collection Performance
+            </h2>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 ml-7">Target vs. Actual for this month</p>
+          </div>
+          <Link to="/payments" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-all">
+            View Ledger
           </Link>
         </div>
-        
-        <div className="flex justify-between items-end mb-3">
-          <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Collected</p>
-            <p className="text-3xl font-black text-emerald-600">{formatCurrency(financials.collected)}</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="flex flex-col">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 transition-colors">Collected</p>
+            <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 transition-colors">{formatCurrency(financials.collected)}</p>
           </div>
-          <div className="text-right">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Pending</p>
-            <p className="text-xl font-bold text-amber-500">{formatCurrency(financials.pending)}</p>
+          <div className="md:text-right flex flex-col md:items-end">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 transition-colors">Pending</p>
+            <p className="text-2xl font-bold text-amber-500 dark:text-amber-400 transition-colors">{formatCurrency(financials.pending)}</p>
           </div>
         </div>
 
-        <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
+        <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 mb-2 transition-colors">
           <div
-            className="h-3 rounded-full bg-emerald-500 transition-all duration-500 ease-out"
+            className="h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 transition-all duration-500"
             style={{ width: `${collectionRate}%` }}
           />
         </div>
-        <p className="text-xs font-semibold text-gray-500 text-right">{collectionRate}% Collected of {formatCurrency(financials.total)}</p>
+        <div className="flex justify-between items-center text-xs font-medium transition-colors text-slate-500 dark:text-slate-400">
+          <span>Target: {formatCurrency(financials.total)}</span>
+          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{collectionRate}% Achieved</span>
+        </div>
       </div>
 
       {/* PROPERTIES OVERVIEW */}
-      <div className="mt-2 w-full">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Property Overview</h2>
-          <Link to="/properties" className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-semibold transition-colors">
-            View all <MdArrowRightAlt className="w-4 h-4" />
+      <div className="mt-6 w-full">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-black text-slate-900 dark:text-white transition-colors uppercase tracking-tight">Portfolio Analysis</h2>
+          <Link to="/properties" className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-black uppercase tracking-widest transition-all group">
+            All Properties <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
         {!stats?.properties?.length ? (
-          <div className="bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center">
-            <h3 className="text-base font-semibold text-gray-900">No properties yet</h3>
-            <Link to="/properties" className="text-blue-600 text-sm font-medium mt-2 inline-block hover:underline">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-gray-300 dark:border-slate-600 p-8 text-center transition-colors">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white transition-colors">No properties yet</h3>
+            <Link to="/properties" className="text-blue-600 dark:text-blue-400 text-sm font-medium mt-2 inline-block hover:underline transition-colors">
               Add your first property
             </Link>
           </div>
@@ -155,59 +163,68 @@ export default function Dashboard() {
           <div className="flex flex-col gap-6">
             {Object.entries(grouped).map(([type, list]) => (
               <div key={type}>
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <h3 className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2 transition-colors">
                   {TYPE_LABELS[type] || type}
-                  <div className="h-px bg-gray-200 flex-1"></div>
+                  <div className="h-px bg-gray-200 dark:bg-slate-700 flex-1 transition-colors"></div>
                 </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {list.map((p) => {
-                    const totalUnits = Number(p.total_units) || 0;
-                    const occupiedUnits = Number(p.occupied_units) || 0;
-                    const occupancyRate = totalUnits > 0 
-                      ? Math.round((occupiedUnits / totalUnits) * 100) 
+                    const totalUnits = Number(p.total_units) || 0
+                    const occupiedUnits = Number(p.occupied_units) || 0
+                    const occupancyRate = totalUnits > 0
+                      ? Math.round((occupiedUnits / totalUnits) * 100)
                       : 0
 
                     return (
                       <Link
                         key={p.id}
                         to={`/properties/${p.id}`}
-                        className="group bg-white p-4 pb-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
+                        className="group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col overflow-hidden"
                       >
-                        <div className={`rounded-xl border p-5 mb-4 ${FRAME_BG[type] || 'bg-gray-50 border-gray-100'} transition-colors flex-1`}>
-                          <div className="flex items-start justify-between mb-5">
-                            <div>
-                              <h4 className="font-bold text-gray-900 text-lg">{p.name}</h4>
-                              <p className="text-sm text-gray-500 font-medium mt-1">{totalUnits} total units</p>
-                            </div>
-                            <span className={`text-xs font-bold px-2.5 py-1.5 rounded-md uppercase tracking-wider ${TYPE_COLORS[type] || 'text-gray-700 bg-gray-100'}`}>
+                        {/* DEEP MATURE COLOR HEAD */}
+                        <div className={`p-5 border-b border-white/10 ${FRAME_BG[type]} flex-1 flex flex-col min-h-[140px]`}>
+                          <div className="flex justify-between items-start w-full">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded border border-white/20 uppercase tracking-wide opacity-90 inline-block mb-3">
                               {type}
                             </span>
                           </div>
+                          <h4 className="font-bold text-2xl leading-tight line-clamp-2 mt-auto mb-1" title={p.name}>
+                            {p.name}
+                          </h4>
+                          <p className="text-xs font-medium opacity-75">
+                            {totalUnits} Units Total
+                          </p>
+                        </div>
 
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="font-semibold text-gray-600">Occupancy</span>
-                            <span className="font-bold text-gray-900">{occupancyRate}%</span>
+                        {/* SEGMENTED OCCUPANCY TRACKER */}
+                        <div className="px-5 py-5 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/60">
+                          <div className="flex justify-between items-center text-xs font-semibold mb-2.5 text-slate-500 dark:text-slate-400">
+                            <span>Occupancy Rate</span>
+                            <span className="text-slate-900 dark:text-white font-bold">{occupancyRate}%</span>
                           </div>
-                          <div className="w-full bg-black/5 rounded-full h-2">
-                            <div
-                              className={`h-2 rounded-full transition-all duration-500 ease-out ${PROGRESS_COLORS[type] || 'bg-gray-500'}`}
-                              style={{ width: `${occupancyRate}%` }}
-                            />
+                          <div className="flex gap-1 h-2.5 w-full">
+                            {Array.from({ length: 10 }).map((_, i) => {
+                              const isActive = (i * 10) < occupancyRate
+                              return (
+                                <div 
+                                  key={i} 
+                                  className={`flex-1 rounded-sm transition-colors duration-300 ${isActive ? (ACTIVE_SEGMENT[type] || 'bg-slate-500') : 'bg-slate-100 dark:bg-slate-800'}`} 
+                                />
+                              )
+                            })}
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center px-2">
+                        {/* STATS FOOTER */}
+                        <div className="grid grid-cols-2 pt-4 pb-5 px-5 bg-white dark:bg-slate-900 mt-auto">
                           <div className="flex flex-col">
-                            <span className="text-xs uppercase font-bold text-gray-400 mb-1">Occupied</span>
-                            <span className="font-bold text-emerald-600 text-lg">{occupiedUnits}</span>
+                            <span className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-0.5">Active Tenants</span>
+                            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">{occupiedUnits}</span>
                           </div>
-                          <div className="h-8 w-px bg-gray-200"></div>
-                          <div className="flex flex-col items-end">
-                            <span className="text-xs uppercase font-bold text-gray-400 mb-1">Vacant</span>
-                            <span className="font-bold text-amber-500 text-lg">
-                              {totalUnits - occupiedUnits}
-                            </span>
+                          <div className="flex flex-col text-right border-l border-slate-100 dark:border-slate-800/60 pl-4">
+                            <span className="text-xs font-medium text-slate-400 dark:text-slate-500 mb-0.5">Vacant Units</span>
+                            <span className="font-bold text-amber-500 dark:text-amber-400 text-xl">{totalUnits - occupiedUnits}</span>
                           </div>
                         </div>
                       </Link>

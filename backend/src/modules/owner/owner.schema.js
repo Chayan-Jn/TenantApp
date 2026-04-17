@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const updateOwnerSchema = z.object({
-    name: z.string().min(2)
+    name: z.string().min(2).max(50)
   })
 
 export const updatePasswordSchema = z.object({

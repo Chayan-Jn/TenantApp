@@ -5,6 +5,9 @@ import { createBill, updateBill, deleteBill, getBillSplits, updateBillStatus, up
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
 import Badge from '../../components/ui/Badge.jsx'
 import { FiTrash2, FiEdit2, FiChevronDown, FiChevronUp, FiCheckCircle, FiCamera } from 'react-icons/fi'
+import Modal from '../../components/ui/Modal.jsx'
+import Button from '../../components/ui/Button.jsx'
+import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 import PhotoManagerModal from '../../components/photos/PhotoManagerModal.jsx'
 
 const BILL_TYPES = ['electricity', 'water', 'gas', 'maintenance', 'parking', 'other']
@@ -23,38 +26,38 @@ const BillForm = ({ form, setForm, customSplits, setCustomSplits, onSplitTypeCha
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Bill Type</label>
-        <select required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white cursor-pointer" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Bill Type</label>
+        <select required className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
           {BILL_TYPES.map(t => <option key={t} value={t} className="capitalize">{t}</option>)}
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
-        <input type="number" required min="1" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Amount (₹)</label>
+        <input type="number" required min="1" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
-          <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white cursor-pointer" value={form.month} onChange={(e) => setForm({ ...form, month: Number(e.target.value) })}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Month</label>
+          <select className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors" value={form.month} onChange={(e) => setForm({ ...form, month: Number(e.target.value) })}>
             {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-          <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white cursor-pointer" value={form.year} onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Year</label>
+          <select className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors" value={form.year} onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}>
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Split Type</label>
-        <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white cursor-pointer" value={form.split_type} onChange={(e) => onSplitTypeChange(e.target.value)}>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Split Type</label>
+        <select className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors" value={form.split_type} onChange={(e) => onSplitTypeChange(e.target.value)}>
           <option value="unit">Per Unit (no split)</option>
           <option value="equal">Equal Split</option>
           <option value="custom">Custom Split</option>
         </select>
         {isSplitDisabled && (
-          <p className="mt-2 text-xs font-medium text-red-500 bg-red-50 p-2 rounded-md border border-red-100">
+          <p className="mt-2 text-xs font-medium text-red-500 bg-red-50 dark:bg-red-900/20 p-2 rounded-md border border-red-100 dark:border-red-800/50 transition-colors">
             No available tenants to split this bill with.
           </p>
         )}
@@ -92,11 +95,11 @@ const BillForm = ({ form, setForm, customSplits, setCustomSplits, onSplitTypeCha
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Note (optional)</label>
-        <input type="text" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} placeholder="e.g. March meter reading" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Note (optional)</label>
+        <input type="text" maxLength="255" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} placeholder="e.g. March meter reading" className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
       </div>
-      <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-        <button type="button" onClick={onCancel} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+      <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100 dark:border-slate-700 transition-colors">
+        <button type="button" onClick={onCancel} className="px-4 py-2 cursor-pointer text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-all">Cancel</button>
         <button type="submit" disabled={loading || isSplitDisabled} className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
           {loading ? 'Saving...' : submitLabel}
         </button>
@@ -129,6 +132,7 @@ export default function UnitDetail() {
   const [creating, setCreating] = useState(false)
   const [creatingBill, setCreatingBill] = useState(false)
   const [updatingBill, setUpdatingBill] = useState(false)
+  const [deletingTenant, setDeletingTenant] = useState(false)
 
   // Form States
   const [form, setForm] = useState({ name: '', phone: '', join_date: '', security_deposit: '' })
@@ -191,6 +195,7 @@ export default function UnitDetail() {
   }
 
   const handleConfirmRemove = async () => {
+    setDeletingTenant(true)
     try {
       await removeTenant(removeModal.tenantId, {
         deposit_refunded: Number(refundForm.deposit_refunded) || 0,
@@ -198,7 +203,11 @@ export default function UnitDetail() {
       })
       setTenants(tenants.filter(t => t.id !== removeModal.tenantId))
       setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })
-    } catch (err) { setErrorMsg(err.message || 'Error') }
+    } catch (err) { 
+      setErrorMsg(err.message || 'Error') 
+    } finally {
+      setDeletingTenant(false)
+    }
   }
 
   const handleCreateBill = async (e) => {
@@ -211,7 +220,10 @@ export default function UnitDetail() {
       const payload = { unit_id: parseInt(unit_id, 10), ...billForm, amount: Number(billForm.amount) }
       if (billForm.split_type === 'custom') payload.splits = customSplits.map(s => ({ tenant_id: s.tenant_id, amount: Number(s.amount) }))
       const res = await createBill(payload)
-      setBills([...bills, res.data]); setBillModal(false); setBillForm({ type: 'electricity', amount: '', split_type: 'unit', month: now.getMonth() + 1, year: now.getFullYear(), note: '' }); setCustomSplits([])
+      setBills([res.data, ...bills])
+      setBillModal(false)
+      setBillForm({ type: 'electricity', amount: '', split_type: 'unit', month: now.getMonth() + 1, year: now.getFullYear(), note: '' })
+      setCustomSplits([])
     } catch (err) { setErrorMsg(err.message || 'Failed to add bill') } finally { setCreatingBill(false) }
   }
 
@@ -258,26 +270,26 @@ export default function UnitDetail() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <Breadcrumb crumbs={[{ label: 'Properties', to: '/properties' }, { label: property_name || 'Property', to: `/properties/${property_id}` }, { label: unit_name || 'Unit' }]} />
-          <h1 className="text-2xl font-bold text-gray-900">{unit_name || 'Unit'}</h1>
-          <p className="text-gray-500 mt-1">Rent: {formatCurrency(unit?.rent)}/mo</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">{unit_name || 'Unit'}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 transition-colors">Rent: {formatCurrency(unit?.rent)}/mo</p>
         </div>
         <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Add Tenant</button>
       </div>
 
       {/* Unit Photos Section */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 flex items-center justify-between transition-colors">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center transition-colors">
             <FiCamera size={24} />
           </div>
           <div>
-            <h2 className="text-base font-bold text-gray-900">Unit Condition Photos</h2>
-            <p className="text-xs text-gray-500">Document the unit's state at move-in/move-out</p>
+            <h2 className="text-base font-bold text-gray-900 dark:text-white transition-colors">Unit Condition Photos</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors">Document the unit's state at move-in/move-out</p>
           </div>
         </div>
         <button 
           onClick={() => setPhotoModalOpen(true)} 
-          className="text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg transition-all cursor-pointer border border-emerald-100"
+          className="text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-4 py-2 rounded-lg transition-all cursor-pointer border border-emerald-100 dark:border-emerald-800/50"
         >
           Manage Photos
         </button>
@@ -285,74 +297,85 @@ export default function UnitDetail() {
 
       {/* Tenant Cards */}
       {tenants.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200 shadow-sm"><p className="text-gray-500">No tenants yet.</p></div>
+        <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm transition-colors">
+          <p className="text-gray-500 dark:text-gray-400">No tenants yet.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tenants.map((tenant) => (
-            <Link key={tenant.id} to={`/tenants/${tenant.id}`} className="group block bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:border-blue-500 hover:shadow-md transition-all relative">
-              <h3 className="text-lg font-bold text-gray-900 truncate pr-8">{tenant.name}</h3>
-              <button onClick={(e) => handleDeleteTenant(tenant, e)} className="text-gray-400 hover:text-red-600 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4 cursor-pointer"><FiTrash2 size={18} /></button>
-              <p className="text-sm text-gray-600 mt-1">{tenant.phone}</p>
+            <Link key={tenant.id} to={`/tenants/${tenant.id}`} className="group block bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-6 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all relative transition-colors">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate pr-8 transition-colors">{tenant.name}</h3>
+              <button onClick={(e) => handleDeleteTenant(tenant, e)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4 cursor-pointer transition-colors"><FiTrash2 size={18} /></button>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 transition-colors">{tenant.phone}</p>
               {tenant.security_deposit > 0 && (
-                <p className="text-xs text-gray-500 mt-1">Deposit: {formatCurrency(tenant.security_deposit)}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors">Deposit: {formatCurrency(tenant.security_deposit)}</p>
               )}
-              <div className="pt-4 border-t border-gray-100 mt-4 text-sm text-blue-600 font-medium">View History &rarr;</div>
+              <div className="pt-4 border-t border-gray-100 dark:border-slate-700 mt-4 text-sm text-blue-600 dark:text-blue-400 font-medium transition-colors">View History &rarr;</div>
             </Link>
           ))}
         </div>
       )}
 
       {/* Bills Section */}
-      <div className="flex items-center justify-between"><h2 className="text-lg font-semibold text-gray-900">Bills</h2><button onClick={() => setBillModal(true)} className="bg-gray-100 cursor-pointer hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">+ Add Bill</button></div>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors">Bills</h2>
+        <button onClick={() => setBillModal(true)} className="bg-gray-100 dark:bg-slate-800 cursor-pointer hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition-colors text-sm border border-transparent dark:border-slate-700">
+          + Add Bill
+        </button>
+      </div>
 
       <div className="flex flex-col gap-3">
-        {bills.length === 0 ? <p className="text-center py-8 text-gray-500 text-sm bg-white rounded-xl border border-gray-200">No bills added yet</p> : bills.map((bill) => (
-          <div key={bill.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        {bills.length === 0 ? (
+          <p className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 transition-colors">
+            No bills added yet
+          </p>
+        ) : bills.map((bill) => (
+          <div key={bill.id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-gray-900 capitalize">{bill.type}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize transition-colors">{bill.type}</span>
                   <Badge variant={TYPE_COLORS[bill.type]}>{bill.type}</Badge>
                   {bill.split_type !== 'unit' && <Badge variant="blue">{bill.split_type} split</Badge>}
                   {bill.status === 'paid' && <Badge variant="green">Paid</Badge>}
                 </div>
-                <span className="text-xs text-gray-500">{MONTHS[bill.month - 1]} {bill.year} {bill.note && `• ${bill.note}`}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors">{MONTHS[bill.month - 1]} {bill.year} {bill.note && `• ${bill.note}`}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-gray-900 mr-2">{formatCurrency(bill.amount)}</span>
+                <span className="text-base font-bold text-gray-900 dark:text-white mr-2 transition-colors">{formatCurrency(bill.amount)}</span>
                 
                 {/* Mark Paid Button (Unit Bills Only) */}
                 {bill.split_type === 'unit' && (
                   <button onClick={() => handleToggleBillStatus(bill.id, bill.status)} 
                     className={bill.status === 'paid' 
-                      ? "text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white" 
+                      ? "text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white dark:bg-slate-800" 
                       : "text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md transition-colors cursor-pointer shadow-sm border-none"}>
                     {bill.status === 'paid' ? 'Undo' : 'Mark Paid'}
                   </button>
                 )}
 
                 {bill.split_type !== 'unit' && (
-                  <button onClick={() => handleExpandBill(bill.id)} className="text-gray-400 hover:text-blue-600 p-1.5 bg-gray-50 hover:bg-blue-50 rounded-md cursor-pointer">
+                  <button onClick={() => handleExpandBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md cursor-pointer transition-colors">
                     {expandedBill === bill.id ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
                   </button>
                 )}
-                <button onClick={() => openEditBillModal(bill)} className="text-gray-400 hover:text-blue-600 p-1.5 bg-gray-50 hover:bg-blue-50 rounded-md cursor-pointer"><FiEdit2 size={16} /></button>
-                <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 hover:text-red-600 p-1.5 bg-gray-50 hover:bg-red-50 rounded-md cursor-pointer"><FiTrash2 size={16} /></button>
+                <button onClick={() => openEditBillModal(bill)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md cursor-pointer transition-colors"><FiEdit2 size={16} /></button>
+                <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-md cursor-pointer transition-colors"><FiTrash2 size={16} /></button>
               </div>
             </div>
 
             {/* Auto-Expanding Split Details */}
             {expandedBill === bill.id && splits.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Split Details</p>
+              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-700 flex flex-col gap-2 transition-colors">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide transition-colors">Split Details</p>
                 {splits.map(s => (
-                  <div key={s.id} className="flex items-center justify-between text-sm bg-gray-50 p-2.5 rounded-lg border border-gray-100">
-                    <div className="flex items-center gap-2"><span className="text-gray-800 font-medium">{s.tenant_name}</span>{s.status === 'paid' && <Badge variant="green">Paid</Badge>}</div>
+                  <div key={s.id} className="flex items-center justify-between text-sm bg-gray-50 dark:bg-slate-900/40 p-2.5 rounded-lg border border-gray-100 dark:border-slate-700 transition-colors">
+                    <div className="flex items-center gap-2"><span className="text-gray-800 dark:text-gray-200 font-medium transition-colors">{s.tenant_name}</span>{s.status === 'paid' && <Badge variant="green">Paid</Badge>}</div>
                     <div className="flex items-center gap-3">
-                      <span className="font-semibold text-gray-900">{formatCurrency(s.amount)}</span>
+                      <span className="font-semibold text-gray-900 dark:text-white transition-colors">{formatCurrency(s.amount)}</span>
                       <button onClick={() => handleToggleSplitStatus(bill.id, s.id, s.status)}
                         className={s.status === 'paid' 
-                          ? "text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-200 bg-gray-100 border border-gray-200 px-3 py-1.5 rounded transition-colors cursor-pointer" 
+                          ? "text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded transition-colors cursor-pointer" 
                           : "text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded transition-colors cursor-pointer shadow-sm border-none"}>
                         {s.status === 'paid' ? 'Undo' : 'Mark Paid'}
                       </button>
@@ -371,7 +394,7 @@ export default function UnitDetail() {
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-5"><h2 className="text-xl font-bold text-gray-900">Add New Tenant</h2><button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl cursor-pointer">&times;</button></div>
             <form onSubmit={handleCreateTenant} className="space-y-4">
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" required minLength="2" title="Name must be at least 2 characters long" maxLength="50" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input type="tel" required maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Join Date</label><input type="date" required value={form.join_date} onChange={(e) => setForm({ ...form, join_date: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit (₹)</label><input type="number" min="0" placeholder="0" value={form.security_deposit} onChange={(e) => setForm({ ...form, security_deposit: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
@@ -409,56 +432,55 @@ export default function UnitDetail() {
         </div>
       )}
 
-      {confirmDialog.isOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-2">{confirmDialog.title}</h2><p className="text-gray-600 mb-6">{confirmDialog.message}</p>
-            <div className="flex justify-end gap-3"><button onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg">Cancel</button><button onClick={() => { confirmDialog.onConfirm(); setConfirmDialog({ ...confirmDialog, isOpen: false }) }} className="px-4 py-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg">Confirm</button></div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal 
+        open={confirmDialog.isOpen} 
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
+        onConfirm={() => {
+          confirmDialog.onConfirm()
+          setConfirmDialog({ ...confirmDialog, isOpen: false })
+        }} 
+        title={confirmDialog.title} 
+        message={confirmDialog.message}
+        confirmText="Confirm"
+        variant="danger"
+      />
 
       {/* Remove Tenant Modal with Deposit Refund */}
-      {removeModal.open && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Remove Tenant</h2>
-            <p className="text-sm text-gray-500 mb-4">Remove <strong>{removeModal.tenantName}</strong> from this unit?</p>
+      <Modal open={removeModal.open} onClose={() => setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })} title="Remove Tenant">
+        <p className="text-sm text-gray-500 mb-4">Remove <strong>{removeModal.tenantName}</strong> from this unit?</p>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                <p className="text-sm font-semibold text-gray-800 mb-3">Security Deposit: {formatCurrency(removeModal.depositAmount)}</p>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
-                    <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Deduction Note (optional)</label>
-                    <input type="text" placeholder="e.g. Wall damage, cleaning charges" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
-                  {removeModal.depositAmount > 0 && Number(refundForm.deposit_refunded) < removeModal.depositAmount && (
-                    <p className="text-xs text-amber-700 font-medium">
-                      Deducting {formatCurrency(removeModal.depositAmount - Number(refundForm.deposit_refunded || 0))} from deposit
-                    </p>
-                  )}
-                  {Number(refundForm.deposit_refunded) > removeModal.depositAmount && (
-                    <p className="text-xs text-red-600 font-medium">
-                      Refund cannot exceed the original deposit amount.
-                    </p>
-                  )}
-                </div>
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+            <p className="text-sm font-semibold text-gray-800 mb-3">Security Deposit: {formatCurrency(removeModal.depositAmount)}</p>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
+                <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
               </div>
-
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg">Cancel</button>
-              <button disabled={Number(refundForm.deposit_refunded) > removeModal.depositAmount} onClick={handleConfirmRemove} className="px-4 py-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">Remove Tenant</button>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Deduction Note (optional)</label>
+                <input type="text" maxLength="255" placeholder="e.g. Wall damage, cleaning charges" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+              </div>
+              {removeModal.depositAmount > 0 && Number(refundForm.deposit_refunded) < removeModal.depositAmount && (
+                <p className="text-xs text-amber-700 font-medium">
+                  Deducting {formatCurrency(removeModal.depositAmount - Number(refundForm.deposit_refunded || 0))} from deposit
+                </p>
+              )}
+              {Number(refundForm.deposit_refunded) > removeModal.depositAmount && (
+                <p className="text-xs text-red-600 font-medium">
+                  Refund cannot exceed the original deposit amount.
+                </p>
+              )}
             </div>
           </div>
+
+        <div className="flex justify-end gap-3 mt-2">
+          <Button variant="ghost" onClick={() => setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })}>Cancel</Button>
+          <Button variant="danger" disabled={Number(refundForm.deposit_refunded) > removeModal.depositAmount} loading={deletingTenant} onClick={handleConfirmRemove}>Remove Tenant</Button>
         </div>
-      )}
+      </Modal>
 
       <PhotoManagerModal 
-        isOpen={photoModalOpen}
+        open={photoModalOpen}
         onClose={() => setPhotoModalOpen(false)}
         unitId={unit_id}
         unitName={unit_name}

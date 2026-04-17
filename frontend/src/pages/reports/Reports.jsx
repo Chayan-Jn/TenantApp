@@ -198,7 +198,7 @@ function buildCollectionHTML(data, monthLabel, year, ownerName) {
   return `
     <div class="doc-header">
       <div>
-        <div class="title">Monthly Collection Report</div>
+        <div class="title">${monthLabel === 'Full Year' ? 'Yearly' : 'Monthly'} Collection Report</div>
         <div class="date">${monthLabel} ${year}</div>
       </div>
       <div style="text-align:right;">
@@ -296,19 +296,27 @@ export default function Reports() {
   const { properties, owner } = useLoaderData()
   const now = new Date()
 
-  const [reportType, setReportType] = useState('rent_receipt')
+  const [reportType, setReportType] = useState(() => sessionStorage.getItem('reports_type') || 'rent_receipt')
   const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
   const [generating, setGenerating] = useState(false)
 
-  const [selectedProperty, setSelectedProperty] = useState('all')
+  const [selectedProperty, setSelectedProperty] = useState(() => sessionStorage.getItem('reports_prop') || 'all')
   const [selectedTenant, setSelectedTenant] = useState('')
   const [selectedItems, setSelectedItems] = useState(new Set())
   const [tenantList, setTenantList] = useState([])
   const [paidItems, setPaidItems] = useState([])
   const [tenantInfo, setTenantInfo] = useState(null)
-  const [month, setMonth] = useState(now.getMonth() + 1)
-  const [year, setYear] = useState(now.getFullYear())
-  const [showPastTenants, setShowPastTenants] = useState(false)
+  const [month, setMonth] = useState(() => Number(sessionStorage.getItem('reports_month')) || (now.getMonth() + 1))
+  const [year, setYear] = useState(() => Number(sessionStorage.getItem('reports_year')) || now.getFullYear())
+  const [showPastTenants, setShowPastTenants] = useState(() => sessionStorage.getItem('reports_past') === 'true')
+
+  useEffect(() => {
+    sessionStorage.setItem('reports_type', reportType)
+    sessionStorage.setItem('reports_prop', selectedProperty)
+    sessionStorage.setItem('reports_month', month.toString())
+    sessionStorage.setItem('reports_year', year.toString())
+    sessionStorage.setItem('reports_past', showPastTenants.toString())
+  }, [reportType, selectedProperty, month, year, showPastTenants])
 
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i)
   const ownerName = owner?.name || owner?.username || 'Owner'
@@ -345,7 +353,7 @@ export default function Reports() {
       try {
         const [tRes, ledgerRes] = await Promise.all([
           api(`/tenants/${selectedTenant}`),
-          getLedger({ month: 'all', year, property_id: selectedProperty })
+          getLedger({ month: reportType === 'rent_receipt' ? month : 'all', year, property_id: selectedProperty })
         ])
         setTenantInfo(tRes.data)
         // Find this tenant's block in the ledger
@@ -362,10 +370,11 @@ export default function Reports() {
       }
     }
     f()
-  }, [selectedTenant, year])
+  }, [selectedTenant, year, month, reportType])
 
   const needsTenant = reportType === 'rent_receipt' || reportType === 'tenant_statement'
-  const needsMonth = reportType === 'monthly_collection'
+  const needsMonth = reportType === 'monthly_collection' || reportType === 'rent_receipt'
+  const needsYear = reportType === 'monthly_collection' || reportType === 'rent_receipt' || reportType === 'yearly_collection'
   const needsRentPicker = reportType === 'rent_receipt'
 
   const handleGenerate = async () => {
@@ -391,6 +400,11 @@ export default function Reports() {
         openPrintWindow(buildCollectionHTML(data.data, MONTHS[month - 1], year, ownerName), `Collection - ${MONTHS[month - 1]} ${year}`)
       }
 
+      if (reportType === 'yearly_collection') {
+        const data = await getLedger({ month: 'all', year, property_id: selectedProperty })
+        openPrintWindow(buildCollectionHTML(data.data, 'Full Year', year, ownerName), `Yearly Collection - ${year}`)
+      }
+
       if (reportType === 'tenant_statement') {
         if (!selectedTenant) { setAlertInfo({ open: true, message: 'Select a tenant first.' }); return }
         const [tRes, rRes] = await Promise.all([api(`/tenants/${selectedTenant}`), api(`/rent?tenant_id=${selectedTenant}`)])
@@ -406,47 +420,49 @@ export default function Reports() {
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-8 pb-16">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Reports</h1>
-        <p className="text-sm text-slate-500 mt-1">Generate rent receipts, collection reports, and tenant statements</p>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white transition-colors">Reports</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors">Generate rent receipts, collection reports, and tenant statements</p>
       </div>
 
-      <Card className="p-5! border-slate-200 shadow-sm">
+      <Card className="p-5! border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
         <div className="flex flex-wrap gap-4 items-end">
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Report Type</label>
+            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Report Type</label>
             <select
-              className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white min-w-48 cursor-pointer"
+              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 min-w-48 cursor-pointer transition-colors"
               value={reportType}
               onChange={(e) => { setReportType(e.target.value); setSelectedRent('') }}
             >
               <option value="rent_receipt">Rent Receipt</option>
               <option value="monthly_collection">Monthly Collection Report</option>
+              <option value="yearly_collection">Yearly Collection Report</option>
               <option value="tenant_statement">Tenant Ledger Statement</option>
             </select>
           </div>
 
           {needsMonth && (
-            <>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Month</label>
-                <select className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white cursor-pointer" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-                  {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                </select>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Year</label>
-                <select className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white cursor-pointer" value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                  {years.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
-            </>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Month</label>
+              <select className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 cursor-pointer transition-colors" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
+              </select>
+            </div>
+          )}
+
+          {needsYear && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Year</label>
+              <select className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 cursor-pointer transition-colors" value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                {years.map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </div>
           )}
 
           <div className="flex flex-col gap-1.5 flex-1 min-w-44">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Property</label>
+            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Property</label>
             <select
-              className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white w-full cursor-pointer"
+              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full cursor-pointer transition-colors"
               value={selectedProperty}
               onChange={(e) => { setSelectedProperty(e.target.value); setSelectedTenant(''); setSelectedRent('') }}
             >
@@ -457,20 +473,20 @@ export default function Reports() {
 
           {needsTenant && (
             <div className="flex flex-col gap-1.5 flex-1 min-w-44">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tenant</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tenant</label>
                 <label className="flex items-center gap-1.5 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={showPastTenants}
                     onChange={(e) => setShowPastTenants(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="w-3.5 h-3.5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 dark:bg-slate-700"
                   />
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-600 uppercase tracking-tight transition-colors">Include Former Tenants</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 uppercase tracking-wide transition-colors">Include Former</span>
                 </label>
               </div>
               <select
-                className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white w-full cursor-pointer"
+                className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full cursor-pointer transition-colors"
                 value={selectedTenant}
                 onChange={(e) => { setSelectedTenant(e.target.value); setSelectedItems(new Set()) }}
                 disabled={selectedProperty === 'all'}
@@ -485,21 +501,14 @@ export default function Reports() {
             </div>
           )}
 
-          {needsRentPicker && selectedTenant && (
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Year</label>
-              <select className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white cursor-pointer" value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                {years.map(y => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-          )}
+          {/* Removed duplicate year picker since needsMonth now handles it */}
         </div>
 
         {/* Payment picker — rents + bills, multi-select */}
         {needsRentPicker && selectedTenant && (
-          <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Select Payments</label>
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider transition-colors">Select Payments</label>
               {paidItems.length > 0 && (
                 <button
                   onClick={() => {
@@ -509,14 +518,14 @@ export default function Reports() {
                       setSelectedItems(new Set(paidItems.map(d => `${d.item_type}-${d.id}`)))
                     }
                   }}
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-800 cursor-pointer bg-transparent border-none"
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer bg-transparent border-none transition-colors"
                 >
                   {selectedItems.size === paidItems.length ? 'Deselect All' : 'Select All'}
                 </button>
               )}
             </div>
             {paidItems.length === 0 ? (
-              <p className="text-sm text-slate-400">No paid items found for this tenant in {year}</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">No paid items found for this tenant in {year}</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {paidItems.map(d => {
@@ -538,12 +547,12 @@ export default function Reports() {
                       }}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all cursor-pointer flex items-center gap-2 ${
                         isSelected
-                          ? 'border-slate-700 bg-slate-800 text-white'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                          ? 'border-slate-700 dark:border-slate-400 bg-slate-800 dark:bg-slate-300 text-white dark:text-slate-900'
+                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                       }`}
                     >
-                      <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[10px] ${
-                        isSelected ? 'bg-white text-slate-800 border-white' : 'border-slate-300'
+                      <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[10px] transition-colors ${
+                        isSelected ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-white dark:border-slate-400' : 'border-slate-300 dark:border-slate-600'
                       }`}>
                         {isSelected ? '✓' : ''}
                       </span>
@@ -554,7 +563,7 @@ export default function Reports() {
               </div>
             )}
             {selectedItems.size > 0 && (
-              <p className="mt-2 text-xs text-slate-500 font-medium">
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium transition-colors">
                 {selectedItems.size} item{selectedItems.size > 1 ? 's' : ''} selected · Total: {formatCurrency(
                   paidItems.filter(d => selectedItems.has(`${d.item_type}-${d.id}`)).reduce((s, d) => s + Number(d.amount), 0)
                 )}
@@ -564,11 +573,11 @@ export default function Reports() {
         )}
 
         {/* Generate button */}
-        <div className="mt-4 pt-4 border-t border-slate-100">
+        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 transition-colors">
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 cursor-pointer border-none shadow-sm"
+            className="bg-slate-800 dark:bg-slate-300 hover:bg-slate-900 dark:hover:bg-white text-white dark:text-slate-900 px-6 py-2 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 cursor-pointer border-none shadow-sm"
           >
             {generating ? 'Generating...' : 'Generate Report'}
           </button>
@@ -577,17 +586,21 @@ export default function Reports() {
 
       {/* Description cards — clickable to switch report type */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button onClick={() => setReportType('rent_receipt')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'rent_receipt' ? 'border-slate-400 bg-slate-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
-          <h3 className="text-sm font-bold text-slate-800 mb-1">Rent Receipt</h3>
-          <p className="text-xs text-slate-500 leading-relaxed">Formal receipt for a specific paid rent. Pick the tenant & payment to generate.</p>
+        <button onClick={() => setReportType('rent_receipt')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'rent_receipt' ? 'border-slate-400 dark:border-slate-500 bg-slate-50 dark:bg-slate-800/80 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1 transition-colors">Rent Receipt</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed transition-colors">Formal receipt for a specific paid rent. Pick the tenant & payment to generate.</p>
         </button>
-        <button onClick={() => setReportType('monthly_collection')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'monthly_collection' ? 'border-slate-400 bg-slate-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
-          <h3 className="text-sm font-bold text-slate-800 mb-1">Monthly Collection</h3>
-          <p className="text-xs text-slate-500 leading-relaxed">Summary of all rent and bill collections for a given month, grouped by property.</p>
+        <button onClick={() => setReportType('monthly_collection')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'monthly_collection' ? 'border-slate-400 dark:border-slate-500 bg-slate-50 dark:bg-slate-800/80 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1 transition-colors">Monthly Collection</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed transition-colors">Summary of all rent and bill collections for a given month, grouped by property.</p>
         </button>
-        <button onClick={() => setReportType('tenant_statement')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'tenant_statement' ? 'border-slate-400 bg-slate-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
-          <h3 className="text-sm font-bold text-slate-800 mb-1">Tenant Statement</h3>
-          <p className="text-xs text-slate-500 leading-relaxed">Complete payment history for a specific tenant. Useful for move-out settlements.</p>
+        <button onClick={() => setReportType('yearly_collection')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'yearly_collection' ? 'border-slate-400 dark:border-slate-500 bg-slate-50 dark:bg-slate-800/80 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1 transition-colors">Yearly Collection</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed transition-colors">Summary of all collections for a full year. Useful for tax and annual accounting.</p>
+        </button>
+        <button onClick={() => setReportType('tenant_statement')} className={`p-5 rounded-xl border transition-all cursor-pointer text-left ${reportType === 'tenant_statement' ? 'border-slate-400 dark:border-slate-500 bg-slate-50 dark:bg-slate-800/80 shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}>
+          <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1 transition-colors">Tenant Statement</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed transition-colors">Complete payment history for a specific tenant. Useful for move-out settlements.</p>
         </button>
       </div>
 

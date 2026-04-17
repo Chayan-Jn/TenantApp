@@ -54,20 +54,21 @@ export default function Settings() {
   return (
     <div className="max-w-xl mx-auto flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your account</p>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors">Settings</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">Manage your account</p>
       </div>
 
       {/* Profile */}
-      <Card>
-        <h2 className="text-base font-semibold text-gray-900 mb-4">Profile</h2>
-        <div className="text-sm text-gray-500 mb-4">
-          Username: <span className="font-medium text-gray-700">@{owner?.username}</span>
+      <Card className="border-gray-200 dark:border-slate-700 transition-colors">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Profile</h2>
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-4 transition-colors">
+          Username: <span className="font-medium text-gray-700 dark:text-gray-200">@{owner?.username}</span>
         </div>
         <form onSubmit={handleUpdateName} className="flex flex-col gap-4">
           <Input
             label="Name"
             name="name"
+            maxLength="50"
             value={nameForm.name}
             onChange={handleNameChange}
             required
@@ -81,8 +82,8 @@ export default function Settings() {
       </Card>
 
       {/* Password */}
-      <Card>
-        <h2 className="text-base font-semibold text-gray-900 mb-4">Change Password</h2>
+      <Card className="border-gray-200 dark:border-slate-700 transition-colors">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Change Password</h2>
         <form onSubmit={handleUpdatePassword} className="flex flex-col gap-4">
           <Input
             label="Current Password"

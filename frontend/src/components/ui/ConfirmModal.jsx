@@ -1,62 +1,51 @@
-import React from 'react';
-import { FiAlertTriangle, FiX } from 'react-icons/fi';
-import Button from './Button.jsx';
-
 export default function ConfirmModal({ 
-  isOpen, 
+  open, 
   onClose, 
   onConfirm, 
   title = "Are you sure?", 
   message = "This action cannot be undone.", 
   confirmText = "Delete", 
   cancelText = "Cancel",
-  variant = "danger", // 'danger' or 'warning'
-  isLoading = false
+  variant = "danger",
+  loading = false
 }) {
-  if (!isOpen) return null;
+  if (!open) return null
+
+  const getButtonClass = () => {
+    switch (variant) {
+      case 'danger': return 'bg-red-600 hover:bg-red-700 text-white disabled:opacity-50'
+      case 'warning': return 'bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50'
+      case 'success': return 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
+      default: return 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
+    }
+  }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div className={`p-3 rounded-full ${variant === 'danger' ? 'bg-red-50 text-red-500' : 'bg-amber-50 text-amber-500'}`}>
-              <FiAlertTriangle size={24} />
-            </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors">
-              <FiX size={20} />
-            </button>
-          </div>
-
-          <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
-          <p className="text-sm text-gray-500 leading-relaxed mb-8">
-            {message}
-          </p>
-
-          <div className="flex gap-3">
-            <Button 
-              variant="ghost" 
-              className="flex-1 font-bold" 
-              onClick={onClose}
-              disabled={isLoading}
-            >
-              {cancelText}
-            </Button>
-            <Button 
-              variant={variant === 'danger' ? 'danger' : 'primary'} 
-              className="flex-1 font-bold"
-              onClick={onConfirm}
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              {confirmText}
-            </Button>
-          </div>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-sm p-6 transition-colors">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 transition-colors">{title}</h2>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mb-6 transition-colors">{message}</p>
+        
+        <div className="flex justify-end gap-3">
+          <button 
+            type="button" 
+            onClick={onClose} 
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            {cancelText}
+          </button>
+          <button 
+            type="button" 
+            onClick={onConfirm} 
+            disabled={loading}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${getButtonClass()}`}
+          >
+            {loading ? 'Processing...' : confirmText}
+          </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

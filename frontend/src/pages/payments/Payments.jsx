@@ -103,10 +103,14 @@ export default function Payments() {
   const generateMutation = useMutation({
     mutationFn: (payload) => generateMonthlyRent(payload),
     onSuccess: (res) => {
+      setConfirmGenerateOpen(false)
       setAlertInfo({ open: true, message: `Generated: ${res.data.generated} records, Skipped: ${res.data.skipped} already existing` })
       queryClient.invalidateQueries({ queryKey: ledgerQueryKey })
     },
-    onError: (err) => setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
+    onError: (err) => {
+      setConfirmGenerateOpen(false)
+      setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
+    }
   })
 
   const handleGenerate = () => {
@@ -164,16 +168,16 @@ export default function Payments() {
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-8 pb-16 relative">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Payments & Ledger</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage monthly rent and utility collections</p>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white transition-colors">Payments & Ledger</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors">Manage monthly rent and utility collections</p>
       </div>
 
-      <Card className="p-5! border-slate-200 shadow-sm">
+      <Card className="p-5! border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Month</label>
+            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Month</label>
             <select
-              className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white min-w-35 cursor-pointer"
+              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 min-w-35 cursor-pointer transition-colors"
               value={month}
               onChange={(e) => setMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}
             >
@@ -182,9 +186,9 @@ export default function Payments() {
             </select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Year</label>
+            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Year</label>
             <select
-              className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white cursor-pointer"
+              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 cursor-pointer transition-colors"
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
             >
@@ -192,9 +196,9 @@ export default function Payments() {
             </select>
           </div>
           <div className="flex flex-col gap-1.5 flex-1 min-w-50">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Property</label>
+            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Property</label>
             <select
-              className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white w-full cursor-pointer"
+              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 w-full cursor-pointer transition-colors"
               value={propertyId}
               onChange={(e) => setPropertyId(e.target.value)}
             >
@@ -208,7 +212,7 @@ export default function Payments() {
               onClick={handleGenerate}
               loading={generateMutation.isPending}
               disabled={month === 'all' || generateMutation.isPending}
-              className={`flex-1 sm:flex-none border-slate-300 ${month === 'all' ? 'text-slate-400 bg-slate-50 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-50 cursor-pointer'}`}
+              className={`flex-1 sm:flex-none border-slate-300 dark:border-slate-600 ${month === 'all' ? 'text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 cursor-not-allowed' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer'} transition-colors`}
             >
               {month === 'all' ? 'Select Month to Generate' : 'Generate Rent'}
             </Button>
@@ -218,7 +222,7 @@ export default function Payments() {
 
       {isFetching && (
         <div className="flex justify-center py-4">
-          <div className="animate-pulse flex items-center gap-2 text-slate-600 font-medium">
+          <div className="animate-pulse flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium">
              Fetching ledger...
           </div>
         </div>
@@ -227,23 +231,23 @@ export default function Payments() {
       {data && (
         <div className={`flex flex-col gap-12 transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-emerald-700/70 mb-1">Total Collected</p>
-              <p className="text-2xl font-black text-emerald-700">{formatCurrency(data.collected)}</p>
+            <div className="bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-xl p-5 shadow-sm transition-colors">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-700/70 dark:text-emerald-400/70 mb-1">Total Collected</p>
+              <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400">{formatCurrency(data.collected)}</p>
             </div>
-            <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-amber-700/70 mb-1">Total Pending</p>
-              <p className="text-2xl font-black text-amber-700">{formatCurrency(data.pending)}</p>
+            <div className="bg-amber-50/50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 rounded-xl p-5 shadow-sm transition-colors">
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-700/70 dark:text-amber-400/70 mb-1">Total Pending</p>
+              <p className="text-2xl font-black text-amber-700 dark:text-amber-400">{formatCurrency(data.pending)}</p>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Total Billed</p>
-              <p className="text-2xl font-black text-slate-700">{formatCurrency(data.collected + data.pending)}</p>
+            <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-sm transition-colors">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1">Total Billed</p>
+              <p className="text-2xl font-black text-slate-700 dark:text-slate-200">{formatCurrency(data.collected + data.pending)}</p>
             </div>
           </div>
 
           {sortedMonths.length === 0 ? (
-            <Card className="py-12 border-slate-200 shadow-sm">
-              <p className="text-sm text-slate-500 text-center">No tenants or dues found for this period.</p>
+            <Card className="py-12 border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+              <p className="text-sm text-slate-500 dark:text-slate-400 text-center">No tenants or dues found for this period.</p>
             </Card>
           ) : (
             sortedMonths.map(mInt => {
@@ -252,8 +256,8 @@ export default function Payments() {
 
               return (
                 <div key={mInt} className="flex flex-col gap-6">
-                  <div className="border-b-2 border-slate-800 pb-2 flex justify-between items-end">
-                    <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+                  <div className="border-b-2 border-slate-800 dark:border-slate-200 pb-2 flex justify-between items-end transition-colors">
+                    <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">
                       {MONTHS[mInt - 1]} {year}
                     </h2>
                   </div>
@@ -265,18 +269,18 @@ export default function Payments() {
 
                     return (
                       <div key={`${mInt}-${propertyName}`} className="flex flex-col gap-4 ml-2">
-                        <h3 className="text-lg font-bold text-slate-600 border-b border-slate-200 pb-1 mt-2">
+                        <h3 className="text-lg font-bold text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 pb-1 mt-2 transition-colors">
                           {propertyName}
                         </h3>
 
                         <div className="flex flex-col gap-5">
                           {tenants.map((tenant) => (
-                            <Card key={tenant.tenant_id} className="p-0! overflow-hidden border-slate-200 shadow-sm">
+                            <Card key={tenant.tenant_id} className="p-0! overflow-hidden border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
                               
-                              <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                              <div className="bg-slate-50 dark:bg-slate-800/40 px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center transition-colors">
                                 <div>
-                                  <h4 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                                    Unit {tenant.unit_label} <span className="text-slate-400 font-normal mx-1">|</span> {tenant.tenant_name}
+                                  <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 transition-colors">
+                                    Unit {tenant.unit_label} <span className="text-slate-400 dark:text-slate-500 font-normal mx-1">|</span> {tenant.tenant_name}
                                     {tenant.is_moved_out && (
                                       <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">
                                         <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
@@ -297,23 +301,23 @@ export default function Payments() {
                                   )}
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Pending (This Month)</p>
-                                  <p className={`text-lg font-black ${tenant.total_pending > 0 ? 'text-slate-700' : 'text-slate-400'}`}>
+                                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5 transition-colors">Pending (This Month)</p>
+                                  <p className={`text-lg font-black transition-colors ${tenant.total_pending > 0 ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-600'}`}>
                                     {formatCurrency(tenant.total_pending)}
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="divide-y divide-slate-100">
+                              <div className="divide-y divide-slate-100 dark:divide-slate-700 transition-colors">
                                 {tenant.dues.length === 0 ? (
-                                  <div className="px-5 py-4 text-center text-sm text-slate-400">No dues generated for this month.</div>
+                                  <div className="px-5 py-4 text-center text-sm text-slate-400 dark:text-slate-500">No dues generated for this month.</div>
                                 ) : (
                                   tenant.dues.map((due) => (
-                                    <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex justify-between items-center transition-colors ${due.is_shared_reference ? 'bg-slate-50/30' : 'hover:bg-slate-50/50'}`}>
+                                    <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex justify-between items-center transition-colors ${due.is_shared_reference ? 'bg-slate-50/30 dark:bg-slate-900/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30'}`}>
                                       
                                       <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
-                                          <span className={`text-sm font-semibold ${due.is_shared_reference ? 'text-slate-500' : 'text-slate-700'}`}>
+                                          <span className={`text-sm font-semibold transition-colors ${due.is_shared_reference ? 'text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-200'}`}>
                                             {due.title === 'Initial Payment' ? 'Rent' : due.title === 'Security Deposit' ? 'Deposit' : due.title}
                                           </span>
                                           {due.title === 'Initial Payment' && (
@@ -328,12 +332,12 @@ export default function Payments() {
                                           )}
                                         </div>
                                         {due.due_date && (
-                                          <span className="text-xs text-slate-400 font-medium">Due: {formatDate(due.due_date)}</span>
+                                          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium transition-colors">Due: {formatDate(due.due_date)}</span>
                                         )}
                                       </div>
 
                                       <div className="flex items-center gap-4">
-                                        <span className={`text-sm font-bold w-20 text-right ${due.is_shared_reference ? 'text-slate-400' : 'text-slate-700'}`}>
+                                        <span className={`text-sm font-bold w-20 text-right transition-colors ${due.is_shared_reference ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                                           {formatCurrency(due.amount)}
                                         </span>
                                         
@@ -344,8 +348,8 @@ export default function Payments() {
                                         {/* UPDATE: Hide button for shared reference, show text instead */}
                                         <div className="w-28 flex justify-end">
                                           {due.is_shared_reference ? (
-                                            <span className="text-[11px] text-slate-400 italic text-right leading-tight">
-                                              Shared with<br/><span className="font-medium text-slate-500">{due.shared_with}</span>
+                                            <span className="text-[11px] text-slate-400 dark:text-slate-500 italic text-right leading-tight transition-colors">
+                                              Shared with<br/><span className="font-medium text-slate-500 dark:text-slate-400">{due.shared_with}</span>
                                             </span>
                                           ) : (
                                             <Button 
@@ -355,8 +359,8 @@ export default function Payments() {
                                               disabled={actionMutation.isPending}
                                               className={
                                                 due.status === 'paid' 
-                                                  ? 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 cursor-pointer disabled:opacity-50' 
-                                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50'
+                                                  ? 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors' 
+                                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50 transition-colors'
                                               }
                                               onClick={() => actionMutation.mutate(due)}
                                             >
@@ -457,6 +461,7 @@ export default function Payments() {
         message={propertyId === 'all' ? `Generate rent for ALL active tenants across ALL properties for ${MONTHS[month - 1]} ${year}?` : `Generate rent for this specific property for ${MONTHS[month - 1]} ${year}?`}
         confirmText="Generate"
         variant="primary"
+        loading={generateMutation.isPending}
       />
       <AlertModal open={alertInfo.open} onClose={() => setAlertInfo({ open: false, message: '' })} message={alertInfo.message} />
     </div>

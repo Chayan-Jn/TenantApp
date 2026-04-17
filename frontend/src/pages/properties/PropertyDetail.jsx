@@ -5,6 +5,9 @@ import { deleteProperty, updateProperty } from '../../api/property.api.js'
 import { FiEdit2, FiTrash2, FiCamera } from 'react-icons/fi'
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx'
 import PhotoManagerModal from '../../components/photos/PhotoManagerModal.jsx'
+import Modal from '../../components/ui/Modal.jsx'
+import Button from '../../components/ui/Button.jsx'
+import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 
 export default function PropertyDetail() {
   const { units: initialUnits, property_id, property } = useLoaderData()
@@ -209,129 +212,91 @@ export default function PropertyDetail() {
         </div>
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Add New Unit</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
-            </div>
-            <form onSubmit={handleCreateUnit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Unit Label</label>
-                <input type="text" required value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="e.g. 101, Apt B, Shop 4" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rent Amount</label>
-                <input type="number" required min="0" value={form.rent} onChange={(e) => setForm({ ...form, rent: e.target.value })} placeholder="e.g. 15000" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" disabled={creating} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">{creating ? 'Saving...' : 'Save Unit'}</button>
-              </div>
-            </form>
+      {/* --- ADD UNIT MODAL --- */}
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Unit" maxWidth="max-w-sm">
+        <form onSubmit={handleCreateUnit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Unit Label</label>
+            <input type="text" required value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="e.g. 101, Apt B, Shop 4" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
           </div>
-        </div>
-      )}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Rent Amount</label>
+            <input type="number" required min="0" value={form.rent} onChange={(e) => setForm({ ...form, rent: e.target.value })} placeholder="e.g. 15000" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+          </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="font-bold">Cancel</Button>
+            <Button type="submit" loading={creating} className="font-bold">Save Unit</Button>
+          </div>
+        </form>
+      </Modal>
 
-      {editModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Edit Unit</h2>
-              <button onClick={() => setEditModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
-            </div>
-            <form onSubmit={handleUpdateUnit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Unit Label</label>
-                <input type="text" required value={editForm.label} onChange={(e) => setEditForm({ ...editForm, label: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rent Amount</label>
-                <input type="number" required min="0" value={editForm.rent} onChange={(e) => setEditForm({ ...editForm, rent: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setEditModal(false)} className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" disabled={updating} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">{updating ? 'Saving...' : 'Save Changes'}</button>
-              </div>
-            </form>
+      {/* --- EDIT UNIT MODAL --- */}
+      <Modal open={editModal} onClose={() => setEditModal(false)} title="Edit Unit" maxWidth="max-w-sm">
+        <form onSubmit={handleUpdateUnit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Unit Label</label>
+            <input type="text" required value={editForm.label} onChange={(e) => setEditForm({ ...editForm, label: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
           </div>
-        </div>
-      )}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Rent Amount</label>
+            <input type="number" required min="0" value={editForm.rent} onChange={(e) => setEditForm({ ...editForm, rent: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+          </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button type="button" variant="ghost" onClick={() => setEditModal(false)} className="font-bold">Cancel</Button>
+            <Button type="submit" loading={updating} className="font-bold">Save Changes</Button>
+          </div>
+        </form>
+      </Modal>
 
-      {editPropertyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Edit Property</h2>
-              <button onClick={() => setEditPropertyModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
-            </div>
-            <form onSubmit={handleUpdateProperty} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Property Name</label>
-                <input type="text" required value={editPropertyForm.name} onChange={(e) => setEditPropertyForm({ ...editPropertyForm, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
-                <select required value={editPropertyForm.type} onChange={(e) => setEditPropertyForm({ ...editPropertyForm, type: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
-                  <option value="flat">Flat / Apartment</option>
-                  <option value="pg">PG / Co-living</option>
-                  <option value="commercial">Commercial Space</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <textarea required value={editPropertyForm.address} onChange={(e) => setEditPropertyForm({ ...editPropertyForm, address: e.target.value })} rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none" />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setEditPropertyModal(false)} className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" disabled={updatingProperty} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">{updatingProperty ? 'Saving...' : 'Save Changes'}</button>
-              </div>
-            </form>
+      {/* --- EDIT PROPERTY MODAL --- */}
+      <Modal open={editPropertyModal} onClose={() => setEditPropertyModal(false)} title="Edit Property">
+        <form onSubmit={handleUpdateProperty} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Property Name</label>
+            <input type="text" required value={editPropertyForm.name} onChange={(e) => setEditPropertyForm({ ...editPropertyForm, name: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
           </div>
-        </div>
-      )}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Property Type</label>
+            <select required value={editPropertyForm.type} onChange={(e) => setEditPropertyForm({ ...editPropertyForm, type: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
+              <option value="flat">Flat / Apartment</option>
+              <option value="pg">PG / Co-living</option>
+              <option value="commercial">Commercial Space</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+            <textarea required value={editPropertyForm.address} onChange={(e) => setEditPropertyForm({ ...editPropertyForm, address: e.target.value })} rows="3" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none" />
+          </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button type="button" variant="ghost" onClick={() => setEditPropertyModal(false)} className="font-bold">Cancel</Button>
+            <Button type="submit" loading={updatingProperty} className="font-bold">Save Changes</Button>
+          </div>
+        </form>
+      </Modal>
 
-      {errorMsg && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
-            <p className="text-gray-600 mb-6">{errorMsg}</p>
-            <div className="flex justify-end">
-              <button onClick={() => setErrorMsg('')} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors">Close</button>
-            </div>
-          </div>
+      {/* --- ERROR MODAL --- */}
+      <Modal open={!!errorMsg} onClose={() => setErrorMsg('')} title="Error" maxWidth="max-w-sm">
+        <p className="text-slate-600 mb-6">{errorMsg}</p>
+        <div className="flex justify-end">
+          <Button onClick={() => setErrorMsg('')} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border-none shadow-none">Close</Button>
         </div>
-      )}
+      </Modal>
 
-      {confirmDialog.isOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">{confirmDialog.title}</h2>
-            <p className="text-gray-600 mb-6">{confirmDialog.message}</p>
-            <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
-                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={() => {
-                  confirmDialog.onConfirm()
-                  setConfirmDialog({ ...confirmDialog, isOpen: false })
-                }} 
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal 
+        open={confirmDialog.isOpen} 
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
+        onConfirm={() => {
+          confirmDialog.onConfirm()
+          setConfirmDialog({ ...confirmDialog, isOpen: false })
+        }} 
+        title={confirmDialog.title} 
+        message={confirmDialog.message}
+        confirmText="Confirm"
+        variant="danger"
+      />
 
       <PhotoManagerModal 
-        isOpen={photoModal.isOpen}
+        open={photoModal.isOpen}
         onClose={() => setPhotoModal({ ...photoModal, isOpen: false })}
         unitId={photoModal.unitId}
         unitName={photoModal.unitName}

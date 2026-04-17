@@ -73,3 +73,24 @@ export const generateMonthlyRent = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
+
+export const updateRentRecord = async (req, res) => {
+  try {
+    const rent = await rentService.updateRentRecord(req.params.id, req.body, req.owner.id)
+    if (!rent) {
+      return res.status(400).json({ success: false, message: 'No fields to update' })
+    }
+    res.status(200).json({ success: true, data: rent })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}
+
+export const deleteRentRecord = async (req, res) => {
+  try {
+    const rent = await rentService.deleteRentRecord(req.params.id, req.owner.id)
+    res.status(200).json({ success: true, data: rent })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}

@@ -207,3 +207,67 @@ export const generateMonthlyRent = async ({ property_id, month, year, owner_id }
     throw err
   }
 }
+
+export const updateRentRecord = async (id, { amount, due_date }, owner_id) => {
+  try {
+    const fields = []
+    const values = []
+    let queryIndex = 1
+
+    if (amount !== undefined) {
+      fields.push(`amount = $${queryIndex++}`)
+      values.push(amount)
+    }
+    if (due_date !== undefined) {
+      fields.push(`due_date = $${queryIndex++}`)
+      values.push(due_date)
+    }
+
+    if (fields.length === 0) return null
+
+    values.push(id)
+    const idIndex = queryIndex++
+    values.push(owner_id)
+    const ownerIndex = queryIndex
+
+    const query = `
+      UPDATE rent_payments 
+      SET ${fields.join(', ')}
+      WHERE id = $${idIndex} 
+      AND tenant_id IN (
+        SELECT t.id FROM tenants t
+        JOIN units u ON t.unit_id = u.id
+        JOIN properties p ON u.property_id = p.id
+        WHERE p.owner_id = $${ownerIndex}
+      )
+      RETURNING *
+    `
+
+    const result = await pool.query(query, values)
+    if (!result.rows.length) throw new Error('Rent record not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
+
+export const deleteRentRecord = async (id, owner_id) => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM rent_payments 
+       WHERE id = $1
+       AND tenant_id IN (
+         SELECT t.id FROM tenants t
+         JOIN units u ON t.unit_id = u.id
+         JOIN properties p ON u.property_id = p.id
+         WHERE p.owner_id = $2
+       )
+       RETURNING *`,
+      [id, owner_id]
+    )
+    if (!result.rows.length) throw new Error('Rent record not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}

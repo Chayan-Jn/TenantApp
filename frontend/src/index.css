@@ -1,10 +1,55 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @layer base {
-  input {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* Light mode: force white bg + dark text on form elements */
+  input,
+  select,
+  textarea {
     background-color: #ffffff !important;
     color: #111827 !important;
     -webkit-text-fill-color: #111827 !important;
   }
-}
 
+  /* Dark mode: flip form element colors */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+    border-color: #334155 !important;
+  }
+  /* System colors & utility overrides */
+  .text-crimson {
+    color: #991b1b !important; /* Professional High-Contrast Crimson */
+  }
+  
+  .bg-crimson {
+    background-color: #991b1b !important;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .dark .glass-card {
+    background: rgba(30, 41, 59, 0.6);
+  }
+
+  /* Improved contrast for text on white backgrounds */
+  .text-slate-900 {
+    color: #0f172a !important;
+  }
+}

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const registerSchema = z.object({
-  name: z.string().min(2),
+  name: z.string().min(2).max(50),
   username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/, {
     message: 'Username can only contain letters, numbers and underscores'
   }),

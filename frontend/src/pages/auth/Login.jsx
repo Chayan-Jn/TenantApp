@@ -42,13 +42,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
-        <p className="text-gray-500 mb-6">Sign in to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950 px-4 transition-colors">
+      <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-8 transition-colors">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Welcome back</h1>
+        <p className="text-gray-500 dark:text-gray-400 mb-6 transition-colors">Sign in to your account</p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 text-sm rounded-lg transition-colors">
             {error}
           </div>
         )}
@@ -56,24 +56,24 @@ export default function Login() {
         {/* Traditional Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Username</label>
             <input
               id="username"
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Password</label>
             <input
               id="password"
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors"
               required
             />
           </div>
@@ -88,9 +88,9 @@ export default function Login() {
 
         {/* Divider */}
         <div className="relative flex items-center py-6">
-          <div className="grow border-t border-gray-200"></div>
-          <span className="shrink-0 mx-4 text-gray-400 text-sm">Or continue with</span>
-          <div className="grow border-t border-gray-200"></div>
+          <div className="grow border-t border-gray-200 dark:border-slate-700 transition-colors"></div>
+          <span className="shrink-0 mx-4 text-gray-400 dark:text-gray-500 text-sm transition-colors">Or continue with</span>
+          <div className="grow border-t border-gray-200 dark:border-slate-700 transition-colors"></div>
         </div>
 
         {/* Google Button */}
@@ -104,9 +104,9 @@ export default function Login() {
           />
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors">
           Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">Register</Link>
+          <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">Register</Link>
         </p>
       </div>
     </div>
