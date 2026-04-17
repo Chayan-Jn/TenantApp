@@ -1,5 +1,5 @@
 import * as authService from './auth.service.js'
-import {env} from '../../config/env.js'
+import { env } from '../../config/env.js'
 
 export const register = async (req, res) => {
   try {
@@ -16,11 +16,11 @@ export const login = async (req, res) => {
     const { token, owner } = await authService.loginOwner(req.body)
 
     res.cookie('token', token, {
-        httpOnly: true,
-        secure: env.NODE_ENV === 'production',
-        sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-      })
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    })
 
     res.status(200).json({ success: true, data: owner })
   } catch (err) {
@@ -43,8 +43,8 @@ export const logout = async (req, res) => {
 
   res.clearCookie('token', {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax'
+    secure: true,
+    sameSite: 'none'
   })
   res.status(200).json({ success: true, message: 'Logged out' })
 }
@@ -55,10 +55,10 @@ export const googleLogin = async (req, res) => {
     const { token, owner } = await authService.loginWithGoogle(req.body.token)
 
     res.cookie('token', token, {
-        httpOnly: true,
-        secure: env.NODE_ENV === 'production',
-        sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000
     })
 
     res.status(200).json({ success: true, data: owner })
