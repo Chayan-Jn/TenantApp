@@ -2,6 +2,7 @@ import { useNavigate, useRouteLoaderData } from 'react-router'
 import { logout } from '../../api/auth.api.js'
 import { MdOutlineLogout, MdDarkMode, MdLightMode } from 'react-icons/md'
 import { useTheme } from '../../context/ThemeContext.jsx'
+import Logo from '../ui/Logo.jsx'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -20,13 +21,8 @@ export default function Navbar() {
   return (
     <header className="h-18 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-8 sticky top-0 z-30 transition-colors duration-200">
 
-      <div className="flex items-center gap-1.5 select-none">
-        <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase transition-colors">
-          Management
-        </h1>
-        <span className="text-xl font-medium text-gray-400 dark:text-slate-500 tracking-tight uppercase transition-colors">
-          Portal
-        </span>
+      <div className="flex items-center select-none">
+        <Logo size="md" />
       </div>
 
       <div className="flex items-center gap-4">

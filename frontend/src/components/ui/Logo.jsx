@@ -1,0 +1,54 @@
+import React from 'react'
+
+export default function Logo({ size = 'md', className = '' }) {
+  const dimensions = {
+    sm: 'h-10',
+    md: 'h-16',
+    lg: 'h-28',
+    xl: 'h-48'
+  }
+
+  const dimValue = dimensions[size] || dimensions.md
+
+  return (
+    <div className={`relative flex items-center justify-center p-2 group ${className}`} style={{ perspective: '800px' }}>
+      {/* Saturn Ring 1 - Vibrant Blue */}
+      <div 
+        className="absolute inset-[-14px] border-[2px] border-blue-500/50 rounded-[100%] transition-all duration-700 group-hover:scale-110"
+        style={{ 
+          transform: 'rotateX(65deg) rotateY(15deg)',
+          animation: 'ring-spin 12s linear infinite'
+        }}
+      ></div>
+      
+      {/* Saturn Ring 2 - Vibrant Orange Accent */}
+      <div 
+        className="absolute inset-[-8px] border-[1.5px] border-orange-500/40 rounded-[100%]"
+        style={{ 
+          transform: 'rotateX(75deg) rotateY(-20deg)',
+          animation: 'ring-spin-reverse 18s linear infinite'
+        }}
+      ></div>
+
+      <style>{`
+        @keyframes ring-spin {
+          from { transform: rotateX(65deg) rotateY(15deg) rotateZ(0deg); }
+          to { transform: rotateX(65deg) rotateY(15deg) rotateZ(360deg); }
+        }
+        @keyframes ring-spin-reverse {
+          from { transform: rotateX(75deg) rotateY(-20deg) rotateZ(360deg); }
+          to { transform: rotateX(75deg) rotateY(-20deg) rotateZ(0deg); }
+        }
+      `}</style>
+
+      {/* Main Logo Container */}
+      <div className="relative z-10 bg-white dark:bg-white rounded-full border-2 border-gray-100 dark:border-white/20 flex items-center justify-center overflow-hidden shadow-md">
+        <img 
+          src="/logo.png" 
+          alt="MyTenant Logo" 
+          className={`${dimValue} object-contain transition-transform duration-500 group-hover:scale-105`}
+        />
+      </div>
+    </div>
+  )
+}
