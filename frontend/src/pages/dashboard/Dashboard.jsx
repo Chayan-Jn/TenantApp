@@ -190,7 +190,7 @@ export default function Dashboard() {
 
       {/* PROPERTIES OVERVIEW */}
       <div className="mt-6 w-full">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <h2 className="text-xl font-black text-slate-900 dark:text-white transition-colors uppercase tracking-tight">Portfolio Analysis</h2>
           <Link to="/properties" className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-black uppercase tracking-widest transition-all group">
             All Properties <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

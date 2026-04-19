@@ -66,7 +66,9 @@ const PRINT_STYLES = `
 
 function openPrintWindow(htmlContent, title) {
   const win = window.open('', '_blank', 'width=800,height=900')
-  win.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>${PRINT_STYLES}</style></head><body>
+  win.document.write(`<!DOCTYPE html><html><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title><style>${PRINT_STYLES}</style></head><body>
     <div class="doc">${htmlContent}</div>
     <div class="no-print" style="text-align:center;margin-top:32px;">
       <button onclick="window.print()" style="background:#262626;color:#fff;border:none;padding:10px 28px;border-radius:4px;font-weight:600;font-size:13px;cursor:pointer;">Print / Save as PDF</button>

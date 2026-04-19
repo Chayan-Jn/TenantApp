@@ -230,7 +230,7 @@ export default function Payments() {
 
       {data && (
         <div className={`flex flex-col gap-12 transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-xl p-5 shadow-sm transition-colors">
               <p className="text-xs font-bold uppercase tracking-widest text-emerald-700/70 dark:text-emerald-400/70 mb-1">Total Collected</p>
               <p className="text-2xl font-black text-emerald-700 dark:text-emerald-400">{formatCurrency(data.collected)}</p>
@@ -313,7 +313,7 @@ export default function Payments() {
                                   <div className="px-5 py-4 text-center text-sm text-slate-400 dark:text-slate-500">No dues generated for this month.</div>
                                 ) : (
                                   tenant.dues.map((due) => (
-                                    <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex justify-between items-center transition-colors ${due.is_shared_reference ? 'bg-slate-50/30 dark:bg-slate-900/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30'}`}>
+                                    <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 transition-colors ${due.is_shared_reference ? 'bg-slate-50/30 dark:bg-slate-900/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30'}`}>
 
                                       <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
@@ -336,17 +336,19 @@ export default function Payments() {
                                         )}
                                       </div>
 
-                                      <div className="flex items-center gap-4">
-                                        <span className={`text-sm font-bold w-20 text-right transition-colors ${due.is_shared_reference ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
-                                          {formatCurrency(due.amount)}
-                                        </span>
+                                      <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto mt-2 sm:mt-0 border-t sm:border-0 border-slate-100 dark:border-slate-700 pt-3 sm:pt-0">
+                                        <div className="flex items-center gap-3">
+                                          <span className={`text-sm font-bold w-20 sm:w-auto sm:min-w-[5rem] text-left xs:text-right transition-colors ${due.is_shared_reference ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
+                                            {formatCurrency(due.amount)}
+                                          </span>
 
-                                        <div className="w-20 flex justify-center">
-                                          <Badge variant={statusVariant[due.status] || 'yellow'}>{due.status}</Badge>
+                                          <div className="w-20 sm:w-auto flex justify-center xs:justify-start">
+                                            <Badge variant={statusVariant[due.status] || 'yellow'}>{due.status}</Badge>
+                                          </div>
                                         </div>
 
                                         {/* UPDATE: Hide button for shared reference, show text instead */}
-                                        <div className="w-28 flex justify-end">
+                                        <div className="w-full flex justify-end xs:w-auto">
                                           {due.is_shared_reference ? (
                                             <span className="text-[11px] text-slate-400 dark:text-slate-500 italic text-right leading-tight transition-colors">
                                               Shared with<br /><span className="font-medium text-slate-500 dark:text-slate-400">{due.shared_with}</span>
@@ -359,8 +361,8 @@ export default function Payments() {
                                               disabled={actionMutation.isPending}
                                               className={
                                                 due.status === 'paid'
-                                                  ? 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors'
-                                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50 transition-colors'
+                                                  ? 'w-full xs:w-auto text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors'
+                                                  : 'w-full xs:w-auto bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50 transition-colors'
                                               }
                                               onClick={() => actionMutation.mutate(due)}
                                             >

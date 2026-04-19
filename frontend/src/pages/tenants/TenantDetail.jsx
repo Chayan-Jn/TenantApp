@@ -182,7 +182,7 @@ export default function TenantDetail() {
       <Card>
         <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors">{tenant.name}</h1>
               <Badge variant={isActive ? 'green' : 'red'}>
                 {isActive ? 'active' : 'moved out'}
@@ -244,9 +244,9 @@ export default function TenantDetail() {
           {rents.map((rent) => {
             const status = getStatus(rent)
             return (
-              <Card key={rent.id} className="flex items-center justify-between py-4 border-gray-200 dark:border-slate-700 transition-colors">
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2 transition-colors">
+              <Card key={rent.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 py-4 border-gray-200 dark:border-slate-700 transition-colors">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white flex flex-wrap items-center gap-2 transition-colors">
                     {formatCurrency(rent.amount)}
                     {rent.title === 'Initial Payment' && (
                       <span className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded uppercase font-bold tracking-wider mt-px transition-colors">
@@ -267,7 +267,7 @@ export default function TenantDetail() {
                     {rent.paid_date && ` · Paid: ${formatDate(rent.paid_date)}`}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center justify-end gap-3 w-full sm:w-auto">
                   <Badge variant={statusVariant[status]}>{status}</Badge>
                   {status !== 'paid' ? (
                     <Button size="sm" onClick={() => handleMarkPaid(rent.id)}>
