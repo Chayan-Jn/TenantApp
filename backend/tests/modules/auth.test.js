@@ -14,6 +14,12 @@ vi.mock('../../src/config/db.js', () => {
     }
   }
 });
+vi.mock('../../src/config/env.js', () => ({
+  env: {
+    JWT_SECRET: 'test-secret',
+    GOOGLE_CLIENT_ID: 'test-google-client-id',
+  }
+}));
 
 vi.mock('google-auth-library', () => {
   return {
