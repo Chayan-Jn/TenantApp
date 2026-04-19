@@ -1,11 +1,11 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Properties from '../../src/pages/properties/Properties';
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router');
   return {
     ...actual,
     useLoaderData: vi.fn().mockReturnValue({
@@ -17,23 +17,30 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Since properties might make its own mock setup, or import from an api service
+// Mock the API module
 vi.mock('../../src/api/property.api', () => ({
-  getProperties: vi.fn(),
-  deleteProperty: vi.fn(),
+  getProperties: vi.fn(() => Promise.resolve({
+    data: [
+      { id: 1, name: 'Ocean View', type: 'flat', address: '123 Beach', total_units: 5, occupied_units: 3 },
+    ]
+  })),
+  createProperty: vi.fn(),
 }));
 
 describe('Properties Page', () => {
   it('renders properties list with expected numerical values', async () => {
     // Basic test to fulfill Phase 2 structure setup. 
-    // In actual runtime, useLoaderData would populate the UI grid.
     render(
       <MemoryRouter>
         <Properties />
       </MemoryRouter>
     );
 
-    // Assert that the page title renders
-    expect(screen.getByText('Properties')).toBeInTheDocument();
+    // Wait for the async fetch in useEffect to complete and render data
+    await waitFor(() => {
+      expect(screen.getByText('Ocean View')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('123 Beach')).toBeInTheDocument();
   });
 });

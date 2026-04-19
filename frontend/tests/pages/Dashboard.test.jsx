@@ -85,10 +85,11 @@ describe('Dashboard Page', () => {
     useLoaderData.mockReturnValueOnce(mockDashboardData);
     renderDashboard();
 
-    expect(screen.getByText(/This Month's Collections/)).toBeInTheDocument();
+    expect(screen.getByText(/Collection Performance/)).toBeInTheDocument();
     expect(screen.getByText('₹80,000')).toBeInTheDocument(); // Collected
     expect(screen.getByText('₹20,000')).toBeInTheDocument(); // Pending
-    expect(screen.getByText('80% Collected of ₹1,00,000')).toBeInTheDocument();
+    expect(screen.getByText(/80% Achieved/)).toBeInTheDocument();
+    expect(screen.getByText(/Target: ₹1,00,000/)).toBeInTheDocument();
   });
 
   it('renders property overviews correctly categorized', () => {
