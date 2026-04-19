@@ -6,7 +6,9 @@ import {
   FiKey,
   FiAlertCircle,
   FiArrowRight,
-  FiCreditCard
+  FiCreditCard,
+  FiCheckCircle,
+  FiCircle
 } from 'react-icons/fi'
 
 const TYPE_LABELS = { flat: 'Flats', pg: 'PGs', commercial: 'Commercial' }
@@ -72,6 +74,8 @@ export default function Dashboard() {
     return <div className="p-6 text-gray-500 dark:text-slate-400">Loading dashboard data...</div>
   }
 
+  const isOnboardingComplete = stats?.total_properties > 0 && stats?.total_units > 0 && stats?.occupied_units > 0;
+
   return (
     <div className="flex flex-col gap-8 pb-6 w-full">
       {/* HEADER */}
@@ -80,8 +84,49 @@ export default function Dashboard() {
         <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">Here is what's happening with your properties today.</p>
       </div>
 
+      {/* ONBOARDING WIZARD */}
+      {!isOnboardingComplete && (
+        <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden transition-all border border-slate-700">
+          <div className="relative z-10">
+            <h2 className="text-xl font-bold mb-2 tracking-tight">Welcome! Let's get your portfolio set up.</h2>
+            <p className="text-slate-300 text-sm mb-6 max-w-2xl font-medium leading-relaxed">
+              Complete these three quick steps to get everything running so you can start managing properties and collecting rent effortlessly.
+            </p>
+            
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Step 1 */}
+              <Link to="/properties" className={`flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-4 transition-all duration-300 ${stats?.total_properties > 0 ? 'opacity-50 border-emerald-500/50' : 'transform hover:-translate-y-1 shadow-lg border-slate-500'}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  {stats?.total_properties > 0 ? <FiCheckCircle className="text-emerald-400 w-5 h-5 flex-shrink-0" /> : <FiCircle className="text-slate-400 w-5 h-5 flex-shrink-0" />}
+                  <span className="font-bold tracking-wide">1. Add Property</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed pl-8">Create your first building, PG, or residential flat.</p>
+              </Link>
+
+              {/* Step 2 */}
+              <Link to="/properties" className={`flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-4 transition-all duration-300 ${stats?.total_units > 0 ? 'opacity-50 border-emerald-500/50' : stats?.total_properties === 0 ? 'opacity-30 cursor-not-allowed' : 'transform hover:-translate-y-1 shadow-lg border-slate-500'}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  {stats?.total_units > 0 ? <FiCheckCircle className="text-emerald-400 w-5 h-5 flex-shrink-0" /> : <FiCircle className="text-slate-400 w-5 h-5 flex-shrink-0" />}
+                  <span className="font-bold tracking-wide">2. Create Units</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed pl-8">Define the individual rooms or flats inside your property.</p>
+              </Link>
+
+              {/* Step 3 */}
+              <Link to="/properties" className={`flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-4 transition-all duration-300 ${stats?.occupied_units > 0 ? 'opacity-50 border-emerald-500/50' : stats?.total_units === 0 ? 'opacity-30 cursor-not-allowed' : 'transform hover:-translate-y-1 shadow-lg border-slate-500'}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  {stats?.occupied_units > 0 ? <FiCheckCircle className="text-emerald-400 w-5 h-5 flex-shrink-0" /> : <FiCircle className="text-slate-400 w-5 h-5 flex-shrink-0" />}
+                  <span className="font-bold tracking-wide">3. Add Tenants</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed pl-8">Move people in, add deposits, and start tracking rent.</p>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* TOP STATS GRID */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5">
         {statCards(stats).map((card) => {
           const Icon = card.icon
           return (
@@ -106,8 +151,8 @@ export default function Dashboard() {
       </div>
 
       {/* FINANCIAL SNAPSHOT */}
-      <div className="w-full bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col transition-all">
-        <div className="flex items-center justify-between mb-6">
+      <div className="w-full bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 md:p-6 flex flex-col transition-all">
+        <div className="flex flex-row items-start md:items-center justify-between mb-6 gap-4">
           <div>
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 transition-colors">
               <FiCreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -120,14 +165,14 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-2 gap-4 md:gap-6 mb-6">
           <div className="flex flex-col">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 transition-colors">Collected</p>
-            <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 transition-colors">{formatCurrency(financials.collected)}</p>
+            <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 transition-colors">Collected</p>
+            <p className="text-2xl md:text-3xl font-bold text-emerald-600 dark:text-emerald-400 transition-colors">{formatCurrency(financials.collected)}</p>
           </div>
-          <div className="md:text-right flex flex-col md:items-end">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 transition-colors">Pending</p>
-            <p className="text-2xl font-bold text-amber-500 dark:text-amber-400 transition-colors">{formatCurrency(financials.pending)}</p>
+          <div className="text-right flex flex-col items-end">
+            <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 transition-colors">Pending</p>
+            <p className="text-xl md:text-2xl font-bold text-amber-500 dark:text-amber-400 transition-colors">{formatCurrency(financials.pending)}</p>
           </div>
         </div>
 
@@ -168,7 +213,7 @@ export default function Dashboard() {
                   <div className="h-px bg-gray-200 dark:bg-slate-700 flex-1 transition-colors"></div>
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                   {list.map((p) => {
                     const totalUnits = Number(p.total_units) || 0
                     const occupiedUnits = Number(p.occupied_units) || 0
@@ -207,9 +252,9 @@ export default function Dashboard() {
                             {Array.from({ length: 10 }).map((_, i) => {
                               const isActive = (i * 10) < occupancyRate
                               return (
-                                <div 
-                                  key={i} 
-                                  className={`flex-1 rounded-sm transition-colors duration-300 ${isActive ? (ACTIVE_SEGMENT[type] || 'bg-slate-500') : 'bg-slate-100 dark:bg-slate-800'}`} 
+                                <div
+                                  key={i}
+                                  className={`flex-1 rounded-sm transition-colors duration-300 ${isActive ? (ACTIVE_SEGMENT[type] || 'bg-slate-500') : 'bg-slate-100 dark:bg-slate-800'}`}
                                 />
                               )
                             })}

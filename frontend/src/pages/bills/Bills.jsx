@@ -42,8 +42,8 @@ function BillSplitsList({ billId, splitStatusMutation }) {
           </div>
           <div className="flex items-center gap-3">
             <span className="font-semibold text-gray-900 dark:text-white transition-colors">{formatCurrency(s.amount)}</span>
-            <button 
-              onClick={() => splitStatusMutation.mutate({ id: s.id, status: s.status === 'paid' ? 'pending' : 'paid' })} 
+            <button
+              onClick={() => splitStatusMutation.mutate({ id: s.id, status: s.status === 'paid' ? 'pending' : 'paid' })}
               className={
                 s.status === 'paid'
                   ? 'text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded transition-colors cursor-pointer'
@@ -126,7 +126,7 @@ export default function Bills() {
       return getBills(params)
     },
     enabled: !!selectedProperty,
-    staleTime: 1000 * 60 * 5 
+    staleTime: 1000 * 60 * 5
   })
 
   const bills = billsData?.data || []
@@ -161,7 +161,7 @@ export default function Bills() {
 
   const handlePropertyChange = (propertyId) => {
     setSelectedProperty(propertyId)
-    setSelectedUnit('') 
+    setSelectedUnit('')
   }
 
   const proceedDeleteBill = async () => {
@@ -240,9 +240,9 @@ export default function Bills() {
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1 flex-1 min-w-40">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Property</label>
-            <select 
-              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors" 
-              value={selectedProperty} 
+            <select
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors"
+              value={selectedProperty}
               onChange={(e) => handlePropertyChange(e.target.value)}
             >
               <option value="">Select property</option>
@@ -253,9 +253,9 @@ export default function Bills() {
           {units.length > 0 && (
             <div className="flex flex-col gap-1 flex-1 min-w-40">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Unit (optional)</label>
-              <select 
-                className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors" 
-                value={selectedUnit} 
+              <select
+                className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors"
+                value={selectedUnit}
                 onChange={(e) => setSelectedUnit(e.target.value)}
               >
                 <option value="">All Units</option>
@@ -265,9 +265,9 @@ export default function Bills() {
           )}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Month</label>
-            <select 
-              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors" 
-              value={month} 
+            <select
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors"
+              value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
             >
               {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
@@ -275,9 +275,9 @@ export default function Bills() {
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Year</label>
-            <select 
-              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors" 
-              value={year} 
+            <select
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 cursor-pointer transition-colors"
+              value={year}
               onChange={(e) => setYear(Number(e.target.value))}
             >
               {years.map(y => <option key={y} value={y}>{y}</option>)}
@@ -317,7 +317,7 @@ export default function Bills() {
                       {unitBills.map((bill) => (
                         <div key={bill.id} className="border border-gray-100 dark:border-slate-700 rounded-lg p-4 hover:border-gray-300 dark:hover:border-slate-500 transition-colors bg-white dark:bg-slate-800/40">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            
+
                             {/* Bill Info & Names */}
                             <div className="flex flex-col gap-1.5">
                               <div className="flex items-center gap-2">
@@ -326,10 +326,10 @@ export default function Bills() {
                                 {bill.split_type !== 'unit' && <Badge variant="blue">{bill.split_type} split</Badge>}
                                 {bill.status === 'paid' && <Badge variant="green">Paid</Badge>}
                               </div>
-                              
+
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
-                                {bill.split_type === 'unit' 
-                                  ? (bill.tenant_name || 'All Unit Tenants') 
+                                {bill.split_type === 'unit'
+                                  ? (bill.tenant_name || 'All Unit Tenants')
                                   : <span className="text-gray-500 dark:text-gray-400 italic">Shared Bill</span>}
                               </span>
 
@@ -347,24 +347,24 @@ export default function Bills() {
                             {/* Actions & Amounts */}
                             <div className="flex items-center gap-3">
                               <span className="text-base font-bold text-gray-900 dark:text-white mr-2 transition-colors">{formatCurrency(bill.amount)}</span>
-                              
+
                               {bill.split_type === 'unit' && (
-                                <button 
-                                  onClick={() => billStatusMutation.mutate({ id: bill.id, status: bill.status === 'paid' ? 'pending' : 'paid' })} 
+                                <button
+                                  onClick={() => billStatusMutation.mutate({ id: bill.id, status: bill.status === 'paid' ? 'pending' : 'paid' })}
                                   className={
-                                    bill.status === 'paid' 
-                                      ? 'text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white dark:bg-slate-800' 
+                                    bill.status === 'paid'
+                                      ? 'text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white dark:bg-slate-800'
                                       : 'text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none px-3 py-1.5 rounded-md transition-colors cursor-pointer'
                                   }
                                 >
                                   {bill.status === 'paid' ? 'Undo' : 'Mark Paid'}
                                 </button>
                               )}
-                              
+
                               <button onClick={() => openEditBillModal(bill)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md transition-colors">
                                 <FiEdit2 size={16} />
                               </button>
-                              
+
                               <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-1.5 cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-md transition-colors">
                                 <FiTrash2 size={16} />
                               </button>
@@ -456,11 +456,11 @@ export default function Bills() {
         </form>
       </Modal>
 
-      <ConfirmModal 
-        open={!!confirmDeleteId} 
-        onClose={() => setConfirmDeleteId(null)} 
-        onConfirm={proceedDeleteBill} 
-        title="Delete Bill" 
+      <ConfirmModal
+        open={!!confirmDeleteId}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={proceedDeleteBill}
+        title="Delete Bill"
         message="Are you sure you want to delete this bill? This action cannot be undone."
         confirmText="Delete"
         variant="danger"

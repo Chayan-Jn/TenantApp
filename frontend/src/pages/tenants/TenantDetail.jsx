@@ -19,13 +19,13 @@ const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 const getStatus = (rent) => {
   if (rent.status === 'paid') return 'paid'
-  
+
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Ignore current time
-  
+
   const dueDate = new Date(rent.due_date);
   dueDate.setHours(0, 0, 0, 0); // Ignore time just to be safe
-  
+
   if (dueDate < today) return 'overdue'
   return 'pending'
 }
@@ -280,15 +280,15 @@ export default function TenantDetail() {
                   )}
                   {status !== 'paid' && (
                     <>
-                      <button 
-                        onClick={() => handleOpenEditRent(rent)} 
+                      <button
+                        onClick={() => handleOpenEditRent(rent)}
                         className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1 cursor-pointer transition-colors"
                         title="Edit Rent"
                       >
                         <FiEdit2 size={16} />
                       </button>
-                      <button 
-                        onClick={() => setDeleteRentId(rent.id)} 
+                      <button
+                        onClick={() => setDeleteRentId(rent.id)}
                         className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-1 cursor-pointer transition-colors"
                         title="Delete Rent"
                       >
@@ -336,26 +336,26 @@ export default function TenantDetail() {
         </p>
 
         <div className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-slate-700 rounded-lg p-4 mb-4 space-y-3 transition-colors">
-            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors">Security Deposit: {formatCurrency(tenant.security_deposit || 0)}</p>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Refund Amount (₹)</label>
-              <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Deduction Note (optional)</label>
-              <input type="text" placeholder="e.g. Wall damage, cleaning" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
-            </div>
-            {(tenant.security_deposit || 0) > 0 && Number(refundForm.deposit_refunded) < (tenant.security_deposit || 0) && (
-              <p className="text-xs text-amber-700 dark:text-amber-400 font-medium transition-colors">
-                Deducting {formatCurrency((tenant.security_deposit || 0) - Number(refundForm.deposit_refunded || 0))}
-              </p>
-            )}
-            {Number(refundForm.deposit_refunded) > (tenant.security_deposit || 0) && (
-              <p className="text-xs text-rose-600 dark:text-rose-400 font-medium transition-colors">
-                Refund cannot exceed the original deposit amount.
-              </p>
-            )}
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors">Security Deposit: {formatCurrency(tenant.security_deposit || 0)}</p>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Refund Amount (₹)</label>
+            <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Deduction Note (optional)</label>
+            <input type="text" placeholder="e.g. Wall damage, cleaning" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
+          </div>
+          {(tenant.security_deposit || 0) > 0 && Number(refundForm.deposit_refunded) < (tenant.security_deposit || 0) && (
+            <p className="text-xs text-amber-700 dark:text-amber-400 font-medium transition-colors">
+              Deducting {formatCurrency((tenant.security_deposit || 0) - Number(refundForm.deposit_refunded || 0))}
+            </p>
+          )}
+          {Number(refundForm.deposit_refunded) > (tenant.security_deposit || 0) && (
+            <p className="text-xs text-rose-600 dark:text-rose-400 font-medium transition-colors">
+              Refund cannot exceed the original deposit amount.
+            </p>
+          )}
+        </div>
 
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" onClick={() => setRemoveModal(false)}>Cancel</Button>
@@ -366,8 +366,8 @@ export default function TenantDetail() {
       {/* Edit Rent Modal */}
       <Modal open={editRentModal} onClose={() => setEditRentModal(false)} title="Edit Rent Record">
         <form onSubmit={handleEditRentSubmit} className="flex flex-col gap-4">
-          <Input label="Amount (₹)" name="amount" type="number" value={editRentForm.amount} onChange={(e) => setEditRentForm({...editRentForm, amount: e.target.value})} required />
-          <Input label="Due Date" name="due_date" type="date" value={editRentForm.due_date} onChange={(e) => setEditRentForm({...editRentForm, due_date: e.target.value})} required />
+          <Input label="Amount (₹)" name="amount" type="number" value={editRentForm.amount} onChange={(e) => setEditRentForm({ ...editRentForm, amount: e.target.value })} required />
+          <Input label="Due Date" name="due_date" type="date" value={editRentForm.due_date} onChange={(e) => setEditRentForm({ ...editRentForm, due_date: e.target.value })} required />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2 justify-end">
             <Button variant="ghost" type="button" onClick={() => setEditRentModal(false)}>Cancel</Button>

@@ -120,10 +120,10 @@ export default function UnitDetail() {
   const [editingBill, setEditingBill] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
-  
+
   // Photo Modal State
   const [photoModalOpen, setPhotoModalOpen] = useState(false)
-  
+
   // State for Split Data
   const [expandedBill, setExpandedBill] = useState(null)
   const [splits, setSplits] = useState([])
@@ -203,8 +203,8 @@ export default function UnitDetail() {
       })
       setTenants(tenants.filter(t => t.id !== removeModal.tenantId))
       setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })
-    } catch (err) { 
-      setErrorMsg(err.message || 'Error') 
+    } catch (err) {
+      setErrorMsg(err.message || 'Error')
     } finally {
       setDeletingTenant(false)
     }
@@ -239,9 +239,11 @@ export default function UnitDetail() {
   }
 
   const handleDeleteBill = (id) => {
-    setConfirmDialog({ isOpen: true, title: 'Delete Bill', message: 'Delete this bill?', onConfirm: async () => {
-      try { await deleteBill(id); setBills(bills.filter(b => b.id !== id)) } catch (err) { setErrorMsg(err.message) }
-    }})
+    setConfirmDialog({
+      isOpen: true, title: 'Delete Bill', message: 'Delete this bill?', onConfirm: async () => {
+        try { await deleteBill(id); setBills(bills.filter(b => b.id !== id)) } catch (err) { setErrorMsg(err.message) }
+      }
+    })
   }
 
   const handleExpandBill = async (billId) => {
@@ -277,19 +279,19 @@ export default function UnitDetail() {
       </div>
 
       {/* Unit Photos Section */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 flex items-center justify-between transition-colors">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center transition-colors">
-            <FiCamera size={24} />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center transition-colors shrink-0">
+            <FiCamera className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-gray-900 dark:text-white transition-colors">Unit Condition Photos</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors">Document the unit's state at move-in/move-out</p>
+            <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white transition-colors">Unit Condition Photos</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors mt-0.5">Document the unit's state at move-in/move-out</p>
           </div>
         </div>
-        <button 
-          onClick={() => setPhotoModalOpen(true)} 
-          className="text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-4 py-2 rounded-lg transition-all cursor-pointer border border-emerald-100 dark:border-emerald-800/50"
+        <button
+          onClick={() => setPhotoModalOpen(true)}
+          className="w-full sm:w-auto text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-4 py-2.5 rounded-lg transition-all cursor-pointer border border-emerald-100 dark:border-emerald-800/50 flex justify-center items-center"
         >
           Manage Photos
         </button>
@@ -331,9 +333,9 @@ export default function UnitDetail() {
           </p>
         ) : bills.map((bill) => (
           <div key={bill.id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5 transition-colors">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-gray-900 dark:text-white capitalize transition-colors">{bill.type}</span>
                   <Badge variant={TYPE_COLORS[bill.type]}>{bill.type}</Badge>
                   {bill.split_type !== 'unit' && <Badge variant="blue">{bill.split_type} split</Badge>}
@@ -341,26 +343,28 @@ export default function UnitDetail() {
                 </div>
                 <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors">{MONTHS[bill.month - 1]} {bill.year} {bill.note && `• ${bill.note}`}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-gray-900 dark:text-white mr-2 transition-colors">{formatCurrency(bill.amount)}</span>
-                
-                {/* Mark Paid Button (Unit Bills Only) */}
-                {bill.split_type === 'unit' && (
-                  <button onClick={() => handleToggleBillStatus(bill.id, bill.status)} 
-                    className={bill.status === 'paid' 
-                      ? "text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white dark:bg-slate-800" 
-                      : "text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md transition-colors cursor-pointer shadow-sm border-none"}>
-                    {bill.status === 'paid' ? 'Undo' : 'Mark Paid'}
-                  </button>
-                )}
+              <div className="flex flex-wrap items-center justify-between md:justify-end gap-3 border-t md:border-0 border-gray-100 dark:border-slate-700 pt-3 md:pt-0">
+                <span className="text-base font-bold text-gray-900 dark:text-white mr-0 md:mr-2 transition-colors">{formatCurrency(bill.amount)}</span>
 
-                {bill.split_type !== 'unit' && (
-                  <button onClick={() => handleExpandBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md cursor-pointer transition-colors">
-                    {expandedBill === bill.id ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
-                  </button>
-                )}
-                <button onClick={() => openEditBillModal(bill)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md cursor-pointer transition-colors"><FiEdit2 size={16} /></button>
-                <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-md cursor-pointer transition-colors"><FiTrash2 size={16} /></button>
+                <div className="flex items-center gap-2">
+                  {/* Mark Paid Button (Unit Bills Only) */}
+                  {bill.split_type === 'unit' && (
+                    <button onClick={() => handleToggleBillStatus(bill.id, bill.status)}
+                      className={bill.status === 'paid'
+                        ? "text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer bg-white dark:bg-slate-800"
+                        : "text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md transition-colors cursor-pointer shadow-sm border-none"}>
+                      {bill.status === 'paid' ? 'Undo' : 'Mark Paid'}
+                    </button>
+                  )}
+
+                  {bill.split_type !== 'unit' && (
+                    <button onClick={() => handleExpandBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md cursor-pointer transition-colors">
+                      {expandedBill === bill.id ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
+                    </button>
+                  )}
+                  <button onClick={() => openEditBillModal(bill)} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/40 rounded-md cursor-pointer transition-colors"><FiEdit2 size={16} /></button>
+                  <button onClick={() => handleDeleteBill(bill.id)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-md cursor-pointer transition-colors"><FiTrash2 size={16} /></button>
+                </div>
               </div>
             </div>
 
@@ -374,8 +378,8 @@ export default function UnitDetail() {
                     <div className="flex items-center gap-3">
                       <span className="font-semibold text-gray-900 dark:text-white transition-colors">{formatCurrency(s.amount)}</span>
                       <button onClick={() => handleToggleSplitStatus(bill.id, s.id, s.status)}
-                        className={s.status === 'paid' 
-                          ? "text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded transition-colors cursor-pointer" 
+                        className={s.status === 'paid'
+                          ? "text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-600 px-3 py-1.5 rounded transition-colors cursor-pointer"
                           : "text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded transition-colors cursor-pointer shadow-sm border-none"}>
                         {s.status === 'paid' ? 'Undo' : 'Mark Paid'}
                       </button>
@@ -432,14 +436,14 @@ export default function UnitDetail() {
         </div>
       )}
 
-      <ConfirmModal 
-        open={confirmDialog.isOpen} 
-        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
+      <ConfirmModal
+        open={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
         onConfirm={() => {
           confirmDialog.onConfirm()
           setConfirmDialog({ ...confirmDialog, isOpen: false })
-        }} 
-        title={confirmDialog.title} 
+        }}
+        title={confirmDialog.title}
         message={confirmDialog.message}
         confirmText="Confirm"
         variant="danger"
@@ -450,28 +454,28 @@ export default function UnitDetail() {
         <p className="text-sm text-gray-500 mb-4">Remove <strong>{removeModal.tenantName}</strong> from this unit?</p>
 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-            <p className="text-sm font-semibold text-gray-800 mb-3">Security Deposit: {formatCurrency(removeModal.depositAmount)}</p>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
-                <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Deduction Note (optional)</label>
-                <input type="text" maxLength="255" placeholder="e.g. Wall damage, cleaning charges" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-              </div>
-              {removeModal.depositAmount > 0 && Number(refundForm.deposit_refunded) < removeModal.depositAmount && (
-                <p className="text-xs text-amber-700 font-medium">
-                  Deducting {formatCurrency(removeModal.depositAmount - Number(refundForm.deposit_refunded || 0))} from deposit
-                </p>
-              )}
-              {Number(refundForm.deposit_refunded) > removeModal.depositAmount && (
-                <p className="text-xs text-red-600 font-medium">
-                  Refund cannot exceed the original deposit amount.
-                </p>
-              )}
+          <p className="text-sm font-semibold text-gray-800 mb-3">Security Deposit: {formatCurrency(removeModal.depositAmount)}</p>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
+              <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
             </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Deduction Note (optional)</label>
+              <input type="text" maxLength="255" placeholder="e.g. Wall damage, cleaning charges" value={refundForm.deposit_note} onChange={(e) => setRefundForm({ ...refundForm, deposit_note: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+            </div>
+            {removeModal.depositAmount > 0 && Number(refundForm.deposit_refunded) < removeModal.depositAmount && (
+              <p className="text-xs text-amber-700 font-medium">
+                Deducting {formatCurrency(removeModal.depositAmount - Number(refundForm.deposit_refunded || 0))} from deposit
+              </p>
+            )}
+            {Number(refundForm.deposit_refunded) > removeModal.depositAmount && (
+              <p className="text-xs text-red-600 font-medium">
+                Refund cannot exceed the original deposit amount.
+              </p>
+            )}
           </div>
+        </div>
 
         <div className="flex justify-end gap-3 mt-2">
           <Button variant="ghost" onClick={() => setRemoveModal({ open: false, tenantId: null, tenantName: '', depositAmount: 0 })}>Cancel</Button>
@@ -479,7 +483,7 @@ export default function UnitDetail() {
         </div>
       </Modal>
 
-      <PhotoManagerModal 
+      <PhotoManagerModal
         open={photoModalOpen}
         onClose={() => setPhotoModalOpen(false)}
         unitId={unit_id}

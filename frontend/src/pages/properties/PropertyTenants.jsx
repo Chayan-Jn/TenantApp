@@ -79,16 +79,16 @@ export default function PropertyTenants() {
         </p>
       </div>
 
-      <div className="flex gap-3 items-center">
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
         <input
           type="text"
           placeholder="Search by name or phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors"
+          className="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors w-full"
         />
         <select
-          className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors"
+          className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 cursor-pointer transition-colors w-full sm:w-auto"
           value={filter}
           onChange={(e) => handleFilterChange(e.target.value)}
         >
@@ -112,9 +112,9 @@ export default function PropertyTenants() {
                 {unitLabel} <span className="text-gray-400 dark:text-gray-500 font-normal normal-case ml-2 transition-colors">({unitTenants.length})</span>
               </h2>
               {unitTenants.map((tenant) => (
-                <Card key={tenant.id} className="flex items-center justify-between py-4 border-gray-200 dark:border-slate-700 transition-colors">
+                <Card key={tenant.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-4 px-4 sm:px-6 border-gray-200 dark:border-slate-700 gap-4 transition-colors">
                   <div className="flex flex-col gap-1">
-                    <Link to={`/tenants/${tenant.id}`} className="text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <Link to={`/tenants/${tenant.id}`} className="text-sm font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                       {tenant.name}
                     </Link>
                     <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors">Phone: {tenant.phone}</span>
@@ -125,18 +125,20 @@ export default function PropertyTenants() {
                       <span className="text-xs text-rose-500 dark:text-rose-400 font-medium transition-colors">Left: {formatDate(tenant.leave_date)}</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-0 border-gray-100 dark:border-slate-700 pt-3 sm:pt-0">
                     <Badge variant={tenant.leave_date ? 'red' : 'green'}>
                       {tenant.leave_date ? 'left' : 'active'}
                     </Badge>
-                    <Link to={`/tenants/${tenant.id}`}>
-                      <Button size="sm" variant="outline">View</Button>
-                    </Link>
-                    {!tenant.leave_date && (
-                      <Button size="sm" variant="danger" onClick={() => handleRemove(tenant.id)}>
-                        Remove
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Link to={`/tenants/${tenant.id}`}>
+                        <Button size="sm" variant="outline">View</Button>
+                      </Link>
+                      {!tenant.leave_date && (
+                        <Button size="sm" variant="danger" onClick={() => handleRemove(tenant.id)}>
+                          Remove
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </Card>
               ))}

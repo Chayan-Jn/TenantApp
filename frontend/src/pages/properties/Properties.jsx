@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import { getProperties, createProperty } from '../../api/property.api.js'
-import { 
-  MdAdd, 
-  MdOutlineLocationOn, 
-  MdDomain, 
-  MdHomeWork, 
-  MdStorefront, 
+import {
+  MdAdd,
+  MdOutlineLocationOn,
+  MdDomain,
+  MdHomeWork,
+  MdStorefront,
   MdPeopleAlt,
   MdOutlineDoorFront
 } from 'react-icons/md'
@@ -15,25 +15,25 @@ import Modal from '../../components/ui/Modal.jsx'
 import Button from '../../components/ui/Button.jsx'
 
 // Softened the colors significantly for a cleaner look
-const TYPE_CONFIG = { 
-  flat: { 
-    label: 'Flats & Apartments', 
+const TYPE_CONFIG = {
+  flat: {
+    label: 'Flats & Apartments',
     icon: MdHomeWork,
     accent: 'bg-blue-300',
     badge: 'bg-blue-50 text-blue-600 border-blue-100'
-  }, 
-  pg: { 
-    label: 'PGs & Co-living', 
+  },
+  pg: {
+    label: 'PGs & Co-living',
     icon: MdPeopleAlt,
     accent: 'bg-purple-300',
     badge: 'bg-purple-50 text-purple-600 border-purple-100'
-  }, 
-  commercial: { 
-    label: 'Commercial Spaces', 
+  },
+  commercial: {
+    label: 'Commercial Spaces',
     icon: MdStorefront,
     accent: 'bg-orange-300',
     badge: 'bg-orange-50 text-orange-600 border-orange-100'
-  } 
+  }
 }
 
 export default function Properties() {
@@ -83,7 +83,7 @@ export default function Properties() {
 
   return (
     <div className="flex flex-col gap-8 pb-10 w-full max-w-7xl mx-auto">
-      
+
       {/* --- HEADER CONTROL PANEL --- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm transition-colors">
         <div>
@@ -154,12 +154,12 @@ export default function Properties() {
                     >
                       {/* Thin, soft color accent line */}
                       <div className={`h-1 w-full ${config.accent}`}></div>
-                      
+
                       <div className="p-5 flex-1">
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight pr-2 transition-colors">{property.name}</h3>
                         </div>
-                        
+
                         <div className="flex items-start gap-1.5 text-sm font-medium text-gray-500 dark:text-slate-400 mt-2 transition-colors">
                           <MdOutlineLocationOn className="w-4 h-4 text-gray-400 dark:text-slate-500 shrink-0 mt-0.5" />
                           <span className="line-clamp-2 leading-snug">{property.address}</span>
@@ -191,9 +191,9 @@ export default function Properties() {
       )}
 
       {/* --- ADD PROPERTY MODAL --- */}
-      <Modal 
-        open={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         title="Add Property"
       >
         <form onSubmit={handleCreate} className="space-y-4">

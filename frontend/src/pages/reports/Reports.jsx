@@ -5,7 +5,7 @@ import AlertModal from '../../components/ui/AlertModal.jsx'
 import { api } from '../../api/client.js'
 import { getLedger } from '../../api/ledger.api.js'
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
@@ -215,7 +215,7 @@ function buildCollectionHTML(data, monthLabel, year, ownerName) {
     ${tables}
 
     <div class="doc-footer">
-      <span>MCR-${monthLabel.substring(0,3).toUpperCase()}-${year}</span>
+      <span>MCR-${monthLabel.substring(0, 3).toUpperCase()}-${year}</span>
       <span>Prepared by ${ownerName}</span>
     </div>`
 }
@@ -545,15 +545,13 @@ export default function Reports() {
                         isSelected ? next.delete(key) : next.add(key)
                         setSelectedItems(next)
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all cursor-pointer flex items-center gap-2 ${
-                        isSelected
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all cursor-pointer flex items-center gap-2 ${isSelected
                           ? 'border-slate-700 dark:border-slate-400 bg-slate-800 dark:bg-slate-300 text-white dark:text-slate-900'
                           : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                      }`}
+                        }`}
                     >
-                      <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[10px] transition-colors ${
-                        isSelected ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-white dark:border-slate-400' : 'border-slate-300 dark:border-slate-600'
-                      }`}>
+                      <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[10px] transition-colors ${isSelected ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-white dark:border-slate-400' : 'border-slate-300 dark:border-slate-600'
+                        }`}>
                         {isSelected ? '✓' : ''}
                       </span>
                       {formatCurrency(d.amount)} · {label}

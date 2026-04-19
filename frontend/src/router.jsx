@@ -1,6 +1,7 @@
 import { createBrowserRouter, redirect } from 'react-router'
 import { getMe } from './api/owner.api.js'
 import Layout from './components/layout/Layout.jsx'
+import GlobalError from './components/ui/GlobalError.jsx'
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
 import Dashboard from './pages/dashboard/Dashboard.jsx'
@@ -39,17 +40,20 @@ const router = createBrowserRouter([
   {
     path: '/login',
     Component: Login,
+    errorElement: <GlobalError />,
     loader: guestLoader
   },
   {
     path: '/register',
     Component: Register,
+    errorElement: <GlobalError />,
     loader: guestLoader
   },
   {
     path: '/',
     id: 'root',
     Component: Layout,
+    errorElement: <GlobalError />,
     loader: authLoader,
     children: [
       { index: true, loader: () => redirect('/dashboard') },

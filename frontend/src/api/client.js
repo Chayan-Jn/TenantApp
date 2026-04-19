@@ -9,6 +9,14 @@ export const api = async (endpoint, options = {}) => {
     })
   
     const data = await res.json()
-    if (!res.ok) throw new Error(data.message || 'Something went wrong')
+    if (!res.ok) {
+        let errorMsg = 'Something went wrong';
+        if (data.message) errorMsg = data.message;
+        else if (data.messages && Array.isArray(data.messages)) errorMsg = data.messages.join(' • ');
+        
+        const err = new Error(errorMsg);
+        err.fieldErrors = data.fieldErrors || {};
+        throw err;
+    }
     return data
 }

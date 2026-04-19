@@ -8,17 +8,24 @@ export default function Login() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
     setLoading(true)
     try {
       await login(form)
       navigate('/dashboard')
     } catch (err) {
-      setError(err.message)
+      if (err.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
+        setFieldErrors(err.fieldErrors)
+        setError('Please fix the errors below.')
+      } else {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -79,14 +86,14 @@ export default function Login() {
       </div>
 
       {/* Right Form Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-16">
         <div className="w-full max-w-md">
-          <div className="lg:hidden mb-8 flex items-center select-none">
+          <div className="lg:hidden mb-6 sm:mb-8 flex items-center select-none justify-center">
             <Logo size="md" />
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome back</h1>
-          <p className="text-gray-500 dark:text-slate-400 mb-8 font-medium">Please enter your details to sign in.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center lg:text-left">Welcome back</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-slate-400 mb-6 sm:mb-8 font-medium text-center lg:text-left">Please enter your details to sign in.</p>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 text-sm font-medium">
@@ -106,6 +113,7 @@ export default function Login() {
                 placeholder=""
                 required
               />
+              {fieldErrors.username && <p className="text-xs text-red-500 mt-1.5 font-medium">{fieldErrors.username}</p>}
             </div>
             <div>
               <label htmlFor="password" title="password" className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">Password</label>
@@ -118,6 +126,7 @@ export default function Login() {
                 placeholder=""
                 required
               />
+              {fieldErrors.password && <p className="text-xs text-red-500 mt-1.5 font-medium">{fieldErrors.password}</p>}
             </div>
             <button
               type="submit"

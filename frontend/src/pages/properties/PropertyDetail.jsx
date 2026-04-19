@@ -27,7 +27,7 @@ export default function PropertyDetail() {
   const [updatingProperty, setUpdatingProperty] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
-  
+
   // Photo Modal State
   const [photoModal, setPhotoModal] = useState({ isOpen: false, unitId: null, unitName: '' })
 
@@ -125,7 +125,7 @@ export default function PropertyDetail() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div>
           <Breadcrumb crumbs={[
             { label: 'Properties', to: '/properties' },
@@ -134,16 +134,16 @@ export default function PropertyDetail() {
           <h1 className="text-2xl font-bold text-gray-900">{currentProperty?.name}</h1>
           <p className="text-gray-500 mt-1 capitalize">{currentProperty?.type} · {currentProperty?.address}</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="flex-1 sm:flex-none text-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
           >
             + Add Unit
           </button>
           <Link
             to={`/properties/${property_id}/tenants`}
-            className="bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium transition-colors border border-purple-200 flex items-center gap-2"
+            className="flex-1 sm:flex-none justify-center bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium transition-colors border border-purple-200 flex items-center gap-2 whitespace-nowrap"
           >
             View All Tenants
           </Link>
@@ -156,15 +156,15 @@ export default function PropertyDetail() {
               })
               setEditPropertyModal(true)
             }}
-            className="bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors border border-gray-200 flex items-center gap-2"
+            className="flex-1 sm:flex-none justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors border border-gray-200 flex items-center gap-2 whitespace-nowrap"
           >
-            <FiEdit2 size={16} /> Edit Property
+            <FiEdit2 size={16} /> Edit
           </button>
           <button
             onClick={handleDeleteProperty}
-            className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium transition-colors border border-red-200 flex items-center gap-2"
+            className="flex-1 sm:flex-none justify-center bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium transition-colors border border-red-200 flex items-center gap-2 whitespace-nowrap"
           >
-            <FiTrash2 size={16} /> Delete Property
+            <FiTrash2 size={16} /> Delete
           </button>
         </div>
       </div>
@@ -182,15 +182,15 @@ export default function PropertyDetail() {
               to={`/units/${unit.id}`}
               className="group block bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:border-blue-500 hover:shadow-md transition-all relative"
             >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-xl font-bold text-gray-900">{unit.label}</h3>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
+              <div className="flex justify-between items-start mb-2 gap-2">
+                <h3 className="text-xl font-bold text-gray-900 truncate">{unit.label}</h3>
+                <div className="flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity bg-white/80 dark:bg-slate-800/80 p-1 rounded-md">
+                  <button
                     onClick={(e) => {
                       e.preventDefault();
                       setPhotoModal({ isOpen: true, unitId: unit.id, unitName: unit.label });
-                    }} 
-                    className="text-gray-400 hover:text-emerald-600 p-1 cursor-pointer" 
+                    }}
+                    className="text-gray-400 hover:text-emerald-600 p-1 cursor-pointer"
                     title="Unit Photos"
                   >
                     <FiCamera size={20} />
@@ -205,7 +205,7 @@ export default function PropertyDetail() {
               </div>
               <p className="text-gray-500 text-sm mb-4">Rent: ₹{unit.rent}</p>
               <div className="pt-4 border-t border-gray-100 text-sm text-blue-600 font-medium">
-                Manage Tenants 
+                Manage Tenants
               </div>
             </Link>
           ))}
@@ -282,20 +282,20 @@ export default function PropertyDetail() {
         </div>
       </Modal>
 
-      <ConfirmModal 
-        open={confirmDialog.isOpen} 
-        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })} 
+      <ConfirmModal
+        open={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
         onConfirm={() => {
           confirmDialog.onConfirm()
           setConfirmDialog({ ...confirmDialog, isOpen: false })
-        }} 
-        title={confirmDialog.title} 
+        }}
+        title={confirmDialog.title}
         message={confirmDialog.message}
         confirmText="Confirm"
         variant="danger"
       />
 
-      <PhotoManagerModal 
+      <PhotoManagerModal
         open={photoModal.isOpen}
         onClose={() => setPhotoModal({ ...photoModal, isOpen: false })}
         unitId={photoModal.unitId}

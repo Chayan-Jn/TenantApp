@@ -13,6 +13,7 @@ export default function Register() {
     confirmPassword: ''
   })
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
@@ -22,6 +23,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
 
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match')
@@ -34,7 +36,12 @@ export default function Register() {
       await register(data)
       navigate('/login') 
     } catch (err) {
-      setError(err.message)
+      if (err.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
+        setFieldErrors(err.fieldErrors)
+        setError('Please fix the errors below.')
+      } else {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -95,14 +102,14 @@ export default function Register() {
       </div>
 
       {/* Right Form Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-16">
         <div className="w-full max-w-md">
-          <div className="lg:hidden mb-8 flex items-center">
+          <div className="lg:hidden mb-6 sm:mb-8 flex items-center select-none justify-center">
             <Logo size="md" />
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create an account</h1>
-          <p className="text-gray-500 dark:text-slate-400 mb-8 font-medium">Be the master of your portfolio.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center lg:text-left">Create an account</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-slate-400 mb-6 sm:mb-8 font-medium text-center lg:text-left">Be the master of your portfolio.</p>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-400 text-sm font-medium">
@@ -122,6 +129,7 @@ export default function Register() {
                 placeholder=""
                 required
               />
+              {fieldErrors.name && <p className="text-xs text-red-500 mt-1.5 font-medium">{fieldErrors.name}</p>}
             </div>
 
             <div>
@@ -135,6 +143,7 @@ export default function Register() {
                 placeholder=""
                 required
               />
+              {fieldErrors.username && <p className="text-xs text-red-500 mt-1.5 font-medium">{fieldErrors.username}</p>}
             </div>
 
             <div>
@@ -148,6 +157,7 @@ export default function Register() {
                 placeholder=""
                 required
               />
+              {fieldErrors.password && <p className="text-xs text-red-500 mt-1.5 font-medium">{fieldErrors.password}</p>}
             </div>
 
             <div>

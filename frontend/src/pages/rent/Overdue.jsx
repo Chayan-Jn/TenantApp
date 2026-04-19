@@ -191,18 +191,18 @@ export default function Overdue() {
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-4">
-                          <span className="text-base font-bold text-gray-900 dark:text-gray-100 w-24 text-right transition-colors">
-                            {formatCurrency(rent.amount)}
-                          </span>
-                          
-                          <div className="w-20 flex justify-center">
+                        <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto mt-2 sm:mt-0 border-t sm:border-0 border-gray-100 dark:border-slate-700 pt-3 sm:pt-0">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 transition-colors">
+                              {formatCurrency(rent.amount)}
+                            </span>
+                            
                             <Badge variant={rent.status === 'paid' ? 'green' : 'crimson'}>
                               {rent.status === 'paid' ? 'paid' : 'overdue'}
                             </Badge>
                           </div>
                           
-                          <div className="w-[200px] flex justify-end gap-2">
+                          <div className="flex justify-end gap-2 w-full xs:w-auto">
                             <Button 
                               type="button"
                               size="sm" 
@@ -210,8 +210,8 @@ export default function Overdue() {
                               disabled={actionMutation.isPending}
                               className={
                                 rent.status === 'paid' 
-                                  ? 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors' 
-                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50 transition-colors'
+                                  ? 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors flex-1 xs:flex-none' 
+                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50 transition-colors flex-1 xs:flex-none'
                               }
                               onClick={() => actionMutation.mutate(rent)}
                             >
@@ -222,17 +222,17 @@ export default function Overdue() {
                               <div className="flex items-center gap-1">
                                 <button 
                                   onClick={() => handleOpenEditRent(rent)} 
-                                  className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1.5 cursor-pointer transition-colors bg-gray-50 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"
+                                  className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-2 sm:p-1.5 cursor-pointer transition-colors bg-gray-50 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"
                                   title="Edit Rent"
                                 >
-                                  <FiEdit2 size={14} />
+                                  <FiEdit2 size={16} className="sm:w-3.5 sm:h-3.5" />
                                 </button>
                                 <button 
                                   onClick={() => setDeleteRentId(rent.id)} 
-                                  className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-1.5 cursor-pointer transition-colors bg-gray-50 dark:bg-slate-700/50 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
+                                  className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-2 sm:p-1.5 cursor-pointer transition-colors bg-gray-50 dark:bg-slate-700/50 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
                                   title="Delete Rent"
                                 >
-                                  <FiTrash2 size={14} />
+                                  <FiTrash2 size={16} className="sm:w-3.5 sm:h-3.5" />
                                 </button>
                               </div>
                             )}

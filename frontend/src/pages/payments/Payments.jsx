@@ -30,16 +30,16 @@ This is a summary of pending dues for *{{monthName}} {{year}}* (Unit: {{unit_lab
 // Injects the tenant's actual data into the template
 const parseTemplate = (template, tenant, monthName, year) => {
   if (!tenant.phone || tenant.total_pending <= 0) return ''
-  
+
   // UPDATE: Ensure we don't text the roommate asking them to pay the shared reference bill
   const pendingDues = tenant.dues.filter(d => d.status !== 'paid' && !d.is_shared_reference)
   let duesListStr = ''
-  
-  pendingDues.forEach(due => { 
+
+  pendingDues.forEach(due => {
     const dateStr = due.due_date ? ` (Due: ${formatDate(due.due_date)})` : ''
-    duesListStr += `• ${due.title}: ₹${due.amount}${dateStr}\n` 
+    duesListStr += `• ${due.title}: ₹${due.amount}${dateStr}\n`
   })
-  
+
   // Remove the very last newline so we don't accidentally create an empty line
   duesListStr = duesListStr.trimEnd()
 
@@ -127,17 +127,17 @@ export default function Payments() {
   const handleDirectWhatsAppSend = (tenant, monthName) => {
     if (!tenant.phone) return
     const finalMessage = parseTemplate(messageTemplate, tenant, monthName, year)
-    
+
     let cleanPhone = tenant.phone.replace(/\D/g, '')
     if (cleanPhone.length === 10) cleanPhone = `91${cleanPhone}`
-    
+
     const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(finalMessage)}`
     window.open(url, 'whatsapp_messaging_tab', 'noopener,noreferrer')
   }
 
   const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i)
 
-  const groupedData = {} 
+  const groupedData = {}
   if (data?.tenants) {
     data.tenants.forEach(tenant => {
       const duesByMonth = {}
@@ -145,13 +145,13 @@ export default function Payments() {
         if (!duesByMonth[due.month]) duesByMonth[due.month] = []
         duesByMonth[due.month].push(due)
       })
-      if (tenant.dues.length === 0 && month !== 'all') duesByMonth[month] = [] 
+      if (tenant.dues.length === 0 && month !== 'all') duesByMonth[month] = []
 
       Object.keys(duesByMonth).forEach(m => {
         const mInt = Number(m)
         if (!groupedData[mInt]) groupedData[mInt] = {}
         if (!groupedData[mInt][tenant.property_name]) groupedData[mInt][tenant.property_name] = []
-        
+
         const monthDues = duesByMonth[m]
         groupedData[mInt][tenant.property_name].push({
           ...tenant,
@@ -223,7 +223,7 @@ export default function Payments() {
       {isFetching && (
         <div className="flex justify-center py-4">
           <div className="animate-pulse flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium">
-             Fetching ledger...
+            Fetching ledger...
           </div>
         </div>
       )}
@@ -263,7 +263,7 @@ export default function Payments() {
                   </div>
 
                   {sortedProps.map(propertyName => {
-                    const tenants = propertiesForMonth[propertyName].sort((a, b) => 
+                    const tenants = propertiesForMonth[propertyName].sort((a, b) =>
                       a.unit_label.localeCompare(b.unit_label, undefined, { numeric: true, sensitivity: 'base' })
                     )
 
@@ -276,26 +276,26 @@ export default function Payments() {
                         <div className="flex flex-col gap-5">
                           {tenants.map((tenant) => (
                             <Card key={tenant.tenant_id} className="p-0! overflow-hidden border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
-                              
+
                               <div className="bg-slate-50 dark:bg-slate-800/40 px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center transition-colors">
                                 <div>
                                   <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 transition-colors">
                                     Unit {tenant.unit_label} <span className="text-slate-400 dark:text-slate-500 font-normal mx-1">|</span> {tenant.tenant_name}
                                     {tenant.is_moved_out && (
                                       <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">
-                                        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                                         Moved Out
                                       </span>
                                     )}
                                   </h4>
-                                  
+
                                   {/* UPDATE: Directly sends message using the saved template */}
                                   {tenant.total_pending > 0 && tenant.phone && (
-                                    <button 
+                                    <button
                                       onClick={() => handleDirectWhatsAppSend(tenant, MONTHS[mInt - 1])}
                                       className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-green-700 hover:text-green-800 bg-green-100 hover:bg-green-200 px-2.5 py-1 rounded transition-colors cursor-pointer border-none"
                                     >
-                                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.347-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.347-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" /></svg>
                                       Send Message
                                     </button>
                                   )}
@@ -314,7 +314,7 @@ export default function Payments() {
                                 ) : (
                                   tenant.dues.map((due) => (
                                     <div key={`${due.item_type}-${due.id}`} className={`px-5 py-3.5 flex justify-between items-center transition-colors ${due.is_shared_reference ? 'bg-slate-50/30 dark:bg-slate-900/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30'}`}>
-                                      
+
                                       <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
                                           <span className={`text-sm font-semibold transition-colors ${due.is_shared_reference ? 'text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-200'}`}>
@@ -340,26 +340,26 @@ export default function Payments() {
                                         <span className={`text-sm font-bold w-20 text-right transition-colors ${due.is_shared_reference ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-200'}`}>
                                           {formatCurrency(due.amount)}
                                         </span>
-                                        
+
                                         <div className="w-20 flex justify-center">
                                           <Badge variant={statusVariant[due.status] || 'yellow'}>{due.status}</Badge>
                                         </div>
-                                        
+
                                         {/* UPDATE: Hide button for shared reference, show text instead */}
                                         <div className="w-28 flex justify-end">
                                           {due.is_shared_reference ? (
                                             <span className="text-[11px] text-slate-400 dark:text-slate-500 italic text-right leading-tight transition-colors">
-                                              Shared with<br/><span className="font-medium text-slate-500 dark:text-slate-400">{due.shared_with}</span>
+                                              Shared with<br /><span className="font-medium text-slate-500 dark:text-slate-400">{due.shared_with}</span>
                                             </span>
                                           ) : (
-                                            <Button 
+                                            <Button
                                               type="button"
-                                              size="sm" 
+                                              size="sm"
                                               variant={due.status === 'paid' ? 'ghost' : 'default'}
                                               disabled={actionMutation.isPending}
                                               className={
-                                                due.status === 'paid' 
-                                                  ? 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors' 
+                                                due.status === 'paid'
+                                                  ? 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer disabled:opacity-50 transition-colors'
                                                   : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-none cursor-pointer disabled:opacity-50 transition-colors'
                                               }
                                               onClick={() => actionMutation.mutate(due)}
@@ -388,7 +388,7 @@ export default function Payments() {
       )}
 
       {/* Floating Action Button to edit the template */}
-      <button 
+      <button
         onClick={() => setIsTemplateModalOpen(true)}
         className="fixed bottom-6 right-6 h-14 w-14 bg-slate-800 hover:bg-slate-900 text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 z-40 border-none"
         title="Edit WhatsApp Template"
@@ -404,8 +404,8 @@ export default function Payments() {
           <div className="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden flex flex-col">
             <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-800">Edit Message Template</h3>
-              <button 
-                onClick={() => setIsTemplateModalOpen(false)} 
+              <button
+                onClick={() => setIsTemplateModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 cursor-pointer border-none bg-transparent"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,7 +413,7 @@ export default function Payments() {
                 </svg>
               </button>
             </div>
-            
+
             <div className="p-5 flex flex-col gap-4">
               <div className="bg-blue-50 text-blue-800 text-xs p-3 rounded border border-blue-100">
                 <p className="font-semibold mb-1">Available Placeholders:</p>
@@ -427,23 +427,23 @@ export default function Payments() {
                 </ul>
               </div>
 
-              <textarea 
+              <textarea
                 className="w-full h-48 p-3 border border-slate-300 rounded-lg text-sm text-slate-700 outline-none focus:ring-2 focus:ring-slate-400 resize-none font-mono"
                 value={messageTemplate}
                 onChange={(e) => setMessageTemplate(e.target.value)}
               />
             </div>
-            
+
             <div className="px-5 py-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-3">
-              <Button 
-                variant="ghost" 
-                onClick={() => setMessageTemplate(DEFAULT_TEMPLATE)} 
+              <Button
+                variant="ghost"
+                onClick={() => setMessageTemplate(DEFAULT_TEMPLATE)}
                 className="text-slate-500 cursor-pointer text-xs"
               >
                 Reset to Default
               </Button>
-              <Button 
-                onClick={() => setIsTemplateModalOpen(false)} 
+              <Button
+                onClick={() => setIsTemplateModalOpen(false)}
                 className="bg-slate-800 hover:bg-slate-900 text-white border-none cursor-pointer"
               >
                 Save & Close
@@ -453,11 +453,11 @@ export default function Payments() {
         </div>
       )}
 
-      <ConfirmModal 
-        open={confirmGenerateOpen} 
-        onClose={() => setConfirmGenerateOpen(false)} 
-        onConfirm={proceedGenerate} 
-        title="Generate Monthly Rent" 
+      <ConfirmModal
+        open={confirmGenerateOpen}
+        onClose={() => setConfirmGenerateOpen(false)}
+        onConfirm={proceedGenerate}
+        title="Generate Monthly Rent"
         message={propertyId === 'all' ? `Generate rent for ALL active tenants across ALL properties for ${MONTHS[month - 1]} ${year}?` : `Generate rent for this specific property for ${MONTHS[month - 1]} ${year}?`}
         confirmText="Generate"
         variant="primary"

@@ -43,3 +43,12 @@ export const updatePassword = async (id, { current_password, new_password }) => 
     throw err
   }
 }
+
+export const deleteAccount = async (id) => {
+  try {
+    const result = await pool.query('DELETE FROM owners WHERE id = $1 RETURNING id', [id]);
+    if (!result.rows.length) throw new Error('Owner not found');
+  } catch (err) {
+    throw err;
+  }
+}

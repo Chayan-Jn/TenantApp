@@ -26,3 +26,18 @@ export const updatePassword = async (req, res) => {
     res.status(400).json({ success: false, message: err.message })
   }
 }
+
+export const deleteMe = async (req, res) => {
+  try {
+    await ownerService.deleteAccount(req.owner.id)
+    // Clear the auth cookie manually as well to sign them out
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    })
+    res.status(200).json({ success: true, message: 'Account deleted successfully' })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}
