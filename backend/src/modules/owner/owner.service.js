@@ -4,11 +4,30 @@ import bcrypt from 'bcrypt'
 export const getOwnerById = async (id) => {
   try {
     const result = await pool.query(
-      'SELECT id, name, username, email, created_at FROM owners WHERE id = $1',
+      'SELECT id, name, username, email, created_at, subscription_plan, subscription_status, subscription_end_date FROM owners WHERE id = $1',
       [id]
     )
     if (!result.rows.length) throw new Error('Owner not found')
-    return result.rows[0]
+
+    const owner = result.rows[0];
+    let trial_days_left = 0;
+    
+    if (owner.subscription_status === 'trial' && owner.subscription_end_date) {
+      const now = new Date();
+      const end = new Date(owner.subscription_end_date);
+      const diffTime = end - now;
+      trial_days_left = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (trial_days_left <= 0) {
+        owner.subscription_status = 'expired';
+        trial_days_left = 0;
+        await pool.query("UPDATE owners SET subscription_status = 'expired' WHERE id = $1", [id]);
+      }
+    }
+    
+    owner.trial_days_left = trial_days_left;
+
+    return owner;
   } catch (err) {
     throw err
   }

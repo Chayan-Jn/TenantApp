@@ -15,6 +15,8 @@ import Payments from './pages/payments/Payments.jsx'
 import PropertyTenants from './pages/properties/PropertyTenants.jsx'
 import Bills from './pages/bills/Bills.jsx'
 import Reports from './pages/reports/Reports.jsx'
+import PricingPage from './pages/subscription/PricingPage.jsx'
+import SubscriptionExpired from './pages/subscription/SubscriptionExpired.jsx'
 
 
 
@@ -233,6 +235,16 @@ const router = createBrowserRouter([
             return { properties: [], owner: {} }
           }
         }
+      },
+      {
+        path: 'pricing',
+        Component: PricingPage,
+        loader: authLoader
+      },
+      {
+        path: 'subscription/expired',
+        Component: SubscriptionExpired,
+        loader: authLoader
       }
 
       

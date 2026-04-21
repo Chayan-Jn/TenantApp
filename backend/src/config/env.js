@@ -7,8 +7,8 @@ export const env = {
     FRONTEND_URLS: process.env.FRONTEND_URLS || 'http://localhost:5173',
     NODE_ENV: process.env.NODE_ENV || 'development',
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    CA_CERT:process.env.CA_CERT 
-  }
-
-
-
+    CA_CERT: process.env.CA_CERT,
+    S3_ENDPOINT: process.env.BACKBLAZE_ENDPOINT,
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET
+}

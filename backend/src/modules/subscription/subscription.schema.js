@@ -1,0 +1,20 @@
+import { z } from 'zod';
+
+export const createOrderSchema = z.object({
+  body: z.object({
+    planId: z.enum(['plan_monthly', 'plan_annual'], {
+      required_error: 'Plan ID is required',
+    }),
+  }),
+});
+
+export const verifyPaymentSchema = z.object({
+  body: z.object({
+    razorpay_order_id: z.string({ required_error: 'Order ID is required' }),
+    razorpay_payment_id: z.string({ required_error: 'Payment ID is required' }),
+    razorpay_signature: z.string({ required_error: 'Signature is required' }),
+    planId: z.enum(['plan_monthly', 'plan_annual'], {
+      required_error: 'Plan ID is required',
+    }),
+  }),
+});

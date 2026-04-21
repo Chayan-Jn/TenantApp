@@ -14,7 +14,7 @@ export const registerOwner = async ({ name, username, password }) => {
 
     const hash = await bcrypt.hash(password, 10)
     const result = await pool.query(
-      'INSERT INTO owners (name, username, password_hash) VALUES ($1, $2, $3) RETURNING id, name, username',
+      "INSERT INTO owners (name, username, password_hash, subscription_status, subscription_end_date) VALUES ($1, $2, $3, 'trial', NOW() + INTERVAL '7 days') RETURNING id, name, username",
       [name, username, hash]
     )
     return result.rows[0]
@@ -67,7 +67,7 @@ export const loginWithGoogle = async (googleToken) => {
       const hash = await bcrypt.hash(dummyPassword, 10)
 
       const result = await pool.query(
-        'INSERT INTO owners (name, username, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email, token_version',
+        "INSERT INTO owners (name, username, email, password_hash, subscription_status, subscription_end_date) VALUES ($1, $2, $3, $4, 'trial', NOW() + INTERVAL '7 days') RETURNING id, name, username, email, token_version",
         [name, uniqueUsername, email, hash]
       )
       owner = result.rows[0]

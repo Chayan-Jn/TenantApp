@@ -15,6 +15,7 @@ import paymentsRoutes from './modules/payments/payments.routes.js'
 import billsRoutes from './modules/bills/bills.routes.js'
 import ledgerRoutes from './modules/ledger/ledger.routes.js'
 import photoRoutes from './modules/photo/photo.routes.js'
+import subscriptionRoutes from './modules/subscription/subscription.routes.js'
 import { errorHandler } from './middlewares/error.middleware.js'
 
 import { env } from './config/env.js'
@@ -54,6 +55,7 @@ app.use('/payments', paymentsRoutes)
 app.use('/bills', billsRoutes)
 app.use('/ledger', ledgerRoutes)
 app.use('/photos', photoRoutes)
+app.use('/subscription', subscriptionRoutes)
 
 
 

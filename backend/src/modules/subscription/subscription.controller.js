@@ -1,0 +1,37 @@
+import * as subscriptionService from './subscription.service.js';
+import { createOrderSchema, verifyPaymentSchema } from './subscription.schema.js';
+
+export const getStatus = async (req, res) => {
+  try {
+    const status = await subscriptionService.getSubscriptionStatus(req.owner.id);
+    res.status(200).json({ success: true, data: status });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+export const createOrder = async (req, res) => {
+  try {
+    const parsed = createOrderSchema.parse({ body: req.body });
+    const order = await subscriptionService.createOrder(parsed.body.planId);
+    res.status(200).json({ success: true, data: order });
+  } catch (err) {
+    if (err.name === 'ZodError') {
+      return res.status(400).json({ success: false, errors: err.errors });
+    }
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const parsed = verifyPaymentSchema.parse({ body: req.body });
+    const result = await subscriptionService.verifyPayment(req.owner.id, parsed.body);
+    res.status(200).json({ success: true, data: result, message: 'Payment verified and subscription activated.' });
+  } catch (err) {
+    if (err.name === 'ZodError') {
+      return res.status(400).json({ success: false, errors: err.errors });
+    }
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
