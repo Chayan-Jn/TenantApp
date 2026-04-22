@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MdCheck, MdArrowForward } from 'react-icons/md'
 import { createSubscription, verifyPayment } from '../../api/subscription.api.js'
 import { loadRazorpay } from '../../utils/razorpay.js'
+import AlertModal from '../../components/ui/AlertModal.jsx'
 
 const features = [
   'Unlimited Properties & Units',
@@ -13,13 +14,21 @@ const features = [
 export default function PricingPage() {
   const [billing, setBilling] = useState('annual')
   const [processingPlan, setProcessingPlan] = useState(null)
+  const [alertConfig, setAlertConfig] = useState({ open: false, message: '', title: 'Notice' })
+
+  const showAlert = (message, title = 'Notice') => {
+    setAlertConfig({ open: true, message, title })
+  }
 
   const handleSubscribe = async (planId, e) => {
     e.stopPropagation()
     try {
       setProcessingPlan(planId)
       const isLoaded = await loadRazorpay()
-      if (!isLoaded) return alert('Failed to load payment gateway.')
+      if (!isLoaded) {
+        setProcessingPlan(null)
+        return showAlert('Failed to load payment gateway.', 'Error')
+      }
       const res = await createSubscription(planId)
       const rzp = new window.Razorpay({
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -39,7 +48,7 @@ export default function PricingPage() {
             });
             window.location.reload();
           } catch (err) {
-            alert('Verification failed. Contact support.');
+            showAlert('Verification failed. Contact support.', 'Payment Error');
             setProcessingPlan(null);
           }
         },
@@ -51,14 +60,19 @@ export default function PricingPage() {
         theme: { color: '#F5A623' },
       })
       rzp.on('payment.failed', function (response) {
-        alert(response.error.description || 'Payment failed');
+        showAlert(response.error.description || 'Payment failed', 'Payment Failed');
         setProcessingPlan(null);
       });
-      rzp.open()
+      
+      try {
+        rzp.open()
+      } catch (razorpayErr) {
+        setProcessingPlan(null)
+        showAlert(razorpayErr.message || 'Failed to open Razorpay checkout.', 'Error')
+      }
     } catch (err) {
-      alert(err.message || 'Something went wrong.')
-    } finally {
-      // Don't reset processingPlan here because the modal is open, we do it ondismiss or verified
+      setProcessingPlan(null)
+      showAlert(err?.response?.data?.message || err.message || 'Something went wrong.', 'Error')
     }
   }
 
@@ -216,6 +230,13 @@ export default function PricingPage() {
       <p className="mt-4 text-[9px] uppercase tracking-widest text-slate-400 italic">
         Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
       </p>
+
+      <AlertModal
+        open={alertConfig.open}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={() => setAlertConfig({ ...alertConfig, open: false })}
+      />
     </div>
   )
 }
