@@ -9,6 +9,7 @@ import {
     MdDomain,
     MdOutlineReceiptLong,
     MdOutlineDescription,
+    MdOutlineCardMembership,
     MdClose
 } from 'react-icons/md'
 
@@ -19,6 +20,7 @@ const links = [
     { to: '/rent/overdue', label: 'Overdue Rent', icon: MdOutlineWarningAmber },
     { to: '/payments', label: 'Payments', icon: MdOutlineCreditCard },
     { to: '/reports', label: 'Reports', icon: MdOutlineDescription },
+    { to: '/subscription', label: 'Subscription', icon: MdOutlineCardMembership },
     { to: '/settings', label: 'Settings', icon: MdOutlineSettings }
 ]
 
@@ -64,6 +66,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     )
                 })}
             </nav>
+
+            {/* Legal footer */}
+            <div className="px-5 pb-5 pt-3 border-t border-slate-700/60">
+                <div className="flex flex-wrap gap-x-3 gap-y-1">
+                    {[['Privacy', '/privacy-policy'], ['Terms', '/terms'], ['Refund', '/refund-policy'], ['Contact', '/contact']].map(([label, to]) => (
+                        <a key={to} href={to} className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors">{label}</a>
+                    ))}
+                </div>
+                <p className="text-[10px] text-slate-600 mt-2">© {new Date().getFullYear()} MyTenant</p>
+            </div>
         </aside>
     )
 }

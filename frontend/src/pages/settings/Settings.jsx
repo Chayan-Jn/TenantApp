@@ -164,6 +164,29 @@ export default function Settings() {
                 variant="danger"
                 loading={deleteLoading}
             />
+
+            {/* Legal */}
+            <Card className="border-gray-200 dark:border-slate-700 transition-colors">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3 transition-colors">Legal</h2>
+                <div className="flex flex-col gap-2">
+                    {[
+                        ['Privacy Policy', '/privacy-policy'],
+                        ['Terms of Service', '/terms'],
+                        ['Refund & Cancellation Policy', '/refund-policy'],
+                        ['Contact Us', '/contact'],
+                    ].map(([label, to]) => (
+                        <a
+                            key={to}
+                            href={to}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-[#0ea5e9] hover:underline font-medium"
+                        >
+                            {label}
+                        </a>
+                    ))}
+                </div>
+            </Card>
         </div>
     )
 }

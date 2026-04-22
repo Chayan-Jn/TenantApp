@@ -101,7 +101,7 @@ export default function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="username" className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">Username</label>
               <input
@@ -137,7 +137,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="relative flex items-center py-8">
+          <div className="relative flex items-center py-6">
             <div className="grow border-t border-gray-100 dark:border-slate-800"></div>
             <span className="shrink-0 mx-4 text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">Or login with</span>
             <div className="grow border-t border-gray-100 dark:border-slate-800"></div>
@@ -153,10 +153,17 @@ export default function Login() {
             />
           </div>
 
-          <p className="mt-10 text-center text-sm text-gray-500 dark:text-slate-400">
+          <p className="mt-8 text-center text-sm text-gray-500 dark:text-slate-400">
             New to MyTenant?{' '}
             <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">Create an account</Link>
           </p>
+
+          {/* Legal links */}
+          <div className="mt-6 pt-5 border-t border-gray-100 dark:border-slate-800 flex flex-wrap justify-center gap-x-4 gap-y-1">
+            {[['Privacy Policy', '/privacy-policy'], ['Terms of Service', '/terms'], ['Refund Policy', '/refund-policy'], ['Contact', '/contact']].map(([label, to]) => (
+              <a key={to} href={to} className="text-[11px] text-gray-400 dark:text-slate-600 hover:text-gray-600 dark:hover:text-slate-400 transition-colors">{label}</a>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -12,12 +12,12 @@ const features = [
 
 export default function PricingPage() {
   const [billing, setBilling] = useState('annual')
-  const [loading, setLoading] = useState(false)
+  const [processingPlan, setProcessingPlan] = useState(null)
 
   const handleSubscribe = async (planId, e) => {
     e.stopPropagation()
     try {
-      setLoading(true)
+      setProcessingPlan(planId)
       const isLoaded = await loadRazorpay()
       if (!isLoaded) return alert('Failed to load payment gateway.')
       const res = await createSubscription(planId)
@@ -30,7 +30,7 @@ export default function PricingPage() {
         order_id: res.data.id,
         handler: async (response) => {
           try {
-            setLoading(true);
+            setProcessingPlan(planId);
             await verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -38,18 +38,27 @@ export default function PricingPage() {
               planId: planId
             });
             window.location.reload();
-          } catch(err) {
+          } catch (err) {
             alert('Verification failed. Contact support.');
-            setLoading(false);
+            setProcessingPlan(null);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setProcessingPlan(null);
           }
         },
         theme: { color: '#F5A623' },
       })
+      rzp.on('payment.failed', function (response) {
+        alert(response.error.description || 'Payment failed');
+        setProcessingPlan(null);
+      });
       rzp.open()
     } catch (err) {
       alert(err.message || 'Something went wrong.')
     } finally {
-      setLoading(false)
+      // Don't reset processingPlan here because the modal is open, we do it ondismiss or verified
     }
   }
 
@@ -131,21 +140,21 @@ export default function PricingPage() {
           </ul>
 
           <button
-            disabled={loading}
+            disabled={!!processingPlan}
             onClick={e => handleSubscribe('plan_monthly', e)}
             className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95"
             style={{ border: '2.5px solid #111', color: '#111', background: 'transparent', cursor: 'pointer' }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            {billing === 'monthly' && loading ? 'Please wait…' : 'Choose Monthly'}
+            {processingPlan === 'plan_monthly' ? 'Please wait…' : 'Choose Monthly'}
           </button>
         </div>
 
         {/* ── Annual — Dark Glass ── */}
         <div
           onClick={() => setBilling('annual')}
-          className="relative rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300"
+          className="relative rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 sm:-translate-y-2.5"
           style={{
             background: 'rgba(0,0,0,0.78)',
             backdropFilter: 'blur(24px)',
@@ -154,7 +163,6 @@ export default function PricingPage() {
             boxShadow: billing === 'annual'
               ? '0 24px 60px -12px rgba(0,0,0,0.55)'
               : '0 8px 24px rgba(0,0,0,0.3)',
-            transform: 'translateY(-10px)',
           }}
         >
           {/* Gloss top shimmer */}
@@ -188,19 +196,25 @@ export default function PricingPage() {
           </ul>
 
           <button
-            disabled={loading}
+            disabled={!!processingPlan}
             onClick={e => handleSubscribe('plan_annual', e)}
             className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
             style={{ background: '#fff', color: '#000', border: '2.5px solid rgba(255,255,255,0.4)', cursor: 'pointer' }}
           >
-            {billing === 'annual' && loading ? 'Please wait…' : 'Choose Annual'}
+            {processingPlan === 'plan_annual' ? 'Please wait…' : 'Choose Annual'}
             <MdArrowForward size={15} />
           </button>
         </div>
       </div>
 
-      <p className="mt-8 text-[9px] uppercase tracking-widest text-slate-400 italic">
-        Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; Cancel Anytime
+      {/* Legal links — required by Razorpay near payment */}
+      <div className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-1.5">
+        {[['Terms of Service', '/terms'], ['Refund Policy', '/refund-policy'], ['Privacy Policy', '/privacy-policy'], ['Contact', '/contact']].map(([label, to]) => (
+          <a key={to} href={to} className="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors underline-offset-2 hover:underline">{label}</a>
+        ))}
+      </div>
+      <p className="mt-4 text-[9px] uppercase tracking-widest text-slate-400 italic">
+        Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
       </p>
     </div>
   )

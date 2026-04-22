@@ -33,8 +33,8 @@ export default function SubscriptionExpired() {
         </div>
       </div>
 
-      <p className="mt-6 text-[10px] text-slate-400 dark:text-slate-600 uppercase tracking-widest font-medium">
-        Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; Cancel Anytime
+      <p className="mt-6 text-[10px] text-slate-400 dark:text-slate-600 uppercase tracking-widest font-medium text-center">
+        Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
       </p>
     </div>
   )

@@ -117,7 +117,7 @@ export default function Register() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5">Full Name</label>
               <input
@@ -173,16 +173,21 @@ export default function Register() {
               />
             </div>
 
+            <p className="text-[11px] text-gray-400 dark:text-slate-500 text-center mt-4">
+              By registering you agree to our{' '}
+              <a href="/terms" className="underline hover:text-gray-600 dark:hover:text-slate-300">Terms of Service</a>{' '}and{' '}
+              <a href="/privacy-policy" className="underline hover:text-gray-600 dark:hover:text-slate-300">Privacy Policy</a>.
+            </p>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] disabled:opacity-50 mt-4"
+              className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] disabled:opacity-50 mt-3"
             >
               {loading ? 'Creating...' : 'Get Started'}
             </button>
           </form>
 
-          <div className="relative flex items-center py-6">
+          <div className="relative flex items-center py-4">
             <div className="grow border-t border-gray-100 dark:border-slate-800"></div>
             <span className="shrink-0 mx-4 text-gray-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">Or sign up with</span>
             <div className="grow border-t border-gray-100 dark:border-slate-800"></div>
@@ -198,10 +203,17 @@ export default function Register() {
             />
           </div>
 
-          <p className="mt-8 text-center text-sm text-gray-500 dark:text-slate-400">
+          <p className="mt-5 text-center text-sm text-gray-500 dark:text-slate-400">
             Already a member?{' '}
             <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">Sign in here</Link>
           </p>
+
+          {/* Legal links */}
+          <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-wrap justify-center gap-x-4 gap-y-1">
+            {[['Privacy Policy', '/privacy-policy'], ['Terms of Service', '/terms'], ['Refund Policy', '/refund-policy'], ['Contact', '/contact']].map(([label, to]) => (
+              <a key={to} href={to} className="text-[11px] text-gray-400 dark:text-slate-600 hover:text-gray-600 dark:hover:text-slate-400 transition-colors">{label}</a>
+            ))}
+          </div>
         </div>
       </div>
     </div>

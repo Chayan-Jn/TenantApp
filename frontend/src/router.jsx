@@ -15,8 +15,14 @@ import Payments from './pages/payments/Payments.jsx'
 import PropertyTenants from './pages/properties/PropertyTenants.jsx'
 import Bills from './pages/bills/Bills.jsx'
 import Reports from './pages/reports/Reports.jsx'
+import SubscriptionPage from './pages/subscription/SubscriptionPage.jsx'
 import PricingPage from './pages/subscription/PricingPage.jsx'
 import SubscriptionExpired from './pages/subscription/SubscriptionExpired.jsx'
+import LegalLayout from './pages/legal/LegalLayout.jsx'
+import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx'
+import TermsOfService from './pages/legal/TermsOfService.jsx'
+import RefundPolicy from './pages/legal/RefundPolicy.jsx'
+import ContactPage from './pages/legal/ContactPage.jsx'
 
 
 
@@ -237,6 +243,11 @@ const router = createBrowserRouter([
         }
       },
       {
+        path: 'subscription',
+        Component: SubscriptionPage,
+        loader: authLoader
+      },
+      {
         path: 'pricing',
         Component: PricingPage,
         loader: authLoader
@@ -248,6 +259,18 @@ const router = createBrowserRouter([
       }
 
       
+    ]
+  },
+  // ── Public legal pages (no auth required) ──
+  {
+    path: '/',
+    Component: LegalLayout,
+    errorElement: <GlobalError />,
+    children: [
+      { path: 'privacy-policy', Component: PrivacyPolicy },
+      { path: 'terms', Component: TermsOfService },
+      { path: 'refund-policy', Component: RefundPolicy },
+      { path: 'contact', Component: ContactPage },
     ]
   }
 ])
