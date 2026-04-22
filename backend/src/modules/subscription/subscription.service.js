@@ -44,7 +44,7 @@ export const createOrder = async (planId) => {
   const rzp = getRazorpayInstance();
   if (!rzp) throw new Error('Razorpay is not configured on the server');
 
-  const amount = planId === 'plan_monthly' ? 10 : 1199;
+  const amount = planId === 'plan_monthly' ? 199 : 1199;
   
   const options = {
     amount: amount * 100, // amount in the smallest currency unit

@@ -32,7 +32,7 @@ export default function PricingPage() {
       const res = await createSubscription(planId)
       const rzp = new window.Razorpay({
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: (billing === 'monthly' ? 10 : 1199) * 100,
+        amount: (billing === 'monthly' ? 199 : 1199) * 100,
         currency: 'INR',
         name: 'MyTenant',
         description: 'App Subscription',
@@ -138,7 +138,7 @@ export default function PricingPage() {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-5">Monthly</p>
 
           <div className="mb-1 flex items-baseline gap-1">
-            <span className="text-5xl font-bold text-slate-900 tracking-tight">₹10</span>
+            <span className="text-5xl font-bold text-slate-900 tracking-tight">₹199</span>
             <span className="text-sm text-slate-400 ml-1">/ month</span>
           </div>
           <p className="text-[11px] text-slate-400 italic mb-7">Billed every 30 days</p>
