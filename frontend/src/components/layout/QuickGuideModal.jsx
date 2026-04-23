@@ -158,7 +158,7 @@ export default function QuickGuideModal({ isOpen, onClose }) {
             <div className="relative w-full max-w-6xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto transform transition-all duration-500 ease-out sm:scale-100 scale-95 border border-slate-200 dark:border-slate-800">
                 
                 {/* Header / Image Area */}
-                <div className={`relative w-full h-72 sm:h-[550px] shrink-0 ${step.bg} transition-colors duration-700 overflow-hidden flex flex-col`}>
+                <div className={`relative w-full h-56 sm:h-[550px] shrink-0 ${step.bg} transition-colors duration-700 overflow-hidden flex flex-col`}>
                     {/* Decorative Blobs */}
                     <div className={`absolute -top-24 -left-24 w-64 h-64 rounded-full opacity-20 blur-3xl ${step.buttonColor} transition-colors duration-700`}></div>
                     <div className={`absolute -bottom-24 -right-24 w-64 h-64 rounded-full opacity-20 blur-3xl ${step.buttonColor} transition-colors duration-700`}></div>
@@ -181,7 +181,7 @@ export default function QuickGuideModal({ isOpen, onClose }) {
                                     e.target.onerror = null; 
                                     e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2394a3b8">Image not found at '+step.image+'</text></svg>'
                                 }}
-                                className="object-cover object-top w-full h-full aspect-[16/9] sm:aspect-auto sm:max-h-[480px] border-[4px] sm:border-[6px] border-b-0 border-white dark:border-slate-800 rounded-t-xl sm:rounded-t-3xl shadow-2xl bg-white dark:bg-slate-800 transition-transform duration-500 hover:scale-[1.01]"
+                                className="object-contain sm:object-cover object-top w-full h-full aspect-video sm:aspect-auto sm:max-h-[480px] border-[4px] sm:border-[6px] border-b-0 border-white dark:border-slate-800 rounded-t-xl sm:rounded-t-3xl shadow-2xl bg-white dark:bg-slate-800 transition-transform duration-500 hover:scale-[1.01]"
                             />
                         </div>
                     </div>
