@@ -101,5 +101,24 @@ export const verifyPayment = async (ownerId, paymentData) => {
     [planName, newEndDate, ownerId]
   );
 
+  // Record the purchase in payment history
+  const amount = planId === 'plan_monthly' ? 199 : 1199;
+  await pool.query(
+    `INSERT INTO subscription_payments (owner_id, razorpay_order_id, razorpay_payment_id, plan, amount_inr)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [ownerId, razorpay_order_id, razorpay_payment_id, planName, amount]
+  );
+
   return updateResult.rows[0];
+};
+
+export const getPaymentHistory = async (ownerId) => {
+  const result = await pool.query(
+    `SELECT id, razorpay_payment_id, plan, amount_inr, paid_at
+     FROM subscription_payments
+     WHERE owner_id = $1
+     ORDER BY paid_at DESC`,
+    [ownerId]
+  );
+  return result.rows;
 };

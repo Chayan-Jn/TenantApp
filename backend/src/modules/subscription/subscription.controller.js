@@ -35,3 +35,12 @@ export const verifyPayment = async (req, res) => {
     res.status(400).json({ success: false, message: err.message });
   }
 };
+
+export const getHistory = async (req, res) => {
+  try {
+    const history = await subscriptionService.getPaymentHistory(req.owner.id);
+    res.status(200).json({ success: true, data: history });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};

@@ -8,6 +8,7 @@ router.use(protect);
 
 
 router.get('/status', subscriptionController.getStatus);
+router.get('/history', subscriptionController.getHistory);
 router.post('/create-order', subscriptionController.createOrder);
 router.post('/verify', subscriptionController.verifyPayment);
 

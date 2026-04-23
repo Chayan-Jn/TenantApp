@@ -8,8 +8,10 @@ import {
   MdOutlineCalendarToday,
   MdOutlineAutorenew,
   MdOutlineRocketLaunch,
+  MdOutlineReceipt,
+  MdOutlineCheckCircle,
 } from 'react-icons/md'
-import { getSubscriptionStatus } from '../../api/subscription.api.js'
+import { getSubscriptionStatus, getSubscriptionHistory } from '../../api/subscription.api.js'
 
 const PLAN_FEATURES = [
   'Unlimited Properties & Units',
@@ -22,6 +24,13 @@ export default function SubscriptionPage() {
   const { data: res, isLoading, isError } = useQuery({
     queryKey: ['subscriptionStatus'],
     queryFn: getSubscriptionStatus,
+  })
+
+  const { data: historyRes } = useQuery({
+    queryKey: ['subscriptionHistory'],
+    queryFn: getSubscriptionHistory,
+    retry: false,          // don't retry if table not yet migrated in prod
+    // silently ignore errors — history panel just won't render
   })
 
   if (isLoading) {
@@ -203,6 +212,80 @@ export default function SubscriptionPage() {
           </div>
         </div>
       )}
+
+      {/* ── Purchase History ── */}
+      {(() => {
+        const history = historyRes?.data
+        if (!history) return null
+
+        const PLAN_COLOR = {
+          monthly: { bg: 'rgba(99,102,241,0.12)', text: '#a5b4fc', border: 'rgba(99,102,241,0.25)' },
+          annual:  { bg: 'rgba(52,211,153,0.12)', text: '#6ee7b7', border: 'rgba(52,211,153,0.25)' },
+        }
+
+        return (
+          <div className="bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-7">
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+                <MdOutlineReceipt size={15} className="text-indigo-500 dark:text-indigo-400" />
+              </div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Purchase History</p>
+            </div>
+
+            {history.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 gap-2">
+                <MdOutlineReceipt size={32} className="text-slate-300 dark:text-slate-600" />
+                <p className="text-sm text-slate-400 dark:text-slate-500">No purchases yet</p>
+              </div>
+            ) : (
+              <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-700/60">
+                {history.map((item) => {
+                  const colors = PLAN_COLOR[item.plan] ?? PLAN_COLOR.monthly
+                  const date = new Date(item.paid_at).toLocaleDateString(undefined, {
+                    year: 'numeric', month: 'short', day: 'numeric',
+                  })
+                  const time = new Date(item.paid_at).toLocaleTimeString(undefined, {
+                    hour: '2-digit', minute: '2-digit',
+                  })
+                  return (
+                    <div key={item.id} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
+                      {/* icon */}
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ background: colors.bg, border: `1px solid ${colors.border}` }}>
+                        <MdOutlineCheckCircle size={18} style={{ color: colors.text }} />
+                      </div>
+
+                      {/* info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-sm font-semibold capitalize text-slate-900 dark:text-white">
+                            {item.plan} Plan
+                          </span>
+                          <span
+                            className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
+                            style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}
+                          >
+                            {item.plan}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono truncate">
+                          {item.razorpay_payment_id}
+                        </p>
+                      </div>
+
+                      {/* amount + date */}
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-sm font-bold text-slate-900 dark:text-white">₹{item.amount_inr}</p>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{date} · {time}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Footer note */}
       <p className="text-center text-[10px] text-slate-400 dark:text-slate-600 uppercase tracking-widest pt-1">

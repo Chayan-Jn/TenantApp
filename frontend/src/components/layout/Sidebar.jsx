@@ -45,24 +45,30 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
 
             <nav className="flex-1 px-4 py-4 flex flex-col gap-2">
-                {links.map((link) => {
+                {links.map((link, index) => {
                     const Icon = link.icon
-                    return (
-                        <NavLink
-                            key={link.to}
-                            to={link.to}
-                            onClick={() => setIsOpen(false)}
-                            className={({ isActive }) =>
-                                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
-                                    ? 'bg-[#0ea5e9] text-white shadow-md'
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                                }`
-                            }
-                        >
+                    const isSystemLink = link.to === '/subscription' || link.to === '/settings';
+                    const showDivider = link.to === '/subscription'; 
 
-                            <Icon className="w-5 h-5" />
-                            {link.label}
-                        </NavLink>
+                    return (
+                        <div key={link.to}>
+                            {showDivider && (
+                                <div className="h-px bg-slate-700/50 my-2 mx-2"></div>
+                            )}
+                            <NavLink
+                                to={link.to}
+                                onClick={() => setIsOpen(false)}
+                                className={({ isActive }) =>
+                                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+                                        ? 'bg-[#0ea5e9] text-white shadow-md'
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                    }`
+                                }
+                            >
+                                <Icon className="w-5 h-5" />
+                                {link.label}
+                            </NavLink>
+                        </div>
                     )
                 })}
             </nav>

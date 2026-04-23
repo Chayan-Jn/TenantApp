@@ -1,13 +1,16 @@
 import { useNavigate, useRouteLoaderData } from 'react-router'
 import { logout } from '../../api/auth.api.js'
-import { MdOutlineLogout, MdDarkMode, MdLightMode, MdMenu } from 'react-icons/md'
+import { MdOutlineLogout, MdDarkMode, MdLightMode, MdMenu, MdHelpOutline, MdAutoAwesome } from 'react-icons/md'
 import { useTheme } from '../../context/ThemeContext.jsx'
+import { useState } from 'react'
 import Logo from '../ui/Logo.jsx'
+import QuickGuideModal from './QuickGuideModal.jsx'
 
 export default function Navbar({ toggleSidebar }) {
     const navigate = useNavigate()
     const { data: owner } = useRouteLoaderData('root') || { data: {} }
     const { isDark, toggleTheme } = useTheme()
+    const [isGuideOpen, setIsGuideOpen] = useState(false)
 
     const handleLogout = async () => {
         try {
@@ -45,6 +48,22 @@ export default function Navbar({ toggleSidebar }) {
                     }
                 </button>
 
+                <button
+                    onClick={() => setIsGuideOpen(true)}
+                    className="group relative flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/20 dark:to-teal-500/20 border border-emerald-200/50 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm hover:from-emerald-500 hover:to-teal-500 hover:text-white transition-all duration-300 shadow-sm hover:shadow-emerald-500/25 active:scale-95 cursor-pointer overflow-hidden"
+                    title="Start Product Tour"
+                >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <div className="relative flex items-center gap-2">
+                        <MdAutoAwesome size={18} className="group-hover:rotate-12 transition-transform duration-300" />
+                        <span className="hidden md:inline">Quick Tour</span>
+                        <span className="flex h-2 w-2 relative">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                    </div>
+                </button>
+
                 <div className="h-6 sm:h-8 w-px bg-gray-200 dark:bg-slate-700 transition-colors" />
 
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -73,6 +92,11 @@ export default function Navbar({ toggleSidebar }) {
                 </button>
 
             </div>
+            
+            <QuickGuideModal 
+                isOpen={isGuideOpen} 
+                onClose={() => setIsGuideOpen(false)} 
+            />
         </header>
     )
 }
