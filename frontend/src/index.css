@@ -53,4 +53,13 @@
   .text-slate-900 {
     color: #0f172a !important;
   }
+
+  /* Utilities */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

@@ -155,25 +155,25 @@ export default function QuickGuideModal({ isOpen, onClose }) {
                 onClick={onClose}
             ></div>
             
-            <div className="relative w-full max-w-6xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col transform transition-all duration-500 ease-out sm:scale-100 scale-95 border border-slate-200 dark:border-slate-800">
+            <div className="relative w-full max-w-6xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto transform transition-all duration-500 ease-out sm:scale-100 scale-95 border border-slate-200 dark:border-slate-800">
                 
                 {/* Header / Image Area */}
-                <div className={`relative w-full h-80 sm:h-[550px] ${step.bg} transition-colors duration-700 overflow-hidden flex flex-col`}>
+                <div className={`relative w-full h-72 sm:h-[550px] shrink-0 ${step.bg} transition-colors duration-700 overflow-hidden flex flex-col`}>
                     {/* Decorative Blobs */}
                     <div className={`absolute -top-24 -left-24 w-64 h-64 rounded-full opacity-20 blur-3xl ${step.buttonColor} transition-colors duration-700`}></div>
                     <div className={`absolute -bottom-24 -right-24 w-64 h-64 rounded-full opacity-20 blur-3xl ${step.buttonColor} transition-colors duration-700`}></div>
 
                     <button 
                         onClick={onClose}
-                        className="absolute z-20 top-6 right-6 p-2.5 rounded-full bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md transition-all duration-200 text-slate-800 dark:text-white shadow-lg"
+                        className="absolute z-20 top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md transition-all duration-200 text-slate-800 dark:text-white shadow-lg"
                     >
-                        <MdClose size={24} />
+                        <MdClose size={20} className="sm:w-6 sm:h-6" />
                     </button>
 
                     {/* Screenshot Container */}
-                    <div className="flex-1 w-full h-full p-6 sm:p-10 pb-0 flex justify-center items-end relative z-10">
+                    <div className="flex-1 w-full h-full p-4 sm:p-10 pb-0 flex justify-center items-end relative z-10">
                         <div className="relative w-full max-w-5xl transform group">
-                            <div className="absolute -inset-1 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl blur opacity-25"></div>
+                            <div className="absolute -inset-1 bg-gradient-to-t from-black/20 to-transparent rounded-t-xl sm:rounded-t-2xl blur opacity-25"></div>
                             <img 
                                 src={step.image} 
                                 alt={step.title}
@@ -181,30 +181,30 @@ export default function QuickGuideModal({ isOpen, onClose }) {
                                     e.target.onerror = null; 
                                     e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2394a3b8">Image not found at '+step.image+'</text></svg>'
                                 }}
-                                className="object-cover object-top w-full h-full aspect-[16/9] sm:aspect-auto sm:max-h-[480px] border-[6px] border-b-0 border-white dark:border-slate-800 rounded-t-2xl sm:rounded-t-3xl shadow-2xl bg-white dark:bg-slate-800 transition-transform duration-500 hover:scale-[1.01]"
+                                className="object-cover object-top w-full h-full aspect-[16/9] sm:aspect-auto sm:max-h-[480px] border-[4px] sm:border-[6px] border-b-0 border-white dark:border-slate-800 rounded-t-xl sm:rounded-t-3xl shadow-2xl bg-white dark:bg-slate-800 transition-transform duration-500 hover:scale-[1.01]"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="px-8 sm:px-12 pt-8 pb-8 text-center flex-1">
-                    <div className={`inline-flex p-3 rounded-2xl ${step.bg} ${step.color} mb-4 transition-all duration-300 transform hover:scale-110`}>
-                        <Icon size={32} />
+                <div className="px-6 sm:px-12 pt-6 sm:pt-8 pb-6 sm:pb-8 text-center flex-1">
+                    <div className={`inline-flex p-2.5 sm:p-3 rounded-2xl ${step.bg} ${step.color} mb-3 sm:mb-4 transition-all duration-300 transform hover:scale-110`}>
+                        <Icon size={28} className="sm:w-8 sm:h-8" />
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
+                    <h3 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2 sm:mb-4 tracking-tight">
                         {step.title}
                     </h3>
-                    <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
+                    <p className="text-sm sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
                         {step.description}
                     </p>
                 </div>
 
                 {/* Footer Controls */}
-                <div className="px-8 sm:px-12 pb-10 flex items-center justify-between">
+                <div className="px-6 sm:px-12 pb-8 sm:pb-10 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0">
                     
                     {/* Dots indicator */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5 sm:gap-2 overflow-x-auto py-2 max-w-full no-scrollbar">
                         {GUIDE_STEPS.map((_, i) => (
                             <button 
                                 key={i} 
