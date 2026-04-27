@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /privacy-policy
+Allow: /terms
+Allow: /refund-policy
+Allow: /contact
+
+Disallow: /dashboard
+Disallow: /properties
+Disallow: /units
+Disallow: /tenants
+Disallow: /rent
+Disallow: /settings
+Disallow: /payments
+Disallow: /bills
+Disallow: /reports
+Disallow: /subscription
+
+Sitemap: https://mytenant.me/sitemap.xml
