@@ -16,7 +16,7 @@ const GUIDE_STEPS = [
         color: 'text-blue-500',
         buttonColor: 'bg-blue-600',
         bg: 'bg-blue-50 dark:bg-blue-500/10',
-        image: '/ScreenShots/1.PropertyPage.png'
+        image: '/ScreenShots/1.PropertyPage.webp'
     },
     {
         title: 'Deep Property Insights',
@@ -25,7 +25,7 @@ const GUIDE_STEPS = [
         color: 'text-indigo-500',
         buttonColor: 'bg-indigo-600',
         bg: 'bg-indigo-50 dark:bg-indigo-500/10',
-        image: '/ScreenShots/2.PropertyDetail_Units.png'
+        image: '/ScreenShots/2.PropertyDetail_Units.webp'
     },
     {
         title: 'Smart Unit Management',
@@ -34,7 +34,7 @@ const GUIDE_STEPS = [
         color: 'text-emerald-500',
         buttonColor: 'bg-emerald-600',
         bg: 'bg-emerald-50 dark:bg-emerald-500/10',
-        image: '/ScreenShots/3.UnitDetail_AddBills.png'
+        image: '/ScreenShots/3.UnitDetail_AddBills.webp'
     },
     {
         title: 'Visual Asset Tracking',
@@ -43,7 +43,7 @@ const GUIDE_STEPS = [
         color: 'text-amber-500',
         buttonColor: 'bg-amber-600',
         bg: 'bg-amber-50 dark:bg-amber-500/10',
-        image: '/ScreenShots/4.UnitPhotos.png'
+        image: '/ScreenShots/4.UnitPhotos.webp'
     },
     {
         title: 'Seamless Tenant Onboarding',
@@ -52,7 +52,7 @@ const GUIDE_STEPS = [
         color: 'text-green-500',
         buttonColor: 'bg-green-600',
         bg: 'bg-green-50 dark:bg-green-500/10',
-        image: '/ScreenShots/5.TenantDetail.png'
+        image: '/ScreenShots/5.TenantDetail.webp'
     },
     {
         title: 'Centralized Billing Hub',
@@ -61,7 +61,7 @@ const GUIDE_STEPS = [
         color: 'text-purple-500',
         buttonColor: 'bg-purple-600',
         bg: 'bg-purple-50 dark:bg-purple-500/10',
-        image: '/ScreenShots/6.ManageBills.png'
+        image: '/ScreenShots/6.ManageBills.webp'
     },
     {
         title: 'Intelligent Bill Splitting',
@@ -70,7 +70,7 @@ const GUIDE_STEPS = [
         color: 'text-pink-500',
         buttonColor: 'bg-pink-600',
         bg: 'bg-pink-50 dark:bg-pink-500/10',
-        image: '/ScreenShots/6.5AddBillSplits.png'
+        image: '/ScreenShots/6.5AddBillSplits.webp'
     },
     {
         title: 'Proactive Overdue Tracking',
@@ -79,7 +79,7 @@ const GUIDE_STEPS = [
         color: 'text-red-500',
         buttonColor: 'bg-red-600',
         bg: 'bg-red-50 dark:bg-red-500/10',
-        image: '/ScreenShots/7.OverdueRent.png'
+        image: '/ScreenShots/7.OverdueRent.webp'
     },
     {
         title: 'Unified Payments Feed',
@@ -88,7 +88,7 @@ const GUIDE_STEPS = [
         color: 'text-teal-500',
         buttonColor: 'bg-teal-600',
         bg: 'bg-teal-50 dark:bg-teal-500/10',
-        image: '/ScreenShots/8.TenantPayment.png'
+        image: '/ScreenShots/8.TenantPayment.webp'
     },
     {
         title: 'Automated Rent Cycles',
@@ -97,7 +97,7 @@ const GUIDE_STEPS = [
         color: 'text-orange-500',
         buttonColor: 'bg-orange-600',
         bg: 'bg-orange-50 dark:bg-orange-500/10',
-        image: '/ScreenShots/9.GenerateRentForEveryTenantForThisMonth.png'
+        image: '/ScreenShots/9.GenerateRentForEveryTenantForThisMonth.webp'
     },
     {
         title: 'Advanced Analytics',
@@ -106,7 +106,7 @@ const GUIDE_STEPS = [
         color: 'text-violet-500',
         buttonColor: 'bg-violet-600',
         bg: 'bg-violet-50 dark:bg-violet-500/10',
-        image: '/ScreenShots/10.GenerateReceips_Statements_SeeCollections.png'
+        image: '/ScreenShots/10.GenerateReceips_Statements_SeeCollections.webp'
     },
     {
         title: 'Branded Document Export',
@@ -115,7 +115,7 @@ const GUIDE_STEPS = [
         color: 'text-cyan-500',
         buttonColor: 'bg-cyan-600',
         bg: 'bg-cyan-50 dark:bg-cyan-500/10',
-        image: '/ScreenShots/10.5DownloadReport_ReceiptsEasily.png'
+        image: '/ScreenShots/10.5DownloadReport_ReceiptsEasily.webp'
     },
     {
         title: 'Scale Without Limits',
@@ -124,7 +124,7 @@ const GUIDE_STEPS = [
         color: 'text-slate-700 dark:text-slate-300',
         buttonColor: 'bg-slate-800 dark:bg-slate-700',
         bg: 'bg-slate-100 dark:bg-slate-800',
-        image: '/ScreenShots/11.ExploreSubscription.png'
+        image: '/ScreenShots/11.ExploreSubscription.webp'
     }
 ]
 

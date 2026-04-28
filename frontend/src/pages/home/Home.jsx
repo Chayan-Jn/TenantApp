@@ -1,0 +1,316 @@
+import { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import Logo from '../../components/ui/Logo.jsx'
+import {
+    MdArrowForward, MdArrowBack, MdOutlineDomain,
+    MdOutlineBedroomParent, MdOutlineMeetingRoom, MdOutlineGroups,
+    MdOutlineReceiptLong, MdOutlinePayments, MdOutlinePieChart,
+    MdOutlineWarningAmber, MdOutlineCreditCard, MdAutoGraph,
+    MdOutlineAssessment, MdOutlineFileDownload, MdOutlineCardMembership,
+    MdLogin, MdPersonAdd, MdAutoAwesome
+} from 'react-icons/md'
+
+const FEATURES = [
+    {
+        title: 'Property Portfolio',
+        description: 'Oversee your entire portfolio from a single intuitive dashboard. Track total assets, occupancy, and performance.',
+        icon: MdOutlineDomain,
+        color: 'from-blue-500 to-blue-600',
+        image: '/ScreenShots/1.PropertyPage.webp'
+    },
+    {
+        title: 'Deep Property Insights',
+        description: 'Analyze occupancy rates, unit distributions, and real-time tenant statistics at a glance.',
+        icon: MdOutlineBedroomParent,
+        color: 'from-indigo-500 to-indigo-600',
+        image: '/ScreenShots/2.PropertyDetail_Units.webp'
+    },
+    {
+        title: 'Smart Unit Management',
+        description: 'Add, configure, and manage units across properties. Set base rents and track availability.',
+        icon: MdOutlineMeetingRoom,
+        color: 'from-emerald-500 to-emerald-600',
+        image: '/ScreenShots/3.UnitDetail_AddBills.webp'
+    },
+    {
+        title: 'Tenant Onboarding',
+        description: 'Full-lifecycle tenant management — onboarding to lease tracking and payment profiles.',
+        icon: MdOutlineGroups,
+        color: 'from-amber-500 to-amber-600',
+        image: '/ScreenShots/5.TenantDetail.webp'
+    },
+    {
+        title: 'Centralized Billing',
+        description: 'Manage utility bills and expenses. Track water, electricity, and maintenance costs effortlessly.',
+        icon: MdOutlineReceiptLong,
+        color: 'from-purple-500 to-purple-600',
+        image: '/ScreenShots/6.ManageBills.webp'
+    },
+    {
+        title: 'Intelligent Bill Splitting',
+        description: 'Automate complex calculations. Split master bills among tenants based on occupancy or custom rules.',
+        icon: MdOutlinePieChart,
+        color: 'from-pink-500 to-pink-600',
+        image: '/ScreenShots/6.5AddBillSplits.webp'
+    },
+    {
+        title: 'Overdue Tracking',
+        description: 'Intelligent alerts highlight overdue rents and bills before they become a problem.',
+        icon: MdOutlineWarningAmber,
+        color: 'from-red-500 to-red-600',
+        image: '/ScreenShots/7.OverdueRent.webp'
+    },
+    {
+        title: 'Payments Feed',
+        description: 'A transparent, searchable history of every transaction in one synchronized real-time feed.',
+        icon: MdOutlineCreditCard,
+        color: 'from-teal-500 to-teal-600',
+        image: '/ScreenShots/8.TenantPayment.webp'
+    },
+    {
+        title: 'Automated Rent Cycles',
+        description: 'Generate rent invoices for your entire portfolio automatically every month.',
+        icon: MdAutoGraph,
+        color: 'from-orange-500 to-orange-600',
+        image: '/ScreenShots/9.GenerateRentForEveryTenantForThisMonth.webp'
+    },
+    {
+        title: 'Advanced Analytics',
+        description: 'Generate comprehensive revenue reports, collection statements, and growth charts.',
+        icon: MdOutlineAssessment,
+        color: 'from-violet-500 to-violet-600',
+        image: '/ScreenShots/10.GenerateReceips_Statements_SeeCollections.webp'
+    },
+    {
+        title: 'PDF Exports',
+        description: 'Export crystal-clear PDFs for receipts and statements to share with stakeholders.',
+        icon: MdOutlineFileDownload,
+        color: 'from-cyan-500 to-cyan-600',
+        image: '/ScreenShots/10.5DownloadReport_ReceiptsEasily.webp'
+    },
+    {
+        title: 'Scale Without Limits',
+        description: 'Grow with confidence. Upgrade your plan seamlessly as your portfolio expands.',
+        icon: MdOutlineCardMembership,
+        color: 'from-slate-600 to-slate-700',
+        image: '/ScreenShots/11.ExploreSubscription.webp'
+    }
+]
+
+export default function Home() {
+    const [current, setCurrent] = useState(0)
+    const [isTransitioning, setIsTransitioning] = useState(false)
+
+    const goTo = useCallback((idx) => {
+        if (isTransitioning) return
+        setIsTransitioning(true)
+        setCurrent(idx)
+        setTimeout(() => setIsTransitioning(false), 500)
+    }, [isTransitioning])
+
+    const next = useCallback(() => goTo((current + 1) % FEATURES.length), [current, goTo])
+    const prev = useCallback(() => goTo((current - 1 + FEATURES.length) % FEATURES.length), [current, goTo])
+
+    // Auto-advance every 5 seconds
+    useEffect(() => {
+        const timer = setInterval(next, 5000)
+        return () => clearInterval(timer)
+    }, [next])
+
+    const feature = FEATURES[current]
+    const Icon = feature.icon
+
+    return (
+        <div className="min-h-screen flex flex-col lg:flex-row bg-white dark:bg-slate-950 transition-colors">
+
+            {/* ═══ LEFT PANEL — Branding + CTAs ═══ */}
+            <div className="relative lg:w-[45%] xl:w-[40%] overflow-hidden bg-slate-900 flex flex-col">
+                {/* Geometric BG */}
+                <div className="absolute inset-0 z-0 opacity-40">
+                    <svg className="w-full h-full" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="homeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style={{ stopColor: '#3b82f6', stopOpacity: 0.2 }} />
+                                <stop offset="100%" style={{ stopColor: '#1e40af', stopOpacity: 0.5 }} />
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,0 L800,0 L800,800 L0,800 Z" fill="#0f172a" />
+                        <polygon points="0,0 400,0 200,800 0,800" fill="url(#homeGrad)" />
+                        <circle cx="600" cy="200" r="300" fill="#3b82f6" opacity="0.1" />
+                        <path d="M400,0 Q600,400 300,800" stroke="#3b82f6" strokeWidth="2" fill="none" opacity="0.2" />
+                        <polygon points="500,100 700,300 600,600" fill="#1e40af" opacity="0.2" />
+                    </svg>
+                </div>
+
+                <div className="relative z-10 flex flex-col justify-between p-8 sm:p-12 lg:p-16 w-full text-white flex-1">
+                    {/* Logo */}
+                    <div className="flex items-center select-none">
+                        <Logo size="lg" />
+                    </div>
+
+                    {/* Headline */}
+                    <div className="my-8 lg:my-0">
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6 leading-tight">
+                            Manage your<br/>
+                            <span className="text-blue-500">properties</span> with<br/>
+                            absolute ease.
+                        </h1>
+                        <p className="text-base sm:text-lg lg:text-xl text-slate-400 max-w-md mb-8 lg:mb-10">
+                            Everything you need to track tenants, payments, and maintenance in one professional portal.
+                        </p>
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                            <Link
+                                to="/login"
+                                id="home-signin-btn"
+                                className="group flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] text-base"
+                            >
+                                <MdLogin size={20} />
+                                Sign In
+                                <MdArrowForward size={18} className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                            </Link>
+                            <Link
+                                to="/register"
+                                id="home-register-btn"
+                                className="group flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/20 hover:border-white/40 active:scale-[0.98] text-base backdrop-blur-sm"
+                            >
+                                <MdPersonAdd size={20} />
+                                Create Account
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center gap-4 text-sm text-slate-500 mt-8 lg:mt-0">
+                        <span>© 2026 MyTenant Platform</span>
+                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                        <span>Premium Property Management</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* ═══ RIGHT PANEL — Feature Carousel ═══ */}
+            <div className="flex-1 flex flex-col bg-gray-50 dark:bg-slate-900 relative overflow-hidden">
+                {/* Title bar */}
+                <div className="px-6 sm:px-10 pt-6 sm:pt-8 pb-3 flex items-center gap-3">
+                    <div className={`p-2 rounded-xl bg-gradient-to-br ${feature.color} text-white transition-all duration-500`}>
+                        <MdAutoAwesome size={20} />
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
+                        Quick Tour
+                    </h2>
+                    <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-200 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+                        {current + 1} / {FEATURES.length}
+                    </span>
+                </div>
+
+                {/* Screenshot area */}
+                <div className="flex-1 px-4 sm:px-8 pb-2 flex flex-col min-h-0">
+                    <div className="flex-1 relative rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl">
+                        {/* Gradient accent */}
+                        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color} transition-all duration-500`}></div>
+
+                        <div className="w-full h-full p-3 sm:p-5 flex flex-col">
+                            <img
+                                key={current}
+                                src={feature.image}
+                                alt={feature.title}
+                                onError={(e) => {
+                                    e.target.onerror = null
+                                    e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2394a3b8">Preview</text></svg>`
+                                }}
+                                className="w-full flex-1 object-contain object-top rounded-lg transition-opacity duration-500"
+                                style={{ 
+                                    animation: 'homeSlideIn 0.5s ease-out',
+                                    maxHeight: 'calc(100% - 80px)'
+                                }}
+                            />
+
+                            {/* Feature info */}
+                            <div className="mt-3 sm:mt-4 flex items-start gap-3">
+                                <div className={`shrink-0 p-2 rounded-xl bg-gradient-to-br ${feature.color} text-white transition-all duration-500`}>
+                                    <Icon size={22} />
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+                                        {feature.description}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Controls */}
+                <div className="px-6 sm:px-10 py-4 sm:py-5 flex items-center justify-between">
+                    {/* Dots */}
+                    <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        {FEATURES.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => goTo(i)}
+                                className={`h-2 rounded-full transition-all duration-500 cursor-pointer ${
+                                    i === current
+                                        ? `w-8 bg-gradient-to-r ${feature.color} shadow-md`
+                                        : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'
+                                }`}
+                                aria-label={`Feature ${i + 1}`}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Arrows */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={prev}
+                            className="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
+                        >
+                            <MdArrowBack size={20} />
+                        </button>
+                        <button
+                            onClick={next}
+                            className={`w-10 h-10 rounded-xl bg-gradient-to-r ${feature.color} text-white flex items-center justify-center hover:shadow-lg transition-all active:scale-95 cursor-pointer`}
+                        >
+                            <MdArrowForward size={20} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile-only CTA strip */}
+                <div className="lg:hidden px-6 pb-6 flex gap-3">
+                    <Link
+                        to="/login"
+                        className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] text-sm"
+                    >
+                        <MdLogin size={18} /> Sign In
+                    </Link>
+                    <Link
+                        to="/register"
+                        className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold rounded-xl transition-all active:scale-[0.98] text-sm"
+                    >
+                        <MdPersonAdd size={18} /> Register
+                    </Link>
+                </div>
+
+                {/* Legal links - Mobile only */}
+                <div className="lg:hidden pb-4 flex flex-wrap justify-center gap-x-4 gap-y-1">
+                    {[['Privacy Policy', '/privacy-policy'], ['Terms', '/terms'], ['Refund Policy', '/refund-policy'], ['Contact', '/contact']].map(([label, to]) => (
+                        <a key={to} href={to} className="text-[11px] text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors">{label}</a>
+                    ))}
+                </div>
+            </div>
+
+            {/* Keyframe animation */}
+            <style>{`
+                @keyframes homeSlideIn {
+                    from { opacity: 0; transform: translateX(20px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+            `}</style>
+        </div>
+    )
+}

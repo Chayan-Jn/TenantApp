@@ -2,6 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router'
 import { getMe } from './api/owner.api.js'
 import Layout from './components/layout/Layout.jsx'
 import GlobalError from './components/ui/GlobalError.jsx'
+import Home from './pages/home/Home.jsx'
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
 import Dashboard from './pages/dashboard/Dashboard.jsx'
@@ -31,7 +32,7 @@ const authLoader = async () => {
     const data = await getMe()
     return data
   } catch {
-    return redirect('/login')
+    return redirect('/home')
   }
 }
 
@@ -45,6 +46,12 @@ const guestLoader = async () => {
 }
 
 const router = createBrowserRouter([
+  {
+    path: '/home',
+    Component: Home,
+    errorElement: <GlobalError />,
+    loader: guestLoader
+  },
   {
     path: '/login',
     Component: Login,
