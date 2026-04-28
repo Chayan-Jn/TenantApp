@@ -63,10 +63,11 @@ const PRINT_STYLES = `
   .doc-footer { display: flex; justify-content: space-between; margin-top: 36px; padding-top: 16px; border-top: 1px solid #d4d4d4; font-size: 11px; color: #a3a3a3; }
 
   @media print { body { padding: 24px; } .no-print { display: none !important; } }
+  @media (max-width: 600px) { body { padding: 16px; font-size: 12px; } .info-row { flex-direction: column; gap: 16px; } .summary-row { flex-direction: column; gap: 8px; } .amount-block .value { font-size: 24px; } }
 `
 
 function openPrintWindow(htmlContent, title) {
-  const win = window.open('', '_blank', 'width=800,height=900')
+  const win = window.open('', '_blank')
   win.document.write(`<!DOCTYPE html><html><head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title><style>${PRINT_STYLES}</style></head><body>
