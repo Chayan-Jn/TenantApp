@@ -14,7 +14,7 @@ const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
 
 const PRINT_STYLES = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #1a1a1a; padding: 48px; background: #fff; font-size: 13px; line-height: 1.6; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #1a1a1a; padding: 32px; background: #fff; font-size: 13px; line-height: 1.6; }
   
   .doc { max-width: 680px; margin: 0 auto; }
   
@@ -63,20 +63,35 @@ const PRINT_STYLES = `
   .doc-footer { display: flex; justify-content: space-between; margin-top: 36px; padding-top: 16px; border-top: 1px solid #d4d4d4; font-size: 11px; color: #a3a3a3; }
 
   @media print { body { padding: 24px; } .no-print { display: none !important; } }
-  @media (max-width: 600px) { body { padding: 16px; font-size: 12px; } .info-row { flex-direction: column; gap: 16px; } .summary-row { flex-direction: column; gap: 8px; } .amount-block .value { font-size: 24px; } }
+  @media (max-width: 700px) {
+    body { padding: 14px; font-size: 12px; }
+    .doc { max-width: 100%; }
+    .info-row { flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .summary-row { flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .amount-block { padding: 16px; margin: 16px 0; }
+    .amount-block .value { font-size: 22px; }
+    table { font-size: 11px; }
+    th, td { padding: 6px 8px; }
+    .doc-footer { flex-direction: column; gap: 4px; font-size: 10px; }
+    .no-print button { width: 100%; padding: 14px; font-size: 15px; }
+  }
 `
 
 function openPrintWindow(htmlContent, title) {
-  const win = window.open('', '_blank')
-  win.document.write(`<!DOCTYPE html><html><head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  const html = `<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>${title}</title><style>${PRINT_STYLES}</style></head><body>
     <div class="doc">${htmlContent}</div>
-    <div class="no-print" style="text-align:center;margin-top:32px;">
-      <button onclick="window.print()" style="background:#262626;color:#fff;border:none;padding:10px 28px;border-radius:4px;font-weight:600;font-size:13px;cursor:pointer;">Print / Save as PDF</button>
+    <div class="no-print" style="text-align:center;margin-top:32px;padding-bottom:32px;">
+      <button onclick="window.print()" style="background:#262626;color:#fff;border:none;padding:12px 32px;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;width:auto;">Print / Save as PDF</button>
     </div>
-  </body></html>`)
-  win.document.close()
+  </body></html>`
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  window.open(url, '_blank')
+  // Revoke after a delay to allow the tab to load
+  setTimeout(() => URL.revokeObjectURL(url), 10000)
 }
 
 // ============ REPORT BUILDERS ============
