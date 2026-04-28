@@ -100,6 +100,11 @@ const FEATURES = [
 export default function Home() {
     const [current, setCurrent] = useState(0)
     const [isTransitioning, setIsTransitioning] = useState(false)
+    const [imageLoaded, setImageLoaded] = useState({})
+
+    const handleImageLoad = useCallback((idx) => {
+        setImageLoaded(prev => ({ ...prev, [idx]: true }))
+    }, [])
 
     const goTo = useCallback((idx) => {
         if (isTransitioning) return
@@ -212,20 +217,36 @@ export default function Home() {
                         <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color} transition-all duration-500`}></div>
 
                         <div className="w-full h-full p-3 sm:p-5 flex flex-col">
-                            <img
-                                key={current}
-                                src={feature.image}
-                                alt={feature.title}
-                                onError={(e) => {
-                                    e.target.onerror = null
-                                    e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2394a3b8">Preview</text></svg>`
-                                }}
-                                className="w-full flex-1 object-contain object-top rounded-lg transition-opacity duration-500"
-                                style={{ 
-                                    animation: 'homeSlideIn 0.5s ease-out',
-                                    maxHeight: 'calc(100% - 80px)'
-                                }}
-                            />
+                            <div className="relative w-full flex-1" style={{ maxHeight: 'calc(100% - 80px)' }}>
+                                {/* Shimmer skeleton — visible until image loads */}
+                                {!imageLoaded[current] && (
+                                    <div className="absolute inset-0 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
+                                        <div className="absolute inset-0 shimmer-bg"></div>
+                                        {/* Skeleton layout lines */}
+                                        <div className="absolute inset-4 flex flex-col gap-3">
+                                            <div className="h-4 w-2/5 rounded-md bg-slate-300/60 dark:bg-slate-600/60"></div>
+                                            <div className="flex-1 rounded-lg bg-slate-300/40 dark:bg-slate-600/40"></div>
+                                            <div className="flex gap-3">
+                                                <div className="h-3 flex-1 rounded bg-slate-300/50 dark:bg-slate-600/50"></div>
+                                                <div className="h-3 w-1/4 rounded bg-slate-300/50 dark:bg-slate-600/50"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <img
+                                    key={current}
+                                    src={feature.image}
+                                    alt={feature.title}
+                                    onLoad={() => handleImageLoad(current)}
+                                    onError={(e) => {
+                                        e.target.onerror = null
+                                        e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%2394a3b8">Preview</text></svg>`
+                                        handleImageLoad(current)
+                                    }}
+                                    className={`w-full h-full object-contain object-top rounded-lg transition-opacity duration-500 ${imageLoaded[current] ? 'opacity-100' : 'opacity-0'}`}
+                                    style={{ animation: imageLoaded[current] ? 'homeSlideIn 0.5s ease-out' : 'none' }}
+                                />
+                            </div>
 
                             {/* Feature info */}
                             <div className="mt-3 sm:mt-4 flex items-start gap-3">
@@ -309,6 +330,20 @@ export default function Home() {
                 @keyframes homeSlideIn {
                     from { opacity: 0; transform: translateX(20px); }
                     to { opacity: 1; transform: translateX(0); }
+                }
+                @keyframes shimmer {
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(100%); }
+                }
+                .shimmer-bg::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                    animation: shimmer 1.5s infinite;
+                }
+                .dark .shimmer-bg::after {
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
                 }
             `}</style>
         </div>
