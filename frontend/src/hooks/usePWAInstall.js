@@ -1,44 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
+/**
+ * Hook that reads the globally-captured PWA install prompt from main.jsx.
+ * The beforeinstallprompt event fires once, very early (before most components mount),
+ * so main.jsx captures it on window.__pwaInstallPrompt and dispatches a custom event.
+ */
 export function usePWAInstall() {
-  const [installPrompt, setInstallPrompt] = useState(null);
+  const [isInstallable, setIsInstallable] = useState(() => !!window.__pwaInstallPrompt);
 
   useEffect(() => {
-    const handler = (e) => {
-      // Prevent the mini-infobar from appearing automatically on Android
-      e.preventDefault();
-      // Stash the event so it can be triggered later by our custom button.
-      setInstallPrompt(e);
-    };
-
-    const installHandler = () => {
-      // Hide the prompt if the app was installed successfully
-      setInstallPrompt(null);
-    };
-
-    window.addEventListener('beforeinstallprompt', handler);
-    window.addEventListener('appinstalled', installHandler);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-      window.removeEventListener('appinstalled', installHandler);
-    };
+    const update = () => setIsInstallable(!!window.__pwaInstallPrompt);
+    window.addEventListener('pwa-install-available', update);
+    return () => window.removeEventListener('pwa-install-available', update);
   }, []);
 
-  const promptInstall = async () => {
-    if (!installPrompt) return;
-    
-    // Show the native install prompt
-    installPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    const { outcome } = await installPrompt.userChoice;
-    
-    // We no longer need the prompt. Clear it up if accepted.
+  const promptInstall = useCallback(async () => {
+    const prompt = window.__pwaInstallPrompt;
+    if (!prompt) return;
+    prompt.prompt();
+    const { outcome } = await prompt.userChoice;
     if (outcome === 'accepted') {
-      setInstallPrompt(null);
+      window.__pwaInstallPrompt = null;
+      setIsInstallable(false);
     }
-  };
+  }, []);
 
-  return { isInstallable: !!installPrompt, promptInstall };
+  return { isInstallable, promptInstall };
 }

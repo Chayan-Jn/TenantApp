@@ -39,11 +39,16 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Restrict "Add to Home Screen" install prompt to Android only
+// Capture PWA install prompt globally so React components can use it later.
+// The event fires once, very early — before most components mount.
+window.__pwaInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
-  const isAndroid = /android/i.test(navigator.userAgent || navigator.vendor || window.opera);
-  if (!isAndroid) {
-    // Prevent Chrome from showing the prompt on non-Android devices (e.g. Windows/Mac desktop)
-    e.preventDefault();
-  }
+  e.preventDefault(); // Prevent the automatic mini-infobar
+  window.__pwaInstallPrompt = e;
+  // Dispatch a custom event so any mounted React hook can react immediately
+  window.dispatchEvent(new Event('pwa-install-available'));
+});
+window.addEventListener('appinstalled', () => {
+  window.__pwaInstallPrompt = null;
+  window.dispatchEvent(new Event('pwa-install-available'));
 });

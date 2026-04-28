@@ -78,11 +78,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             </nav>
 
             {/* Install App Banner (Only visible on Android when installable) */}
-            {isInstallable && (
+            {isInstallable && /android/i.test(navigator.userAgent) && (
                 <div className="px-4 mb-4">
                     <button
                         onClick={promptInstall}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
                     >
                         <MdInstallMobile size={20} />
                         Install App
