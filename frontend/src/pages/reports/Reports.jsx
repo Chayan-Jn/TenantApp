@@ -4,6 +4,7 @@ import Card from '../../components/ui/Card.jsx'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 import { api } from '../../api/client.js'
 import { getLedger } from '../../api/ledger.api.js'
+import { getSavedSignature } from '../../components/ui/SignatureModal.jsx'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
@@ -79,7 +80,7 @@ function openPrintWindow(htmlContent, title) {
 
 // ============ REPORT BUILDERS ============
 
-function buildReceiptHTML(items, tenantInfo, ownerName) {
+function buildReceiptHTML(items, tenantInfo, ownerName, signatureDataUrl) {
   const total = items.reduce((s, d) => s + Number(d.amount), 0)
   const receiptId = `RR-${new Date().getFullYear()}-${String(items[0]?.id || 0).padStart(4, '0')}`
 
@@ -156,7 +157,10 @@ function buildReceiptHTML(items, tenantInfo, ownerName) {
       </div>
       <div class="info-col">
         <div class="info-label">Authorized Signature</div>
-        <div style="border-bottom:1px solid #d4d4d4;height:48px;margin-top:8px;"></div>
+        ${signatureDataUrl
+            ? `<img src="${signatureDataUrl}" alt="Signature" style="max-height:60px;max-width:180px;margin-top:8px;object-fit:contain;display:block;" />`
+            : `<div style="border-bottom:1px solid #d4d4d4;height:48px;margin-top:8px;"></div>`
+        }
       </div>
     </div>
 
@@ -169,7 +173,7 @@ function buildReceiptHTML(items, tenantInfo, ownerName) {
 
     <div class="doc-footer">
       <span>${receiptId}</span>
-      <span>This is a computer-generated receipt and does not require a physical signature</span>
+      <span>${signatureDataUrl ? 'Signed' : 'This is a computer-generated receipt and does not require a physical signature'}</span>
     </div>`
 }
 
@@ -394,7 +398,8 @@ export default function Reports() {
           propertyAddress = pRes.data?.address || ''
         } catch { /* ignore */ }
         const info = { ...tenantInfo, unit_label: tenantInfo.label, property_address: propertyAddress }
-        openPrintWindow(buildReceiptHTML(items, info, ownerName), `Receipt - ${tenantInfo.name}`)
+        const signature = getSavedSignature()
+        openPrintWindow(buildReceiptHTML(items, info, ownerName, signature), `Receipt - ${tenantInfo.name}`)
       }
 
       if (reportType === 'monthly_collection') {
@@ -573,7 +578,7 @@ export default function Reports() {
         )}
 
         {/* Generate button */}
-        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 transition-colors">
+        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 transition-colors flex items-center gap-4">
           <button
             onClick={handleGenerate}
             disabled={generating}
@@ -581,6 +586,19 @@ export default function Reports() {
           >
             {generating ? 'Generating...' : 'Generate Report'}
           </button>
+          {reportType === 'rent_receipt' && (() => {
+            const sig = getSavedSignature()
+            return sig ? (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                Signature will be included
+              </span>
+            ) : (
+              <span className="text-xs text-slate-400 dark:text-slate-500">
+                No signature — add one in <a href="/settings" className="underline hover:text-slate-600 dark:hover:text-slate-300">Settings</a>
+              </span>
+            )
+          })()}
         </div>
       </Card>
 

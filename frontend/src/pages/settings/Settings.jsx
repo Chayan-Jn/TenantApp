@@ -5,6 +5,7 @@ import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
 import Input from '../../components/ui/Input.jsx'
 import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
+import SignatureModal, { getSavedSignature, clearSavedSignature } from '../../components/ui/SignatureModal.jsx'
 
 export default function Settings() {
     const { data: owner } = useLoaderData()
@@ -23,6 +24,9 @@ export default function Settings() {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
     const [deleteError, setDeleteError] = useState('')
+
+    const [sigModalOpen, setSigModalOpen] = useState(false)
+    const [savedSig, setSavedSig] = useState(() => getSavedSignature())
 
     const handleNameChange = (e) => setNameForm({ ...nameForm, [e.target.name]: e.target.value })
     const handlePassChange = (e) => setPassForm({ ...passForm, [e.target.name]: e.target.value })
@@ -112,6 +116,39 @@ export default function Settings() {
                 </form>
             </Card>
 
+            {/* Signature */}
+            <Card className="border-gray-200 dark:border-slate-700 transition-colors">
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1 transition-colors">Signature</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Appears on receipts you generate. Stored on this device only.</p>
+
+                {savedSig ? (
+                    <div className="mb-4">
+                        <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 p-4 flex items-center justify-center" style={{ minHeight: 100 }}>
+                            <img src={savedSig} alt="Your signature" className="max-h-16 object-contain" />
+                        </div>
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">✓ Signature saved — will be included in receipts</p>
+                    </div>
+                ) : (
+                    <div className="mb-4 rounded-xl border-2 border-dashed border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 flex items-center justify-center p-6" style={{ minHeight: 80 }}>
+                        <p className="text-sm text-gray-400 dark:text-slate-500">No signature saved yet</p>
+                    </div>
+                )}
+
+                <div className="flex gap-3">
+                    <Button onClick={() => setSigModalOpen(true)} className="self-start">
+                        {savedSig ? 'Update Signature' : 'Add Signature'}
+                    </Button>
+                    {savedSig && (
+                        <button
+                            onClick={() => { clearSavedSignature(); setSavedSig(null) }}
+                            className="px-4 py-2 text-sm font-semibold text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
+                        >
+                            Remove
+                        </button>
+                    )}
+                </div>
+            </Card>
+
             {/* Password */}
             <Card className="border-gray-200 dark:border-slate-700 transition-colors">
                 <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 transition-colors">Change Password</h2>
@@ -153,6 +190,12 @@ export default function Settings() {
                     Delete Account
                 </Button>
             </Card>
+
+            <SignatureModal
+                isOpen={sigModalOpen}
+                onClose={() => setSigModalOpen(false)}
+                onSave={(dataUrl) => setSavedSig(dataUrl)}
+            />
 
             <ConfirmModal
                 open={deleteModalOpen}
