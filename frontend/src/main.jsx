@@ -29,3 +29,21 @@ createRoot(document.getElementById('root')).render(
     </GoogleOAuthProvider>
   </StrictMode>
 )
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
+
+// Restrict "Add to Home Screen" install prompt to Android only
+window.addEventListener('beforeinstallprompt', (e) => {
+  const isAndroid = /android/i.test(navigator.userAgent || navigator.vendor || window.opera);
+  if (!isAndroid) {
+    // Prevent Chrome from showing the prompt on non-Android devices (e.g. Windows/Mac desktop)
+    e.preventDefault();
+  }
+});
