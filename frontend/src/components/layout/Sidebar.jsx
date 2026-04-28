@@ -10,8 +10,10 @@ import {
     MdOutlineReceiptLong,
     MdOutlineDescription,
     MdOutlineCardMembership,
-    MdClose
+    MdClose,
+    MdInstallMobile
 } from 'react-icons/md'
+import { usePWAInstall } from '../../hooks/usePWAInstall.js'
 
 const links = [
     { to: '/dashboard', label: 'Dashboard', icon: MdOutlineSpaceDashboard },
@@ -25,6 +27,8 @@ const links = [
 ]
 
 export default function Sidebar({ isOpen, setIsOpen }) {
+    const { isInstallable, promptInstall } = usePWAInstall();
+
     return (
         <aside className={`fixed inset-y-0 left-0 z-50 w-64 h-full bg-[#1e293b] flex flex-col text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 
@@ -72,6 +76,19 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     )
                 })}
             </nav>
+
+            {/* Install App Banner (Only visible on Android when installable) */}
+            {isInstallable && (
+                <div className="px-4 mb-4">
+                    <button
+                        onClick={promptInstall}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+                    >
+                        <MdInstallMobile size={20} />
+                        Install App
+                    </button>
+                </div>
+            )}
 
             {/* Legal footer */}
             <div className="px-5 pb-5 pt-3 border-t border-slate-700/60">
