@@ -2,28 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router'
 import { getMe } from './api/owner.api.js'
 import Layout from './components/layout/Layout.jsx'
 import GlobalError from './components/ui/GlobalError.jsx'
-import Home from './pages/home/Home.jsx'
-import Login from './pages/auth/Login.jsx'
-import Register from './pages/auth/Register.jsx'
-import Dashboard from './pages/dashboard/Dashboard.jsx'
-import Properties from './pages/properties/Properties.jsx'
-import PropertyDetail from './pages/properties/PropertyDetail.jsx'
-import UnitDetail from './pages/units/UnitDetail.jsx'
-import TenantDetail from './pages/tenants/TenantDetail.jsx'
-import Overdue from './pages/rent/Overdue.jsx'
-import Settings from './pages/settings/Settings.jsx'
-import Payments from './pages/payments/Payments.jsx'
-import PropertyTenants from './pages/properties/PropertyTenants.jsx'
-import Bills from './pages/bills/Bills.jsx'
-import Reports from './pages/reports/Reports.jsx'
-import SubscriptionPage from './pages/subscription/SubscriptionPage.jsx'
-import PricingPage from './pages/subscription/PricingPage.jsx'
-import SubscriptionExpired from './pages/subscription/SubscriptionExpired.jsx'
 import LegalLayout from './pages/legal/LegalLayout.jsx'
-import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx'
-import TermsOfService from './pages/legal/TermsOfService.jsx'
-import RefundPolicy from './pages/legal/RefundPolicy.jsx'
-import ContactPage from './pages/legal/ContactPage.jsx'
 
 
 
@@ -48,19 +27,19 @@ const guestLoader = async () => {
 const router = createBrowserRouter([
   {
     path: '/home',
-    Component: Home,
+    lazy: () => import('./pages/home/Home.jsx').then(m => ({ Component: m.default })),
     errorElement: <GlobalError />,
     loader: guestLoader
   },
   {
     path: '/login',
-    Component: Login,
+    lazy: () => import('./pages/auth/Login.jsx').then(m => ({ Component: m.default })),
     errorElement: <GlobalError />,
     loader: guestLoader
   },
   {
     path: '/register',
-    Component: Register,
+    lazy: () => import('./pages/auth/Register.jsx').then(m => ({ Component: m.default })),
     errorElement: <GlobalError />,
     loader: guestLoader
   },
@@ -74,7 +53,7 @@ const router = createBrowserRouter([
       { index: true, loader: () => redirect('/dashboard') },
       {
         path: 'dashboard',
-        Component: Dashboard,
+        lazy: () => import('./pages/dashboard/Dashboard.jsx').then(m => ({ Component: m.default })),
         loader: async () => {
           const { api } = await import('./api/client.js')
           try {
@@ -87,12 +66,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'properties',
-        Component: Properties,
+        lazy: () => import('./pages/properties/Properties.jsx').then(m => ({ Component: m.default })),
         loader: authLoader
       },
       {
         path: 'properties/:id',
-        Component: PropertyDetail,
+        lazy: () => import('./pages/properties/PropertyDetail.jsx').then(m => ({ Component: m.default })),
         loader: async ({ params }) => {
           const { getUnits } = await import('./api/unit.api.js')
           const { api } = await import('./api/client.js')
@@ -109,7 +88,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'units/:id',
-        Component: UnitDetail,
+        lazy: () => import('./pages/units/UnitDetail.jsx').then(m => ({ Component: m.default })),
         loader: async ({ params }) => {
           const { getTenants } = await import('./api/tenant.api.js')
           const { api } = await import('./api/client.js')
@@ -140,7 +119,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'tenants/:id',
-        Component: TenantDetail,
+        lazy: () => import('./pages/tenants/TenantDetail.jsx').then(m => ({ Component: m.default })),
         loader: async ({ params }) => {
           const { getRentByTenant } = await import('./api/rent.api.js')
           const { api } = await import('./api/client.js')
@@ -157,7 +136,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'rent/overdue',
-        Component: Overdue,
+        lazy: () => import('./pages/rent/Overdue.jsx').then(m => ({ Component: m.default })),
         loader: async () => {
           const { getProperties } = await import('./api/property.api.js')
           try {
@@ -170,12 +149,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'settings',
-        Component: Settings,
+        lazy: () => import('./pages/settings/Settings.jsx').then(m => ({ Component: m.default })),
         loader: authLoader
       },
       {
         path: 'payments',
-        Component: Payments,
+        lazy: () => import('./pages/payments/Payments.jsx').then(m => ({ Component: m.default })),
         loader: async () => {
           const { getProperties } = await import('./api/property.api.js')
           try {
@@ -188,7 +167,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'properties/:id/tenants',
-        Component: PropertyTenants,
+        lazy: () => import('./pages/properties/PropertyTenants.jsx').then(m => ({ Component: m.default })),
         loader: async ({ params }) => {
           const { getTenants } = await import('./api/tenant.api.js')
 
@@ -213,7 +192,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'bills',
-        Component: Bills,
+        lazy: () => import('./pages/bills/Bills.jsx').then(m => ({ Component: m.default })),
         loader: async () => {
           const { getProperties } = await import('./api/property.api.js')
           try {
@@ -226,7 +205,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'reports',
-        Component: Reports,
+        lazy: () => import('./pages/reports/Reports.jsx').then(m => ({ Component: m.default })),
         loader: async () => {
           const { getProperties } = await import('./api/property.api.js')
           const { getMe } = await import('./api/owner.api.js')
@@ -251,17 +230,17 @@ const router = createBrowserRouter([
       },
       {
         path: 'subscription',
-        Component: SubscriptionPage,
+        lazy: () => import('./pages/subscription/SubscriptionPage.jsx').then(m => ({ Component: m.default })),
         loader: authLoader
       },
       {
         path: 'pricing',
-        Component: PricingPage,
+        lazy: () => import('./pages/subscription/PricingPage.jsx').then(m => ({ Component: m.default })),
         loader: authLoader
       },
       {
         path: 'subscription/expired',
-        Component: SubscriptionExpired,
+        lazy: () => import('./pages/subscription/SubscriptionExpired.jsx').then(m => ({ Component: m.default })),
         loader: authLoader
       }
 
@@ -274,10 +253,10 @@ const router = createBrowserRouter([
     Component: LegalLayout,
     errorElement: <GlobalError />,
     children: [
-      { path: 'privacy-policy', Component: PrivacyPolicy },
-      { path: 'terms', Component: TermsOfService },
-      { path: 'refund-policy', Component: RefundPolicy },
-      { path: 'contact', Component: ContactPage },
+      { path: 'privacy-policy', lazy: () => import('./pages/legal/PrivacyPolicy.jsx').then(m => ({ Component: m.default })) },
+      { path: 'terms', lazy: () => import('./pages/legal/TermsOfService.jsx').then(m => ({ Component: m.default })) },
+      { path: 'refund-policy', lazy: () => import('./pages/legal/RefundPolicy.jsx').then(m => ({ Component: m.default })) },
+      { path: 'contact', lazy: () => import('./pages/legal/ContactPage.jsx').then(m => ({ Component: m.default })) },
     ]
   }
 ])
