@@ -17,7 +17,7 @@ export default function Logo({ size = 'md', className = '' }) {
         className="absolute inset-[-14px] border-[2px] border-blue-500/50 rounded-[100%] transition-all duration-700 group-hover:scale-110"
         style={{ 
           transform: 'rotateX(65deg) rotateY(15deg)',
-          animation: 'ring-spin 12s linear infinite'
+          animation: 'ring-spin 12s linear infinite, logo-fade-in 0.6s ease-out both'
         }}
       ></div>
       
@@ -26,7 +26,7 @@ export default function Logo({ size = 'md', className = '' }) {
         className="absolute inset-[-8px] border-[1.5px] border-orange-500/40 rounded-[100%]"
         style={{ 
           transform: 'rotateX(75deg) rotateY(-20deg)',
-          animation: 'ring-spin-reverse 18s linear infinite'
+          animation: 'ring-spin-reverse 18s linear infinite, logo-fade-in 0.6s ease-out 0.1s both'
         }}
       ></div>
 
@@ -38,6 +38,10 @@ export default function Logo({ size = 'md', className = '' }) {
         @keyframes ring-spin-reverse {
           from { transform: rotateX(75deg) rotateY(-20deg) rotateZ(360deg); }
           to { transform: rotateX(75deg) rotateY(-20deg) rotateZ(0deg); }
+        }
+        @keyframes logo-fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
       `}</style>
 
@@ -52,3 +56,4 @@ export default function Logo({ size = 'md', className = '' }) {
     </div>
   )
 }
+

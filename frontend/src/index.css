@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+/* Font is loaded non-blocking from index.html — do NOT use @import here */
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
