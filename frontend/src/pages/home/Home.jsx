@@ -228,7 +228,7 @@ export default function Home() {
                         <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color} transition-all duration-500`}></div>
 
                         <div className="w-full h-full p-3 sm:p-5 flex flex-col">
-                            <div className="relative w-full flex-1" style={{ maxHeight: 'calc(100% - 80px)' }}>
+                            <div className="relative w-full aspect-video lg:aspect-auto lg:flex-1" style={{ maxHeight: 'calc(100% - 80px)' }}>
                                 {/* Shimmer skeleton — visible until image loads */}
                                 {!imageLoaded[current] && (
                                     <div className="absolute inset-0 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
