@@ -11,7 +11,7 @@ const authLoader = async () => {
     const data = await getMe()
     return data
   } catch {
-    return redirect('/home')
+    return redirect('/')
   }
 }
 
@@ -25,10 +25,16 @@ const guestLoader = async () => {
 }
 
 const router = createBrowserRouter([
+  // ── Homepage at root — no auth required, no redirect ──
   {
-    path: '/home',
+    path: '/',
     lazy: () => import('./pages/home/Home.jsx').then(m => ({ Component: m.default })),
     errorElement: <GlobalError />,
+  },
+  // ── Redirect old /home bookmarks to root ──
+  {
+    path: '/home',
+    loader: () => redirect('/'),
   },
   {
     path: '/login',
@@ -42,6 +48,7 @@ const router = createBrowserRouter([
     errorElement: <GlobalError />,
     loader: guestLoader
   },
+  // ── Auth-protected app routes ──
   {
     path: '/',
     id: 'root',
@@ -49,7 +56,6 @@ const router = createBrowserRouter([
     errorElement: <GlobalError />,
     loader: authLoader,
     children: [
-      { index: true, loader: () => redirect('/dashboard') },
       {
         path: 'dashboard',
         lazy: () => import('./pages/dashboard/Dashboard.jsx').then(m => ({ Component: m.default })),
