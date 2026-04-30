@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { useEffect } from 'react'
 import router from './router.jsx'
+import GlobalLoader from './components/ui/GlobalLoader.jsx'
 
 export default function App() {
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <RouterProvider router={router} fallbackElement={<GlobalLoader />} />
       <Analytics />
       <SpeedInsights />
     </>

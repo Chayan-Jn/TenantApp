@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { getMe } from '../../api/owner.api.js'
 import Logo from '../../components/ui/Logo.jsx'
 import {
     MdArrowForward, MdArrowBack, MdOutlineDomain,
@@ -98,9 +99,15 @@ const FEATURES = [
 ]
 
 export default function Home() {
+    const navigate = useNavigate()
     const [current, setCurrent] = useState(0)
     const [isTransitioning, setIsTransitioning] = useState(false)
     const [imageLoaded, setImageLoaded] = useState({})
+
+    // Non-blocking auth check — redirect logged-in users after paint
+    useEffect(() => {
+        getMe().then(() => navigate('/dashboard', { replace: true })).catch(() => {})
+    }, [navigate])
 
     const handleImageLoad = useCallback((idx) => {
         setImageLoaded(prev => ({ ...prev, [idx]: true }))

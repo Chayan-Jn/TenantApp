@@ -29,7 +29,6 @@ const router = createBrowserRouter([
     path: '/home',
     lazy: () => import('./pages/home/Home.jsx').then(m => ({ Component: m.default })),
     errorElement: <GlobalError />,
-    loader: guestLoader
   },
   {
     path: '/login',

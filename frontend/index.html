@@ -21,15 +21,16 @@
     <meta property="twitter:description" content="MyTenant is a modern real estate property and tenant management platform offering automated rent ledgers, bill management, document storage, and easy PDF reporting." />
     <meta property="twitter:image" content="https://mytenant.me/logo.png" />
 
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0f172a" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Preload LCP Element (Hero Image) -->
-    <link rel="preload" as="image" href="/ScreenShots/1.PropertyPage.webp" type="image/webp" />
+    <!-- Non-render-blocking font load -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" /></noscript>
     <style>
       body { font-family: 'Outfit', sans-serif; }
     </style>
@@ -43,19 +44,18 @@
           .ld-pulse{position:relative;overflow:hidden;border-radius:8px;background:#1e293b}
           .ld-pulse::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);animation:ld-shimmer 1.5s infinite}
         </style>
-        <!-- Left branding skeleton -->
+        <!-- Left branding skeleton with real text for instant FCP -->
         <div style="width:40%;padding:48px;display:flex;flex-direction:column;justify-content:space-between" class="ld-hide-mobile">
-          <div class="ld-pulse" style="width:64px;height:64px;border-radius:50%"></div>
+          <div style="width:64px;height:64px;border-radius:50%;overflow:hidden"><img src="/logo-96.png" alt="MyTenant" width="64" height="64" style="width:100%;height:100%;object-fit:cover" /></div>
           <div>
-            <div class="ld-pulse" style="height:40px;width:80%;margin-bottom:16px"></div>
-            <div class="ld-pulse" style="height:40px;width:60%;margin-bottom:16px"></div>
-            <div class="ld-pulse" style="height:20px;width:70%;margin-bottom:32px"></div>
+            <h1 style="font-size:2.8rem;font-weight:700;color:#fff;line-height:1.2;margin:0 0 16px">Manage your<br><span style="color:#3b82f6">properties</span> with<br>absolute ease.</h1>
+            <p style="font-size:1.1rem;color:#94a3b8;margin:0 0 32px;max-width:28rem">Everything you need to track tenants, payments, and maintenance in one professional portal.</p>
             <div style="display:flex;gap:12px">
               <div class="ld-pulse" style="height:48px;width:140px;border-radius:12px"></div>
               <div class="ld-pulse" style="height:48px;width:160px;border-radius:12px"></div>
             </div>
           </div>
-          <div class="ld-pulse" style="height:14px;width:50%"></div>
+          <div style="font-size:0.875rem;color:#64748b">© 2026 MyTenant Platform</div>
         </div>
         <!-- Right carousel skeleton -->
         <div style="flex:1;background:#f8fafc;padding:32px;display:flex;flex-direction:column;gap:16px">
