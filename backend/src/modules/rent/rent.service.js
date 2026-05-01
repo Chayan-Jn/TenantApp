@@ -148,7 +148,7 @@ export const generateMonthlyRent = async ({ property_id, month, year, owner_id }
 
     // 2. Fetch tenants who are active AND joined before the cutoff date
     const query = `
-      SELECT t.id, t.join_date, u.rent
+      SELECT t.id, t.join_date, t.rent_due_day, u.rent
       FROM tenants t
       JOIN units u ON t.unit_id = u.id
       JOIN properties p ON u.property_id = p.id
@@ -186,9 +186,20 @@ export const generateMonthlyRent = async ({ property_id, month, year, owner_id }
     for (const tenant of tenants.rows) {
       if (existingIds.has(tenant.id)) continue
       
-      let joinDay = new Date(tenant.join_date).getDate()
-      joinDay = Math.min(joinDay, daysInMonth)
-      const due_date = `${year}-${String(month).padStart(2, '0')}-${String(joinDay).padStart(2, '0')}`
+      // Use custom rent_due_day if set, otherwise safely extract the day from join_date
+      let joinDay;
+      if (typeof tenant.join_date === 'string') {
+        joinDay = parseInt(tenant.join_date.split('-')[2].substring(0, 2), 10);
+      } else {
+        // If it's a Date object, getUTCDate() is safer if the driver parsed it as UTC
+        // But to be absolutely timezone safe, we can use the string representation
+        const iso = tenant.join_date.toISOString();
+        joinDay = parseInt(iso.split('-')[2].substring(0, 2), 10);
+      }
+      
+      let dueDay = tenant.rent_due_day || joinDay;
+      dueDay = Math.min(dueDay, daysInMonth)
+      const due_date = `${year}-${String(month).padStart(2, '0')}-${String(dueDay).padStart(2, '0')}`
 
       const offset = insertParams.length
       insertValues.push(`($${offset + 1}, $${offset + 2}, $${offset + 3})`)

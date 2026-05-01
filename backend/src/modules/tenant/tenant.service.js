@@ -13,7 +13,7 @@ const verifyUnitOwner = async (unit_id, owner_id) => {
   if (!result.rows.length) throw new Error('Unit not found or unauthorized')
 }
 
-export const createTenant = async ({ unit_id, name, phone, join_date, security_deposit, owner_id }) => {
+export const createTenant = async ({ unit_id, name, phone, join_date, security_deposit, notice_period_days, rent_due_day, owner_id }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -29,8 +29,9 @@ export const createTenant = async ({ unit_id, name, phone, join_date, security_d
     const unit = unitCheck.rows[0]
 
     const tenantResult = await client.query(
-      'INSERT INTO tenants (unit_id, name, phone, join_date, security_deposit) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [unit_id, name, phone, join_date, security_deposit || 0]
+      `INSERT INTO tenants (unit_id, name, phone, join_date, security_deposit, notice_period_days, rent_due_day)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [unit_id, name, phone, join_date, security_deposit || 0, notice_period_days || 0, rent_due_day || null]
     )
     const newTenant = tenantResult.rows[0]
 
@@ -63,7 +64,7 @@ export const createTenant = async ({ unit_id, name, phone, join_date, security_d
   }
 }
 
-export const removeTenant = async (id, owner_id, { deposit_refunded, deposit_note } = {}) => {
+export const removeTenant = async (id, owner_id, { deposit_refunded, deposit_note, leave_date } = {}) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -77,8 +78,10 @@ export const removeTenant = async (id, owner_id, { deposit_refunded, deposit_not
     }
 
     // Perform Soft Delete (set leave_date) + record deposit refund
+    // Use provided leave_date or default to NOW()
+    const leaveExpr = leave_date ? `$5::date` : `NOW()`
     const result = await client.query(
-      `UPDATE tenants SET leave_date = NOW(),
+      `UPDATE tenants SET leave_date = ${leaveExpr},
         deposit_refunded = COALESCE($3, 0),
         deposit_note = COALESCE($4, '')
        WHERE id = $1
@@ -88,7 +91,9 @@ export const removeTenant = async (id, owner_id, { deposit_refunded, deposit_not
          WHERE p.owner_id = $2
        )
        RETURNING *`,
-      [id, owner_id, deposit_refunded || 0, deposit_note || '']
+      leave_date
+        ? [id, owner_id, deposit_refunded || 0, deposit_note || '', leave_date]
+        : [id, owner_id, deposit_refunded || 0, deposit_note || '']
     )
     
     if (!result.rows.length) throw new Error('Tenant not found or unauthorized')
@@ -130,20 +135,78 @@ export const getTenantById = async (id, owner_id) => {
     throw err
   }
 }
-export const updateTenant = async (id, { name, phone }, owner_id) => {
+export const updateTenant = async (id, { name, phone, rent_due_day, expected_move_out, notice_period_days }, owner_id) => {
   try {
+    const fields = []
+    const values = []
+    let idx = 1
+
+    if (name !== undefined) { fields.push(`name = $${idx++}`); values.push(name) }
+    if (phone !== undefined) { fields.push(`phone = $${idx++}`); values.push(phone) }
+    if (rent_due_day !== undefined) {
+      fields.push(`rent_due_day = $${idx++}`)
+      values.push(rent_due_day) // can be null to clear it
+    }
+    if (expected_move_out !== undefined) {
+      fields.push(`expected_move_out = $${idx++}::date`)
+      values.push(expected_move_out)
+    }
+    if (notice_period_days !== undefined) {
+      fields.push(`notice_period_days = $${idx++}`)
+      values.push(notice_period_days)
+    }
+
+    if (fields.length === 0) throw new Error('No fields to update')
+
+    values.push(id)
+    const idIdx = idx++
+    values.push(owner_id)
+    const ownerIdx = idx
+
     const result = await pool.query(
-      `UPDATE tenants SET name = $1, phone = $2
-       WHERE id = $3
+      `UPDATE tenants SET ${fields.join(', ')}
+       WHERE id = $${idIdx}
        AND unit_id IN (
          SELECT u.id FROM units u
          JOIN properties p ON u.property_id = p.id
-         WHERE p.owner_id = $4
+         WHERE p.owner_id = $${ownerIdx}
        )
        RETURNING *`,
-      [name, phone, id, owner_id]
+      values
     )
     if (!result.rows.length) throw new Error('Tenant not found or unauthorized')
+    return result.rows[0]
+  } catch (err) {
+    throw err
+  }
+}
+
+export const giveNotice = async (id, owner_id, expectedMoveOut) => {
+  try {
+    // Verify tenant exists, is active, and hasn't already given notice
+    const check = await pool.query(
+      `SELECT t.id, t.notice_period_days, t.notice_date, t.leave_date
+       FROM tenants t
+       JOIN units u ON t.unit_id = u.id
+       JOIN properties p ON u.property_id = p.id
+       WHERE t.id = $1 AND p.owner_id = $2`,
+      [id, owner_id]
+    )
+    if (!check.rows.length) throw new Error('Tenant not found or unauthorized')
+    if (check.rows[0].leave_date) throw new Error('Tenant has already moved out')
+    if (check.rows[0].notice_date) throw new Error('Notice has already been given')
+
+    const noticeDays = check.rows[0].notice_period_days || 0
+    const moveOutExpr = expectedMoveOut ? `$2::date` : `CURRENT_DATE + ($2 * interval '1 day')`
+
+    const result = await pool.query(
+      `UPDATE tenants
+       SET notice_date = CURRENT_DATE,
+           expected_move_out = ${moveOutExpr}
+       WHERE id = $1
+       RETURNING *`,
+      expectedMoveOut ? [id, expectedMoveOut] : [id, noticeDays]
+    )
     return result.rows[0]
   } catch (err) {
     throw err

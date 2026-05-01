@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router'
 import { createRent, markRentPaid, markRentUnpaid, getRentByTenant, updateRent, deleteRent } from '../../api/rent.api.js'
-import { removeTenant, updateTenant } from '../../api/tenant.api.js'
+import { removeTenant, updateTenant, giveNotice } from '../../api/tenant.api.js'
 import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
@@ -16,6 +16,12 @@ const statusVariant = { paid: 'green', pending: 'yellow', overdue: 'crimson' }
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
+const getLocalISODate = () => {
+  const d = new Date()
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+  return d.toISOString().split('T')[0]
+}
 
 const getStatus = (rent) => {
   if (rent.status === 'paid') return 'paid'
@@ -39,14 +45,22 @@ export default function TenantDetail() {
   const [rentModal, setRentModal] = useState(false)
   const [removeModal, setRemoveModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
-  const [refundForm, setRefundForm] = useState({ deposit_refunded: String(initialTenant.security_deposit || 0), deposit_note: '' })
+  const [noticeModal, setNoticeModal] = useState({ open: false, date: '' })
+  const [editMoveOutModal, setEditMoveOutModal] = useState({ open: false, date: '' })
+  const [refundForm, setRefundForm] = useState({ deposit_refunded: String(initialTenant.security_deposit || 0), deposit_note: '', leave_date: getLocalISODate() })
   const [loading, setLoading] = useState(false)
+  const [noticeLoading, setNoticeLoading] = useState(false)
   const [editLoading, setEditLoading] = useState(false)
   const [error, setError] = useState('')
   const [editError, setEditError] = useState('')
   const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
   const [form, setForm] = useState({ amount: '', due_date: '' })
-  const [editForm, setEditForm] = useState({ name: tenant.name, phone: tenant.phone })
+  const [editForm, setEditForm] = useState({ 
+    name: '', 
+    phone: '', 
+    rent_due_day: '', 
+    notice_period_days: '' 
+  })
   const [editRentModal, setEditRentModal] = useState(false)
   const [editRentForm, setEditRentForm] = useState({ id: null, amount: '', due_date: '' })
   const [deleteRentId, setDeleteRentId] = useState(null)
@@ -99,7 +113,8 @@ export default function TenantDetail() {
     try {
       await removeTenant(tenant_id, {
         deposit_refunded: Number(refundForm.deposit_refunded) || 0,
-        deposit_note: refundForm.deposit_note
+        deposit_note: refundForm.deposit_note,
+        leave_date: refundForm.leave_date || undefined
       })
       navigate(`/units/${tenant.unit_id}`)
     } catch (err) {
@@ -109,18 +124,92 @@ export default function TenantDetail() {
     }
   }
 
+  const handleGiveNotice = async (e) => {
+    if (e) e.preventDefault()
+    setNoticeLoading(true)
+    try {
+      const payload = noticeModal.date ? { expected_move_out: noticeModal.date } : {}
+      const res = await giveNotice(tenant_id, payload)
+      setTenant({ ...tenant, ...res.data })
+      setNoticeModal({ open: false, date: '' })
+    } catch (err) {
+      setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
+    } finally {
+      setNoticeLoading(false)
+    }
+  }
+
+  const openNoticeModal = () => {
+    // Pre-calculate the default date (Today + notice_period_days)
+    const defaultDate = new Date()
+    defaultDate.setDate(defaultDate.getDate() + (tenant.notice_period_days || 0))
+    defaultDate.setMinutes(defaultDate.getMinutes() - defaultDate.getTimezoneOffset())
+    setNoticeModal({ open: true, date: defaultDate.toISOString().split('T')[0] })
+  }
+
+  const openEditModal = () => {
+    setEditForm({
+      name: tenant.name,
+      phone: tenant.phone,
+      rent_due_day: tenant.rent_due_day ? String(tenant.rent_due_day) : '',
+      notice_period_days: tenant.notice_period_days !== null ? String(tenant.notice_period_days) : '0'
+    })
+    setEditModal(true)
+  }
+
+  const getDuration = () => {
+    const start = new Date(tenant.join_date)
+    const end = refundForm.leave_date ? new Date(refundForm.leave_date) : new Date()
+    const diffMs = end - start
+    if (diffMs < 0) return null
+    const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const months = Math.floor(totalDays / 30)
+    const days = totalDays % 30
+    return { months, days, totalDays }
+  }
+
+  const getNoticeCompliance = () => {
+    if (!tenant.notice_period_days || tenant.notice_period_days === 0) return null
+    if (!tenant.notice_date) return { ok: false, label: 'No notice given' }
+    const moveOut = refundForm.leave_date ? new Date(refundForm.leave_date) : new Date()
+    const expected = new Date(tenant.expected_move_out)
+    return moveOut >= expected
+      ? { ok: true, label: 'Notice period served ✓' }
+      : { ok: false, label: 'Early departure — notice not fully served' }
+  }
+
   const handleUpdateTenant = async (e) => {
     e.preventDefault()
     setEditLoading(true)
     setEditError('')
     try {
-      const res = await updateTenant(tenant_id, editForm)
+      const payload = {
+        name: editForm.name,
+        phone: editForm.phone,
+        rent_due_day: editForm.rent_due_day ? Number(editForm.rent_due_day) : null,
+        notice_period_days: editForm.notice_period_days !== '' ? Number(editForm.notice_period_days) : 0
+      }
+      const res = await updateTenant(tenant_id, payload)
       setTenant({ ...tenant, ...res.data })
       setEditModal(false)
     } catch (err) {
-      setEditError(err.message)
+      setError(err.message)
     } finally {
       setEditLoading(false)
+    }
+  }
+
+  const handleUpdateMoveOutDate = async (e) => {
+    if (e) e.preventDefault()
+    setNoticeLoading(true)
+    try {
+      const res = await updateTenant(tenant_id, { expected_move_out: editMoveOutModal.date })
+      setTenant({ ...tenant, ...res.data })
+      setEditMoveOutModal({ open: false, date: '' })
+    } catch (err) {
+      setAlertInfo({ open: true, message: err.response?.data?.message || err.message })
+    } finally {
+      setNoticeLoading(false)
     }
   }
 
@@ -197,7 +286,39 @@ export default function TenantDetail() {
                 : <span className="text-rose-500 dark:text-rose-400 font-medium">Left: {formatDate(tenant.leave_date)}</span>
               }
               <span>Deposit: {formatCurrency(tenant.security_deposit || 0)}</span>
+              {tenant.notice_period_days > 0 && <span>Notice: {tenant.notice_period_days} days</span>}
+              {tenant.rent_due_day && <span>Due day: {tenant.rent_due_day}{tenant.rent_due_day === 1 ? 'st' : tenant.rent_due_day === 2 ? 'nd' : tenant.rent_due_day === 3 ? 'rd' : 'th'}</span>}
             </div>
+            {/* Notice Given Banner */}
+            {isActive && tenant.notice_date && (
+              <div className="mt-3 flex flex-wrap items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg px-3 py-2 transition-colors">
+                <span className="text-amber-700 dark:text-amber-300 text-sm font-medium">🔔 Notice given {formatDate(tenant.notice_date)}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-amber-600 dark:text-amber-400 text-xs">· Expected move-out: {formatDate(tenant.expected_move_out)}</span>
+                  <button onClick={() => setEditMoveOutModal({ open: true, date: new Date(tenant.expected_move_out).toISOString().split('T')[0] })} className="text-amber-600 hover:text-amber-800 dark:text-amber-500 dark:hover:text-amber-300 p-1 rounded transition-colors cursor-pointer" title="Edit move-out date">
+                    <FiEdit2 size={16} />
+                  </button>
+                </div>
+                {(() => {
+                  const today = new Date(); today.setHours(0,0,0,0)
+                  const exp = new Date(tenant.expected_move_out); exp.setHours(0,0,0,0)
+                  const diff = Math.ceil((exp - today) / (1000*60*60*24))
+                  if (diff > 0) return <span className="text-xs bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 px-2 py-0.5 rounded-full font-bold">{diff}d left</span>
+                  if (diff === 0) return <span className="text-xs bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 px-2 py-0.5 rounded-full font-bold">Today</span>
+                  return <span className="text-xs bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 px-2 py-0.5 rounded-full font-bold">{Math.abs(diff)}d overdue</span>
+                })()}
+              </div>
+            )}
+            {/* Give Notice Button */}
+            {isActive && !tenant.notice_date && tenant.notice_period_days > 0 && (
+              <button
+                onClick={openNoticeModal}
+                disabled={noticeLoading}
+                className="mt-3 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-800/50 px-3 py-1.5 rounded-lg cursor-pointer transition-colors disabled:opacity-50"
+              >
+                🔔 Give Notice
+              </button>
+            )}
             {!isActive && tenant.deposit_refunded > 0 && (
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 transition-colors">
                 Deposit refunded: {formatCurrency(tenant.deposit_refunded)}
@@ -208,10 +329,7 @@ export default function TenantDetail() {
           {isActive && (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => {
-                  setEditForm({ name: tenant.name, phone: tenant.phone })
-                  setEditModal(true)
-                }}
+                onClick={openEditModal}
                 className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-1 cursor-pointer transition-colors"
               >
                 <FiEdit2 size={20} />
@@ -321,6 +439,8 @@ export default function TenantDetail() {
         <form onSubmit={handleUpdateTenant} className="flex flex-col gap-4">
           <Input label="Name" name="name" type="text" value={editForm.name} onChange={handleEditChange} required />
           <Input label="Phone" name="phone" type="tel" value={editForm.phone} onChange={handleEditChange} required />
+          <Input label="Rent Due Day" name="rent_due_day" type="number" min="1" max="31" value={editForm.rent_due_day} onChange={handleEditChange} />
+          <Input label="Notice Period (Days)" name="notice_period_days" type="number" min="0" value={editForm.notice_period_days} onChange={handleEditChange} />
           {editError && <p className="text-sm text-red-500">{editError}</p>}
           <div className="flex gap-2 justify-end">
             <Button variant="ghost" type="button" onClick={() => setEditModal(false)}>Cancel</Button>
@@ -334,6 +454,30 @@ export default function TenantDetail() {
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 transition-colors">
           Remove <strong>{tenant.name}</strong>? This will mark them as moved out.
         </p>
+
+        {/* Move-out Date */}
+        <div className="mb-4">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Move-Out Date</label>
+          <input type="date" value={refundForm.leave_date} onChange={(e) => setRefundForm({ ...refundForm, leave_date: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
+        </div>
+
+        {/* Move-out Summary */}
+        {(() => {
+          const dur = getDuration()
+          const compliance = getNoticeCompliance()
+          if (!dur) return null
+          return (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg p-3 mb-4 space-y-1 transition-colors">
+              <p className="text-xs font-semibold text-blue-800 dark:text-blue-200 transition-colors">Move-out Summary</p>
+              <p className="text-xs text-blue-700 dark:text-blue-300 transition-colors">Duration: {dur.months > 0 ? `${dur.months} month${dur.months !== 1 ? 's' : ''}` : ''}{dur.months > 0 && dur.days > 0 ? ' ' : ''}{dur.days > 0 ? `${dur.days} day${dur.days !== 1 ? 's' : ''}` : dur.months === 0 ? '0 days' : ''}</p>
+              {compliance && (
+                <p className={`text-xs font-medium ${compliance.ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'} transition-colors`}>
+                  {compliance.label}
+                </p>
+              )}
+            </div>
+          )
+        })()}
 
         <div className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-slate-700 rounded-lg p-4 mb-4 space-y-3 transition-colors">
           <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors">Security Deposit: {formatCurrency(tenant.security_deposit || 0)}</p>
@@ -361,6 +505,66 @@ export default function TenantDetail() {
           <Button variant="ghost" onClick={() => setRemoveModal(false)}>Cancel</Button>
           <Button variant="danger" loading={loading} disabled={Number(refundForm.deposit_refunded) > (tenant.security_deposit || 0)} onClick={handleRemoveTenant}>Remove</Button>
         </div>
+      </Modal>
+
+      {/* Give Notice Modal */}
+      <Modal open={noticeModal.open} onClose={() => setNoticeModal({ open: false, date: '' })} title="Give Notice">
+        <form onSubmit={handleGiveNotice}>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 transition-colors">
+            Record that <strong>{tenant.name}</strong> has given notice to vacate.
+          </p>
+
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-lg p-4 mb-5 space-y-2 transition-colors">
+            <p className="text-xs text-amber-800 dark:text-amber-200 font-medium transition-colors">
+              Standard Notice Period: {tenant.notice_period_days} days
+            </p>
+            <div>
+              <label className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1 transition-colors">Expected Move-Out Date</label>
+              <input 
+                type="date" 
+                required
+                value={noticeModal.date} 
+                onChange={(e) => setNoticeModal({ ...noticeModal, date: e.target.value })} 
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" 
+              />
+            </div>
+            <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-1 leading-snug transition-colors">
+              You can modify this date if you are allowing an early move-out or extending their stay.
+            </p>
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button type="button" variant="ghost" onClick={() => setNoticeModal({ open: false, date: '' })}>Cancel</Button>
+            <Button type="submit" variant="primary" loading={noticeLoading}>Confirm Notice</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Move-Out Date Modal */}
+      <Modal open={editMoveOutModal.open} onClose={() => setEditMoveOutModal({ open: false, date: '' })} title="Edit Move-Out Date">
+        <form onSubmit={handleUpdateMoveOutDate}>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 transition-colors">
+            Update the expected move-out date for <strong>{tenant.name}</strong>.
+          </p>
+
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg p-4 mb-5 space-y-2 transition-colors">
+            <div>
+              <label className="block text-xs font-semibold text-gray-800 dark:text-gray-200 mb-1 transition-colors">New Expected Move-Out Date</label>
+              <input 
+                type="date" 
+                required
+                value={editMoveOutModal.date} 
+                onChange={(e) => setEditMoveOutModal({ ...editMoveOutModal, date: e.target.value })} 
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" 
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button type="button" variant="ghost" onClick={() => setEditMoveOutModal({ open: false, date: '' })}>Cancel</Button>
+            <Button type="submit" variant="primary" loading={noticeLoading}>Save Change</Button>
+          </div>
+        </form>
       </Modal>
 
       {/* Edit Rent Modal */}

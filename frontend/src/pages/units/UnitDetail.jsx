@@ -135,7 +135,7 @@ export default function UnitDetail() {
   const [deletingTenant, setDeletingTenant] = useState(false)
 
   // Form States
-  const [form, setForm] = useState({ name: '', phone: '', join_date: '', security_deposit: '' })
+  const [form, setForm] = useState({ name: '', phone: '', join_date: '', security_deposit: '', notice_period_days: '', rent_due_day: '' })
   const [billForm, setBillForm] = useState({ type: 'electricity', amount: '', split_type: 'unit', month: now.getMonth() + 1, year: now.getFullYear(), note: '' })
   const [editBillForm, setEditBillForm] = useState({ type: 'electricity', amount: '', split_type: 'unit', month: now.getMonth() + 1, year: now.getFullYear(), note: '' })
   const [customSplits, setCustomSplits] = useState([])
@@ -179,8 +179,8 @@ export default function UnitDetail() {
     e.preventDefault()
     setCreating(true)
     try {
-      const res = await createTenant({ unit_id: parseInt(unit_id, 10), ...form, security_deposit: Number(form.security_deposit) || 0 })
-      setTenants([...tenants, res.data]); setForm({ name: '', phone: '', join_date: '', security_deposit: '' }); setIsModalOpen(false)
+      const res = await createTenant({ unit_id: parseInt(unit_id, 10), ...form, security_deposit: Number(form.security_deposit) || 0, notice_period_days: Number(form.notice_period_days) || 0, rent_due_day: form.rent_due_day ? Number(form.rent_due_day) : undefined })
+      setTenants([...tenants, res.data]); setForm({ name: '', phone: '', join_date: '', security_deposit: '', notice_period_days: '', rent_due_day: '' }); setIsModalOpen(false)
     } catch (err) { setErrorMsg(err.message || 'Failed to add tenant') } finally { setCreating(false) }
   }
 
@@ -306,11 +306,22 @@ export default function UnitDetail() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tenants.map((tenant) => (
             <Link key={tenant.id} to={`/tenants/${tenant.id}`} className="group block bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-6 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all relative transition-colors">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate pr-8 transition-colors">{tenant.name}</h3>
-              <button onClick={(e) => handleDeleteTenant(tenant, e)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4 cursor-pointer transition-colors"><FiTrash2 size={18} /></button>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate pr-16 transition-colors">{tenant.name}</h3>
+              <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                <Link to={`/tenants/${tenant.id}`} className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-lg cursor-pointer transition-colors" title="Edit Tenant">
+                  <FiEdit2 size={16} />
+                </Link>
+                <button onClick={(e) => handleDeleteTenant(tenant, e)} className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 p-2 rounded-lg cursor-pointer transition-colors" title="Remove Tenant"><FiTrash2 size={18} /></button>
+              </div>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 transition-colors">{tenant.phone}</p>
               {tenant.security_deposit > 0 && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors">Deposit: {formatCurrency(tenant.security_deposit)}</p>
+              )}
+              {tenant.notice_date && (
+                <div className="mt-2 flex items-center gap-1.5">
+                  <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded font-bold uppercase tracking-wider transition-colors">🔔 Notice Given</span>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400">Move-out: {new Date(tenant.expected_move_out).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+                </div>
               )}
               <div className="pt-4 border-t border-gray-100 dark:border-slate-700 mt-4 text-sm text-blue-600 dark:text-blue-400 font-medium transition-colors">View History &rarr;</div>
             </Link>
@@ -402,6 +413,21 @@ export default function UnitDetail() {
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input type="tel" required maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Join Date</label><input type="date" required value={form.join_date} onChange={(e) => setForm({ ...form, join_date: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit (₹)</label><input type="number" min="0" placeholder="0" value={form.security_deposit} onChange={(e) => setForm({ ...form, security_deposit: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
+              <div className="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-100 dark:border-slate-700 space-y-4 mt-4">
+                <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-slate-700 pb-2">Advanced Settings (Optional)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notice Period (Days)</label>
+                    <input type="number" min="0" max="365" placeholder="e.g. 30" value={form.notice_period_days} onChange={(e) => setForm({ ...form, notice_period_days: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200" />
+                    <p className="text-[11px] text-gray-500 mt-1 leading-snug">Days of warning required before moving out.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rent Due Date</label>
+                    <input type="number" min="1" max="31" placeholder="e.g. 1 (for 1st)" value={form.rent_due_day} onChange={(e) => setForm({ ...form, rent_due_day: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200" />
+                    <p className="text-[11px] text-gray-500 mt-1 leading-snug">Day of the month rent is due. <br/>If empty, defaults to the day they joined.</p>
+                  </div>
+                </div>
+              </div>
               <div className="flex justify-end gap-3 mt-6"><button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 rounded-lg">Cancel</button><button type="submit" disabled={creating} className="px-4 py-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">{creating ? 'Adding...' : 'Add Tenant'}</button></div>
             </form>
           </div>

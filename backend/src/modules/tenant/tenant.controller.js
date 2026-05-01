@@ -45,8 +45,8 @@ export const getTenants = async (req, res) => {
 
 export const removeTenant = async (req, res) => {
   try {
-    const { deposit_refunded, deposit_note } = req.body || {}
-    const tenant = await tenantService.removeTenant(req.params.id, req.owner.id, { deposit_refunded, deposit_note })
+    const { deposit_refunded, deposit_note, leave_date } = req.body || {}
+    const tenant = await tenantService.removeTenant(req.params.id, req.owner.id, { deposit_refunded, deposit_note, leave_date })
     res.status(200).json({ success: true, data: tenant })
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
@@ -64,6 +64,15 @@ export const getTenantById = async (req, res) => {
 export const updateTenant = async (req, res) => {
   try {
     const tenant = await tenantService.updateTenant(req.params.id, req.body, req.owner.id)
+    res.status(200).json({ success: true, data: tenant })
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message })
+  }
+}
+
+export const giveNotice = async (req, res) => {
+  try {
+    const tenant = await tenantService.giveNotice(req.params.id, req.owner.id, req.body.expected_move_out)
     res.status(200).json({ success: true, data: tenant })
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
