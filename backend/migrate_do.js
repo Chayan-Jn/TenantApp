@@ -2,16 +2,15 @@ import 'dotenv/config';
 import pg from 'pg';
 import fs from 'fs';
 
-const caCert = process.env.CA_CERT ? process.env.CA_CERT.replace(/\\n/g, '\n') : undefined;
-const connectionString = process.env.DATABASE_URL.split('?')[0];
+const connectionString = process.env.DATABASE_URL ? process.env.DATABASE_URL.split('?')[0] : '';
 
 const client = new pg.Pool({
   connectionString,
-  ssl: {
-    rejectUnauthorized: true,
-    ca: caCert,
-    servername: new URL(connectionString).hostname
-  }
+  ...(process.env.NODE_ENV === 'production' && {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  })
 });
 
 const sql = fs.readFileSync('db/migrations/014_add_subscription_to_owners.sql', 'utf8');

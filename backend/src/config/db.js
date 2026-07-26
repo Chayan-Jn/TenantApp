@@ -1,35 +1,20 @@
 import pg from 'pg';
-import path from 'path';
-import fs from 'fs';
 const { Pool } = pg;
 import { env } from './env.js';
 
-const certPath = path.resolve(process.cwd(), 'certs/ca-certificate.crt');
-let caCertString = '';
-
-// 1. Handle the CA_CERT properly
-if (env.CA_CERT) {
-  // Replace escaped newlines if they exist, otherwise use as is
-  caCertString = env.CA_CERT.replace(/\\n/g, '\n');
-} else if (fs.existsSync(certPath)) {
-  caCertString = fs.readFileSync(certPath).toString();
-}
-
-// 2. Clean the Connection String
-// DigitalOcean's injected URL often has ?sslmode=require. 
-// We strip it so the 'ssl' object below takes full control.
+// Heroku's injected URL might have ?sslmode=require, we can strip it to let our ssl object take control,
+// or just use it directly. We'll strip it to avoid conflicts.
 const connectionString = env.DATABASE_URL ? env.DATABASE_URL.split('?')[0] : '';
 
 const pool = new Pool({
   connectionString: connectionString,
   max: 12, 
-  connectionTimeoutMillis: 5000, 
-  ssl: {
-    rejectUnauthorized: true,
-    ca: caCertString,
-    // Forces the handshake to match the DB hostname—fixes 'Self-signed' errors in pools
-    servername: connectionString ? new URL(connectionString).hostname : undefined
-  }
+  connectionTimeoutMillis: 5000,
+  ...(env.NODE_ENV === 'production' && {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  })
 });
 
 export const connectToDB = async () => {
