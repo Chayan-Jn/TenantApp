@@ -141,7 +141,7 @@ export default function PricingPage() {
             <span className="text-5xl font-bold text-slate-900 tracking-tight">₹199</span>
             <span className="text-sm text-slate-400 ml-1">/ month</span>
           </div>
-          <p className="text-[11px] text-slate-400 italic mb-7">Billed every 30 days</p>
+          <p className="text-[11px] text-slate-400 italic mb-7">Valid for 30 days</p>
 
           <ul className="space-y-3 mb-8 flex-1">
             {features.map(f => (
