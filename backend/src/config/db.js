@@ -6,11 +6,13 @@ import { env } from './env.js';
 // or just use it directly. We'll strip it to avoid conflicts.
 const connectionString = env.DATABASE_URL ? env.DATABASE_URL.split('?')[0] : '';
 
+const isLocalhost = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+
 const pool = new Pool({
   connectionString: connectionString,
   max: 12, 
   connectionTimeoutMillis: 5000,
-  ...(env.NODE_ENV === 'production' && {
+  ...(!isLocalhost && {
     ssl: {
       rejectUnauthorized: false
     }
