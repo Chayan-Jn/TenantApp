@@ -12,6 +12,7 @@ import {
   MdOutlineCheckCircle,
 } from 'react-icons/md'
 import { getSubscriptionStatus, getSubscriptionHistory } from '../../api/subscription.api.js'
+import { formatCurrency } from '../../utils/currency.js'
 
 const PLAN_FEATURES = [
   'Unlimited Properties & Units',
@@ -275,7 +276,7 @@ export default function SubscriptionPage() {
 
                       {/* amount + date */}
                       <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-slate-900 dark:text-white">₹{item.amount_inr}</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(item.amount || item.amount_inr, item.currency || 'INR')}</p>
                         <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{date} · {time}</p>
                       </div>
                     </div>

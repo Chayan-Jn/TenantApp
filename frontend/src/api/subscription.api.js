@@ -13,10 +13,10 @@ export const getSubscriptionHistory = () => api('/subscription/history')
 /**
  * Creates a Razorpay subscription order (backend side).
  */
-export const createSubscription = (planId) => {
+export const createSubscription = (planId, currency = 'INR') => {
   return api('/subscription/create-order', {
     method: 'POST',
-    body: { planId }
+    body: { planId, currency }
   })
 }
 

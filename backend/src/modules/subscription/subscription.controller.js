@@ -13,7 +13,7 @@ export const getStatus = async (req, res) => {
 export const createOrder = async (req, res) => {
   try {
     const parsed = createOrderSchema.parse({ body: req.body });
-    const order = await subscriptionService.createOrder(parsed.body.planId);
+    const order = await subscriptionService.createOrder(parsed.body.planId, parsed.body.currency);
     res.status(200).json({ success: true, data: order });
   } catch (err) {
     if (err.name === 'ZodError') {

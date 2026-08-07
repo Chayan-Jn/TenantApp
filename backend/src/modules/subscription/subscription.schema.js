@@ -5,6 +5,7 @@ export const createOrderSchema = z.object({
     planId: z.enum(['plan_monthly', 'plan_annual'], {
       required_error: 'Plan ID is required',
     }),
+    currency: z.enum(['INR', 'USD']).default('INR'),
   }),
 });
 
@@ -16,5 +17,6 @@ export const verifyPaymentSchema = z.object({
     planId: z.enum(['plan_monthly', 'plan_annual'], {
       required_error: 'Plan ID is required',
     }),
+    currency: z.enum(['INR', 'USD']).default('INR'),
   }),
 });

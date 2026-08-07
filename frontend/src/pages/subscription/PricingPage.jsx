@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MdCheck, MdArrowForward } from 'react-icons/md'
 import { createSubscription, verifyPayment } from '../../api/subscription.api.js'
 import { loadRazorpay } from '../../utils/razorpay.js'
+import { formatCurrency } from '../../utils/currency.js'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 
 const features = [
@@ -15,6 +16,28 @@ export default function PricingPage() {
   const [billing, setBilling] = useState('annual')
   const [processingPlan, setProcessingPlan] = useState(null)
   const [alertConfig, setAlertConfig] = useState({ open: false, message: '', title: 'Notice' })
+  const [currency, setCurrency] = useState('INR')
+
+  useEffect(() => {
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        if (data.country === 'IN') {
+          setCurrency('INR');
+        } else {
+          setCurrency('USD');
+        }
+      })
+      .catch(() => {
+        // Fallback if adblocker blocks ipapi
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') {
+          setCurrency('INR');
+        } else {
+          setCurrency('USD');
+        }
+      });
+  }, []);
 
   const showAlert = (message, title = 'Notice') => {
     setAlertConfig({ open: true, message, title })
@@ -29,11 +52,11 @@ export default function PricingPage() {
         setProcessingPlan(null)
         return showAlert('Failed to load payment gateway.', 'Error')
       }
-      const res = await createSubscription(planId)
+      const res = await createSubscription(planId, currency)
       const rzp = new window.Razorpay({
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: (billing === 'monthly' ? 199 : 1199) * 100,
-        currency: 'INR',
+        amount: Math.round(res.data.original_amount * 100),
+        currency: currency,
         name: 'MyTenant',
         description: 'App Subscription',
         order_id: res.data.id,
@@ -45,7 +68,8 @@ export default function PricingPage() {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              planId: planId
+              planId: planId,
+              currency: currency
             });
             window.location.reload();
           } catch (err) {
@@ -138,7 +162,7 @@ export default function PricingPage() {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-5">Monthly</p>
 
           <div className="mb-1 flex items-baseline gap-1">
-            <span className="text-5xl font-bold text-slate-900 tracking-tight">₹199</span>
+            <span className="text-5xl font-bold text-slate-900 tracking-tight">{formatCurrency(currency === 'USD' ? 9.99 : 199, currency)}</span>
             <span className="text-sm text-slate-400 ml-1">/ month</span>
           </div>
           <p className="text-[11px] text-slate-400 italic mb-7">Valid for 30 days</p>
@@ -192,11 +216,11 @@ export default function PricingPage() {
           <p className="text-[10px] font-bold uppercase tracking-widest mb-5" style={{ color: '#F5A623' }}>Annual</p>
 
           <div className="mb-1 flex items-baseline gap-1">
-            <span className="text-5xl font-bold text-white tracking-tight">₹1,199</span>
+            <span className="text-5xl font-bold text-white tracking-tight">{formatCurrency(currency === 'USD' ? 99 : 1199, currency)}</span>
             <span className="text-sm text-slate-400 ml-1">/ year</span>
           </div>
           <p className="text-[11px] italic mb-7 text-slate-400">
-            Just &nbsp; <strong className="not-italic text-white">₹99/mo</strong> - half the monthly rate
+            Just &nbsp; <strong className="not-italic text-white">{formatCurrency(currency === 'USD' ? 8.25 : 99, currency)}/mo</strong> - half the monthly rate
           </p>
 
           <ul className="space-y-3 mb-8 flex-1">

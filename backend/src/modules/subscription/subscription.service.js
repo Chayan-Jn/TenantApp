@@ -40,24 +40,30 @@ export const getSubscriptionStatus = async (ownerId) => {
   };
 };
 
-export const createOrder = async (planId) => {
+export const createOrder = async (planId, currency = 'INR') => {
   const rzp = getRazorpayInstance();
   if (!rzp) throw new Error('Razorpay is not configured on the server');
 
-  const amount = planId === 'plan_monthly' ? 199 : 1199;
+  let amount;
+  if (currency === 'USD') {
+    amount = planId === 'plan_monthly' ? 9.99 : 99.00;
+  } else {
+    amount = planId === 'plan_monthly' ? 199 : 1199;
+  }
   
   const options = {
-    amount: amount * 100, // amount in the smallest currency unit
-    currency: "INR",
+    amount: Math.round(amount * 100), // amount in the smallest currency unit (cents/paise)
+    currency: currency,
     receipt: `receipt_${Date.now()}`
   };
 
   const order = await rzp.orders.create(options);
-  return order;
+  // Return the order, but also attach the raw numeric amount for the frontend to know what was charged
+  return { ...order, original_amount: amount };
 };
 
 export const verifyPayment = async (ownerId, paymentData) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId } = paymentData;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId, currency = 'INR' } = paymentData;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
   const expectedSignature = crypto
@@ -102,11 +108,17 @@ export const verifyPayment = async (ownerId, paymentData) => {
   );
 
   // Record the purchase in payment history
-  const amount = planId === 'plan_monthly' ? 199 : 1199;
+  let amount;
+  if (currency === 'USD') {
+    amount = planId === 'plan_monthly' ? 9.99 : 99.00;
+  } else {
+    amount = planId === 'plan_monthly' ? 199 : 1199;
+  }
+
   await pool.query(
-    `INSERT INTO subscription_payments (owner_id, razorpay_order_id, razorpay_payment_id, plan, amount_inr)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [ownerId, razorpay_order_id, razorpay_payment_id, planName, amount]
+    `INSERT INTO subscription_payments (owner_id, razorpay_order_id, razorpay_payment_id, plan, amount, currency)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
+    [ownerId, razorpay_order_id, razorpay_payment_id, planName, amount, currency]
   );
 
   return updateResult.rows[0];
@@ -114,7 +126,7 @@ export const verifyPayment = async (ownerId, paymentData) => {
 
 export const getPaymentHistory = async (ownerId) => {
   const result = await pool.query(
-    `SELECT id, razorpay_payment_id, plan, amount_inr, paid_at
+    `SELECT id, razorpay_payment_id, plan, amount, currency, paid_at
      FROM subscription_payments
      WHERE owner_id = $1
      ORDER BY paid_at DESC`,
