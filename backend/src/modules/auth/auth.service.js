@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
 import pool from '../../config/db.js'
+import crypto from 'crypto'
 import { env } from '../../config/env.js'
 
 // Initialize Google Client
@@ -48,7 +49,8 @@ export const loginWithGoogle = async (googleToken) => {
       audience: env.GOOGLE_CLIENT_ID,
     })
     
-    const { email, name, sub: googleId } = ticket.getPayload()
+    let { email, name, sub: googleId } = ticket.getPayload()
+    if (!name) name = email.split('@')[0]
 
     // 2. Find the user by their Google email
     const existing = await pool.query('SELECT * FROM owners WHERE email = $1', [email])
@@ -84,6 +86,7 @@ export const loginWithGoogle = async (googleToken) => {
       owner: { id: owner.id, name: owner.name, username: owner.username } 
     }
   } catch (err) {
+    console.error('Google login error:', err)
     throw new Error('Invalid Google token or verification failed')
   }
 }
