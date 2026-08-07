@@ -270,7 +270,7 @@ export default function SubscriptionPage() {
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono truncate">
-                          {item.razorpay_payment_id}
+                          {item.payment_gateway === 'paypal' ? `PayPal ID: ${item.paypal_order_id}` : `Razorpay ID: ${item.razorpay_payment_id}`}
                         </p>
                       </div>
 
@@ -290,7 +290,7 @@ export default function SubscriptionPage() {
 
       {/* Footer note */}
       <p className="text-center text-[10px] text-slate-400 dark:text-slate-600 uppercase tracking-widest pt-1">
-        Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; Cancel Anytime
+        Powered by Razorpay & PayPal &nbsp;·&nbsp; Secure &nbsp;·&nbsp; Cancel Anytime
       </p>
 
     </div>

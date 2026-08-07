@@ -20,3 +20,20 @@ export const verifyPaymentSchema = z.object({
     currency: z.enum(['INR', 'USD']).default('INR'),
   }),
 });
+
+export const createPaypalOrderSchema = z.object({
+  body: z.object({
+    planId: z.enum(['plan_monthly', 'plan_annual'], {
+      required_error: 'Plan ID is required',
+    }),
+  }),
+});
+
+export const verifyPaypalPaymentSchema = z.object({
+  body: z.object({
+    paypalOrderId: z.string({ required_error: 'PayPal Order ID is required' }),
+    planId: z.enum(['plan_monthly', 'plan_annual'], {
+      required_error: 'Plan ID is required',
+    }),
+  }),
+});

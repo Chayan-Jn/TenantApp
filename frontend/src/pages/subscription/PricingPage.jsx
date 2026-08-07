@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { MdCheck, MdArrowForward } from 'react-icons/md'
-import { createSubscription, verifyPayment } from '../../api/subscription.api.js'
+import { createSubscription, verifyPayment, getPaypalConfig, createPaypalOrder, verifyPaypalPayment } from '../../api/subscription.api.js'
 import { loadRazorpay } from '../../utils/razorpay.js'
 import { formatCurrency, APP_CURRENCY } from '../../utils/currency.js'
 import AlertModal from '../../components/ui/AlertModal.jsx'
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
 const features = [
   'Unlimited Properties & Units',
@@ -17,6 +18,17 @@ export default function PricingPage() {
   const [processingPlan, setProcessingPlan] = useState(null)
   const [alertConfig, setAlertConfig] = useState({ open: false, message: '', title: 'Notice' })
   const [currency, setCurrency] = useState(APP_CURRENCY)
+  const [paypalClientId, setPaypalClientId] = useState(null)
+
+  useEffect(() => {
+    if (currency === 'USD') {
+      getPaypalConfig()
+        .then(res => {
+          if (res.data?.clientId) setPaypalClientId(res.data.clientId);
+        })
+        .catch(console.error);
+    }
+  }, [currency]);
 
   const showAlert = (message, title = 'Notice') => {
     setAlertConfig({ open: true, message, title })
@@ -165,8 +177,44 @@ export default function PricingPage() {
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            {processingPlan === 'plan_monthly' ? 'Please wait…' : 'Choose Monthly'}
+            {processingPlan === 'plan_monthly' ? 'Please wait…' : (currency === 'USD' ? 'Choose Monthly (Card)' : 'Choose Monthly')}
           </button>
+
+          {currency === 'USD' && paypalClientId && (
+            <div className="mt-3 w-full z-10 relative">
+              <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "USD", intent: "capture" }}>
+                <PayPalButtons
+                  style={{ layout: "horizontal", height: 45, color: "gold", shape: "pill", label: "paypal" }}
+                  disabled={!!processingPlan}
+                  createOrder={async () => {
+                    try {
+                      setProcessingPlan('plan_monthly')
+                      const res = await createPaypalOrder('plan_monthly');
+                      setProcessingPlan(null)
+                      return res.data.id;
+                    } catch (err) {
+                      setProcessingPlan(null)
+                      showAlert(err?.response?.data?.message || 'Failed to create PayPal order', 'Error');
+                      throw err;
+                    }
+                  }}
+                  onApprove={async (data) => {
+                    try {
+                      setProcessingPlan('plan_monthly');
+                      await verifyPaypalPayment(data.orderID, 'plan_monthly');
+                      window.location.reload();
+                    } catch (err) {
+                      setProcessingPlan(null);
+                      showAlert(err?.response?.data?.message || 'PayPal verification failed.', 'Error');
+                    }
+                  }}
+                  onError={(err) => {
+                    setProcessingPlan(null);
+                  }}
+                />
+              </PayPalScriptProvider>
+            </div>
+          )}
         </div>
 
         {/* ── Annual — Dark Glass ── */}
@@ -222,9 +270,45 @@ export default function PricingPage() {
             className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
             style={{ background: '#fff', color: '#000', border: '2.5px solid rgba(255,255,255,0.4)', cursor: 'pointer' }}
           >
-            {processingPlan === 'plan_annual' ? 'Please wait…' : 'Choose Annual'}
+            {processingPlan === 'plan_annual' ? 'Please wait…' : (currency === 'USD' ? 'Choose Annual (Card)' : 'Choose Annual')}
             <MdArrowForward size={15} />
           </button>
+
+          {currency === 'USD' && paypalClientId && (
+            <div className="mt-3 w-full z-10 relative">
+              <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "USD", intent: "capture" }}>
+                <PayPalButtons
+                  style={{ layout: "horizontal", height: 45, color: "gold", shape: "pill", label: "paypal" }}
+                  disabled={!!processingPlan}
+                  createOrder={async () => {
+                    try {
+                      setProcessingPlan('plan_annual')
+                      const res = await createPaypalOrder('plan_annual');
+                      setProcessingPlan(null)
+                      return res.data.id;
+                    } catch (err) {
+                      setProcessingPlan(null)
+                      showAlert(err?.response?.data?.message || 'Failed to create PayPal order', 'Error');
+                      throw err;
+                    }
+                  }}
+                  onApprove={async (data) => {
+                    try {
+                      setProcessingPlan('plan_annual');
+                      await verifyPaypalPayment(data.orderID, 'plan_annual');
+                      window.location.reload();
+                    } catch (err) {
+                      setProcessingPlan(null);
+                      showAlert(err?.response?.data?.message || 'PayPal verification failed.', 'Error');
+                    }
+                  }}
+                  onError={(err) => {
+                    setProcessingPlan(null);
+                  }}
+                />
+              </PayPalScriptProvider>
+            </div>
+          )}
         </div>
       </div>
 
@@ -235,7 +319,7 @@ export default function PricingPage() {
         ))}
       </div>
       <p className="mt-4 text-[9px] uppercase tracking-widest text-slate-400 italic">
-        Powered by Razorpay &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
+        Powered by {currency === 'USD' ? 'Razorpay & PayPal' : 'Razorpay'} &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
       </p>
 
       <AlertModal

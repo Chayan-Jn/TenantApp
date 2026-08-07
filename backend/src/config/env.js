@@ -10,5 +10,7 @@ export const env = {
     CA_CERT: process.env.CA_CERT,
     S3_ENDPOINT: process.env.BACKBLAZE_ENDPOINT,
     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
-    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+    PAYPAL_API_KEY: process.env.PAYPAL_API_KEY,
+    PAYPAL_API_SECRET: process.env.PAYPAL_API_SECRET
 }

@@ -126,11 +126,130 @@ export const verifyPayment = async (ownerId, paymentData) => {
 
 export const getPaymentHistory = async (ownerId) => {
   const result = await pool.query(
-    `SELECT id, razorpay_payment_id, plan, amount, currency, paid_at
+    `SELECT id, razorpay_payment_id, paypal_order_id, payment_gateway, plan, amount, currency, paid_at
      FROM subscription_payments
      WHERE owner_id = $1
      ORDER BY paid_at DESC`,
     [ownerId]
   );
   return result.rows;
+};
+
+// =======================
+// PAYPAL LOGIC
+// =======================
+
+export const getPaypalClientId = () => {
+  return env.PAYPAL_API_KEY;
+};
+
+const getPaypalAccessToken = async () => {
+  if (!env.PAYPAL_API_KEY || !env.PAYPAL_API_SECRET) {
+    throw new Error('PayPal credentials are not configured on the server.');
+  }
+  const auth = Buffer.from(`${env.PAYPAL_API_KEY}:${env.PAYPAL_API_SECRET}`).toString('base64');
+  const response = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
+    method: 'POST',
+    body: 'grant_type=client_credentials',
+    headers: {
+      Authorization: `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error_description || 'Failed to get PayPal access token');
+  }
+  const data = await response.json();
+  return data.access_token;
+};
+
+export const createPaypalOrder = async (planId) => {
+  const amount = planId === 'plan_monthly' ? '9.99' : '99.00';
+  const token = await getPaypalAccessToken();
+
+  const response = await fetch('https://api-m.paypal.com/v2/checkout/orders', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: 'USD',
+            value: amount,
+          },
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to create PayPal order');
+  }
+
+  const order = await response.json();
+  return { id: order.id, original_amount: Number(amount) };
+};
+
+export const verifyPaypalPayment = async (ownerId, paymentData) => {
+  const { paypalOrderId, planId } = paymentData;
+  const token = await getPaypalAccessToken();
+
+  const response = await fetch(`https://api-m.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+  if (data.status !== 'COMPLETED') {
+    throw new Error('PayPal payment not completed');
+  }
+
+  const captureId = data.purchase_units?.[0]?.payments?.captures?.[0]?.id || data.id;
+  
+  // Extend subscription based on the plan
+  const extensionDays = planId === 'plan_monthly' ? 30 : 365;
+  const planName = planId === 'plan_monthly' ? 'monthly' : 'annual';
+
+  const statusResult = await pool.query(
+    'SELECT subscription_end_date, subscription_status FROM owners WHERE id = $1',
+    [ownerId]
+  );
+  const currentSub = statusResult.rows[0];
+  
+  let baseDate = new Date();
+  if (
+    currentSub.subscription_status === 'active' && 
+    currentSub.subscription_end_date && 
+    new Date(currentSub.subscription_end_date) > baseDate
+  ) {
+    baseDate = new Date(currentSub.subscription_end_date);
+  }
+
+  const newEndDate = new Date(baseDate.getTime() + extensionDays * 24 * 60 * 60 * 1000);
+
+  const updateResult = await pool.query(
+    `UPDATE owners 
+     SET subscription_plan = $1, subscription_status = 'active', subscription_end_date = $2 
+     WHERE id = $3 RETURNING subscription_plan, subscription_status, subscription_end_date`,
+    [planName, newEndDate, ownerId]
+  );
+
+  const amount = planId === 'plan_monthly' ? 9.99 : 99.00;
+
+  await pool.query(
+    `INSERT INTO subscription_payments (owner_id, payment_gateway, paypal_order_id, paypal_capture_id, plan, amount, currency)
+     VALUES ($1, 'paypal', $2, $3, $4, $5, 'USD')`,
+    [ownerId, paypalOrderId, captureId, planName, amount]
+  );
+
+  return updateResult.rows[0];
 };

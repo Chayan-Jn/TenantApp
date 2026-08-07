@@ -12,4 +12,9 @@ router.get('/history', subscriptionController.getHistory);
 router.post('/create-order', subscriptionController.createOrder);
 router.post('/verify', subscriptionController.verifyPayment);
 
+// PayPal Routes
+router.get('/paypal-config', subscriptionController.getPaypalConfig);
+router.post('/paypal/order', subscriptionController.createPaypalOrder);
+router.post('/paypal/verify', subscriptionController.verifyPaypalPayment);
+
 export default router;
