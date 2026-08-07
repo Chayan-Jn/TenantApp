@@ -57,7 +57,7 @@ export default function TermsOfService() {
 
       <Section title="6. Subscriptions & Payment">
         <ul className="list-disc pl-5 space-y-1">
-          <li>Subscription plans are available on a monthly (₹199/month) or annual (₹1,199/year) basis.</li>
+          <li>Subscription plans are available on a monthly ({APP_CURRENCY === 'USD' ? '$9.99/month' : '₹199/month'}) or annual ({APP_CURRENCY === 'USD' ? '$99.00/year' : '₹1,199/year'}) basis.</li>
           <li>Payments are processed securely by Razorpay. We do not store payment credentials.</li>
           <li>Subscriptions do not auto-renew. You must manually renew your subscription at the end of each billing cycle to maintain access to paid features.</li>
           <li>Prices are inclusive of applicable taxes unless stated otherwise.</li>

@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState } from 'react'
 import { useLoaderData, useNavigate, Link } from 'react-router'
 import { createTenant, removeTenant } from '../../api/tenant.api.js'
@@ -14,7 +15,7 @@ const BILL_TYPES = ['electricity', 'water', 'gas', 'maintenance', 'parking', 'ot
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const TYPE_COLORS = { electricity: 'yellow', water: 'blue', gas: 'red', maintenance: 'gray', parking: 'gray', other: 'gray' }
 
-const formatCurrency = (n) => n ? `₹${Number(n).toLocaleString('en-IN')}` : '₹0'
+
 const now = new Date()
 const years = Array.from({ length: 5 }, (_, i) => now.getFullYear() - i)
 
@@ -32,7 +33,7 @@ const BillForm = ({ form, setForm, customSplits, setCustomSplits, onSplitTypeCha
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Amount (₹)</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">Amount ({CURRENCY_SYMBOL})</label>
         <input type="number" required min="1" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -73,7 +74,7 @@ const BillForm = ({ form, setForm, customSplits, setCustomSplits, onSplitTypeCha
               {customSplits.map((s, i) => (
                 <div key={s.tenant_id} className="flex items-center gap-2">
                   <span className="text-sm text-gray-700 flex-1 font-medium">{s.name}</span>
-                  <input type="number" min="0" placeholder="₹" value={s.amount}
+                  <input type="number" min="0" placeholder={CURRENCY_SYMBOL} value={s.amount}
                     onChange={(e) => {
                       const updated = [...customSplits]
                       updated[i] = { ...updated[i], amount: e.target.value }
@@ -412,7 +413,7 @@ export default function UnitDetail() {
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" required minLength="2" title="Name must be at least 2 characters long" maxLength="50" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label><input type="tel" required maxLength="10" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Join Date</label><input type="date" required value={form.join_date} onChange={(e) => setForm({ ...form, join_date: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit (₹)</label><input type="number" min="0" placeholder="0" value={form.security_deposit} onChange={(e) => setForm({ ...form, security_deposit: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Security Deposit ({CURRENCY_SYMBOL})</label><input type="number" min="0" placeholder="0" value={form.security_deposit} onChange={(e) => setForm({ ...form, security_deposit: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" /></div>
               <div className="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-100 dark:border-slate-700 space-y-4 mt-4">
                 <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-slate-700 pb-2">Advanced Settings (Optional)</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -483,7 +484,7 @@ export default function UnitDetail() {
           <p className="text-sm font-semibold text-gray-800 mb-3">Security Deposit: {formatCurrency(removeModal.depositAmount)}</p>
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount (₹)</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Refund Amount ({CURRENCY_SYMBOL})</label>
               <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
             </div>
             <div>

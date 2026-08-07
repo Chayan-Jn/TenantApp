@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState, useEffect } from 'react'
 import { useLoaderData, Link } from 'react-router'
 import { removeTenant, getTenants } from '../../api/tenant.api.js'
@@ -9,7 +10,7 @@ import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
-const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
 
 const getLocalISODate = () => {
   const d = new Date()
@@ -226,7 +227,7 @@ export default function PropertyTenants() {
           <div className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-slate-700 rounded-lg p-4 mb-4 space-y-3 transition-colors">
             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors">Security Deposit: {formatCurrency(removeModal.tenant.security_deposit || 0)}</p>
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Refund Amount (₹)</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Refund Amount ({CURRENCY_SYMBOL})</label>
               <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
             </div>
             <div>

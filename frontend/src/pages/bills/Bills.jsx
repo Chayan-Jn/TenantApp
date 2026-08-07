@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState, useEffect } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -13,7 +14,7 @@ import { FiTrash2, FiEdit2 } from 'react-icons/fi'
 const BILL_TYPES = ['electricity', 'water', 'gas', 'maintenance', 'parking', 'other']
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const TYPE_COLORS = { electricity: 'yellow', water: 'blue', gas: 'red', maintenance: 'gray', parking: 'gray', other: 'gray' }
-const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
 
 // --- NEW SUB-COMPONENT: Auto-fetches and displays splits for shared bills ---
 function BillSplitsList({ billId, splitStatusMutation }) {
@@ -396,7 +397,7 @@ export default function Bills() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Amount ({CURRENCY_SYMBOL})</label>
             <input type="number" required min="1" value={editBillForm.amount} onChange={(e) => setEditBillForm({ ...editBillForm, amount: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -427,7 +428,7 @@ export default function Bills() {
               {editCustomSplits.map((s, i) => (
                 <div key={s.tenant_id} className="flex items-center gap-2">
                   <span className="text-sm text-slate-700 flex-1 font-medium">{s.name}</span>
-                  <input type="number" min="0" placeholder="₹" value={s.amount}
+                  <input type="number" min="0" placeholder={CURRENCY_SYMBOL} value={s.amount}
                     onChange={(e) => {
                       const updated = [...editCustomSplits]
                       updated[i] = { ...updated[i], amount: e.target.value }

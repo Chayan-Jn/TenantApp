@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { useLoaderData } from 'react-router';
 import Dashboard from '../../src/pages/dashboard/Dashboard';
+import { CURRENCY_SYMBOL } from '../../src/utils/currency';
 
 // Mock react-router components and hooks (Dashboard imports from 'react-router')
 vi.mock('react-router', async () => {
@@ -86,10 +87,10 @@ describe('Dashboard Page', () => {
     renderDashboard();
 
     expect(screen.getByText(/Collection Performance/)).toBeInTheDocument();
-    expect(screen.getByText('₹80,000')).toBeInTheDocument(); // Collected
-    expect(screen.getByText('₹20,000')).toBeInTheDocument(); // Pending
+    expect(screen.getByText(`${CURRENCY_SYMBOL}80,000`)).toBeInTheDocument(); // Collected
+    expect(screen.getByText(`${CURRENCY_SYMBOL}20,000`)).toBeInTheDocument(); // Pending
     expect(screen.getByText(/80% Achieved/)).toBeInTheDocument();
-    expect(screen.getByText(/Target: ₹1,00,000/)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`Target: \\${CURRENCY_SYMBOL}1,00,000`))).toBeInTheDocument();
   });
 
   it('renders property overviews correctly categorized', () => {

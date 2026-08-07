@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MdCheck, MdArrowForward } from 'react-icons/md'
 import { createSubscription, verifyPayment } from '../../api/subscription.api.js'
 import { loadRazorpay } from '../../utils/razorpay.js'
-import { formatCurrency } from '../../utils/currency.js'
+import { formatCurrency, APP_CURRENCY } from '../../utils/currency.js'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 
 const features = [
@@ -16,28 +16,7 @@ export default function PricingPage() {
   const [billing, setBilling] = useState('annual')
   const [processingPlan, setProcessingPlan] = useState(null)
   const [alertConfig, setAlertConfig] = useState({ open: false, message: '', title: 'Notice' })
-  const [currency, setCurrency] = useState('INR')
-
-  useEffect(() => {
-    fetch('https://ipapi.co/json/')
-      .then(res => res.json())
-      .then(data => {
-        if (data.country === 'IN') {
-          setCurrency('INR');
-        } else {
-          setCurrency('USD');
-        }
-      })
-      .catch(() => {
-        // Fallback if adblocker blocks ipapi
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') {
-          setCurrency('INR');
-        } else {
-          setCurrency('USD');
-        }
-      });
-  }, []);
+  const [currency, setCurrency] = useState(APP_CURRENCY)
 
   const showAlert = (message, title = 'Notice') => {
     setAlertConfig({ open: true, message, title })
@@ -220,7 +199,10 @@ export default function PricingPage() {
             <span className="text-sm text-slate-400 ml-1">/ year</span>
           </div>
           <p className="text-[11px] italic mb-7 text-slate-400">
-            Just &nbsp; <strong className="not-italic text-white">{formatCurrency(currency === 'USD' ? 8.25 : 99, currency)}/mo</strong> - half the monthly rate
+            {currency === 'USD' 
+              ? <>Just &nbsp; <strong className="not-italic text-white">{formatCurrency(8.25, currency)}/mo</strong> - Save 17%</>
+              : <>Just &nbsp; <strong className="not-italic text-white">{formatCurrency(99, currency)}/mo</strong> - half the monthly rate</>
+            }
           </p>
 
           <ul className="space-y-3 mb-8 flex-1">

@@ -203,7 +203,7 @@ export default function PropertyDetail() {
                   </button>
                 </div>
               </div>
-              <p className="text-gray-500 text-sm mb-4">Rent: ₹{unit.rent}</p>
+              <p className="text-gray-500 text-sm mb-4">Rent: {formatCurrency(unit.rent)}</p>
               <div className="pt-4 border-t border-gray-100 text-sm text-blue-600 font-medium">
                 Manage Tenants
               </div>

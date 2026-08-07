@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState, useEffect } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import Card from '../../components/ui/Card.jsx'
@@ -8,7 +9,7 @@ import { getSavedSignature } from '../../components/ui/SignatureModal.jsx'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
-const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
 
 // ============ PRINT WINDOW ============
 

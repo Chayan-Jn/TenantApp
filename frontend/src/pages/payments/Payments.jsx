@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState, useEffect } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -11,7 +12,7 @@ import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
-const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -25,7 +26,7 @@ const DEFAULT_TEMPLATE = `Hello {{tenant_name}},
 This is a summary of pending dues for *{{monthName}} {{year}}* (Unit: {{unit_label}}).
 *Due Details:*
 {{dues_list}}
-*Total Pending: ₹{{total_pending}}*`
+*Total Pending: ${CURRENCY_SYMBOL}{{total_pending}}*`
 
 // Injects the tenant's actual data into the template
 const parseTemplate = (template, tenant, monthName, year) => {
@@ -37,7 +38,7 @@ const parseTemplate = (template, tenant, monthName, year) => {
 
   pendingDues.forEach(due => {
     const dateStr = due.due_date ? ` (Due: ${formatDate(due.due_date)})` : ''
-    duesListStr += `• ${due.title}: ₹${due.amount}${dateStr}\n`
+    duesListStr += `• ${due.title}: ${CURRENCY_SYMBOL}${due.amount}${dateStr}\n`
   })
 
   // Remove the very last newline so we don't accidentally create an empty line

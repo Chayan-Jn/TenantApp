@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState, useEffect } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -12,7 +13,7 @@ import Input from '../../components/ui/Input.jsx'
 import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
-const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
 
 export default function Overdue() {
   const { properties } = useLoaderData()
@@ -251,7 +252,7 @@ export default function Overdue() {
       {/* Edit Rent Modal */}
       <Modal open={editRentModal} onClose={() => setEditRentModal(false)} title="Edit Overdue Rent">
         <form onSubmit={handleEditRentSubmit} className="flex flex-col gap-4">
-          <Input label="Amount (₹)" name="amount" type="number" value={editRentForm.amount} onChange={(e) => setEditRentForm({...editRentForm, amount: e.target.value})} required />
+          <Input label={`Amount (${CURRENCY_SYMBOL})`} name="amount" type="number" value={editRentForm.amount} onChange={(e) => setEditRentForm({...editRentForm, amount: e.target.value})} required />
           <Input label="Due Date" name="due_date" type="date" value={editRentForm.due_date} onChange={(e) => setEditRentForm({...editRentForm, due_date: e.target.value})} required />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2 justify-end">

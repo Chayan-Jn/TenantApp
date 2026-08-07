@@ -1,3 +1,4 @@
+import { formatCurrency, CURRENCY_SYMBOL } from '../../utils/currency.js'
 import { useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router'
 import { createRent, markRentPaid, markRentUnpaid, getRentByTenant, updateRent, deleteRent } from '../../api/rent.api.js'
@@ -15,7 +16,7 @@ import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 const statusVariant = { paid: 'green', pending: 'yellow', overdue: 'crimson' }
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
-const formatCurrency = (n) => `₹${Number(n).toLocaleString('en-IN')}`
+
 
 const getLocalISODate = () => {
   const d = new Date()
@@ -424,7 +425,7 @@ export default function TenantDetail() {
       {/* Add Rent Modal */}
       <Modal open={rentModal} onClose={() => setRentModal(false)} title="Add Rent Record">
         <form onSubmit={handleAddRent} className="flex flex-col gap-4">
-          <Input label="Amount (₹)" name="amount" type="number" value={form.amount} onChange={handleChange} required />
+          <Input label={`Amount (${CURRENCY_SYMBOL})`} name="amount" type="number" value={form.amount} onChange={handleChange} required />
           <Input label="Due Date" name="due_date" type="date" value={form.due_date} onChange={handleChange} required />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2 justify-end">
@@ -482,7 +483,7 @@ export default function TenantDetail() {
         <div className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-slate-700 rounded-lg p-4 mb-4 space-y-3 transition-colors">
           <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors">Security Deposit: {formatCurrency(tenant.security_deposit || 0)}</p>
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Refund Amount (₹)</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-400 mb-1 transition-colors">Refund Amount ({CURRENCY_SYMBOL})</label>
             <input type="number" min="0" value={refundForm.deposit_refunded} onChange={(e) => setRefundForm({ ...refundForm, deposit_refunded: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 transition-colors" />
           </div>
           <div>
@@ -570,7 +571,7 @@ export default function TenantDetail() {
       {/* Edit Rent Modal */}
       <Modal open={editRentModal} onClose={() => setEditRentModal(false)} title="Edit Rent Record">
         <form onSubmit={handleEditRentSubmit} className="flex flex-col gap-4">
-          <Input label="Amount (₹)" name="amount" type="number" value={editRentForm.amount} onChange={(e) => setEditRentForm({ ...editRentForm, amount: e.target.value })} required />
+          <Input label={`Amount (${CURRENCY_SYMBOL})`} name="amount" type="number" value={editRentForm.amount} onChange={(e) => setEditRentForm({ ...editRentForm, amount: e.target.value })} required />
           <Input label="Due Date" name="due_date" type="date" value={editRentForm.due_date} onChange={(e) => setEditRentForm({ ...editRentForm, due_date: e.target.value })} required />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2 justify-end">

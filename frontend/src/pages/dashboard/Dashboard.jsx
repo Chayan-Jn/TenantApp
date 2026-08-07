@@ -1,4 +1,4 @@
-import { useLoaderData, Link } from 'react-router'
+import { useLoaderData, Link } from 'react-router-dom'
 import {
   FiHome,
   FiHash,
@@ -10,6 +10,7 @@ import {
   FiCheckCircle,
   FiCircle
 } from 'react-icons/fi'
+import { formatCurrency } from '../../utils/currency.js'
 
 const TYPE_LABELS = { flat: 'Flats', pg: 'PGs', commercial: 'Commercial' }
 
@@ -62,12 +63,6 @@ export default function Dashboard() {
 
   const financials = stats?.financials || { collected: 0, pending: 0, total: 0 }
   const collectionRate = financials.total > 0 ? Math.round((financials.collected / financials.total) * 100) : 0
-
-  // Safe currency formatter that won't crash on null/undefined
-  const formatCurrency = (n) => {
-    const num = Number(n) || 0
-    return `₹${num.toLocaleString('en-IN')}`
-  }
 
   // Fallback while loading or if no data
   if (!loaderData) {
