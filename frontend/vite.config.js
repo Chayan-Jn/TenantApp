@@ -1,14 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { compression } from 'vite-plugin-compression2'
 
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: [['babel-plugin-react-compiler', { target: '19' }]],
+      },
+    }),
     tailwindcss(),
+    compression({ algorithm: 'brotliCompress' }),
+    compression({ algorithm: 'gzip' }),
   ],
   build: {
+    target: 'esnext',
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -35,5 +44,8 @@ export default defineConfig({
         }
       }
     }
+  },
+  esbuild: {
+    drop: ['console', 'debugger'],
   }
 })
