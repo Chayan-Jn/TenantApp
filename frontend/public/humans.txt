@@ -1,0 +1,10 @@
+/* TEAM */
+  Developer: MyTenant Engineering
+  Contact: support@mytenant.me
+  Location: Global
+
+/* SITE */
+  Last update: 2026/08/08
+  Standards: HTML5, CSS3
+  Components: React, Vite, Tailwind CSS
+  Software: Node.js, Express

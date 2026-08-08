@@ -26,9 +26,34 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mytenant.me/login</loc>
+    <loc>https://mytenant.me/tools/rent-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/compare/mytenant-vs-buildium</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/compare/mytenant-vs-appfolio</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/compare/mytenant-vs-turbotenant</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/compare/mytenant-vs-doorloop</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://mytenant.me/register</loc>

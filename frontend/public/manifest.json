@@ -5,7 +5,12 @@
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "description": "Modern real estate property and tenant management platform.",
+  "description": "The ultimate real estate property and tenant management platform. Automated rent ledgers, bill splitting, and tenant tracking.",
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "/logo.png",

@@ -265,6 +265,11 @@ const router = createBrowserRouter([
       { path: 'features/rent-ledger', lazy: () => import('./pages/features/RentLedger.jsx').then(m => ({ Component: m.default })) },
       { path: 'features/bill-splitting', lazy: () => import('./pages/features/BillSplitting.jsx').then(m => ({ Component: m.default })) },
       { path: 'features/tenant-tracking', lazy: () => import('./pages/features/TenantTracking.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-buildium', lazy: () => import('./pages/compare/VsBuildium.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-appfolio', lazy: () => import('./pages/compare/VsAppFolio.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-turbotenant', lazy: () => import('./pages/compare/VsTurboTenant.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-doorloop', lazy: () => import('./pages/compare/VsDoorLoop.jsx').then(m => ({ Component: m.default })) },
+      { path: 'tools/rent-calculator', lazy: () => import('./pages/tools/RentCalculator.jsx').then(m => ({ Component: m.default })) },
     ]
   }
 ])

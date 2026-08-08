@@ -8,9 +8,11 @@
 
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="author" href="/humans.txt" />
+    <link rel="search" type="application/opensearchdescription+xml" title="MyTenant" href="/opensearch.xml" />
     <!-- Preload LCP image (first carousel screenshot) + logo -->
-    <link rel="preload" as="image" type="image/webp" href="/ScreenShots/1.PropertyPage.webp" />
-    <link rel="preload" as="image" href="/logo-96.png" />
+    <link rel="preload" as="image" type="image/webp" href="/ScreenShots/1.PropertyPage.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/logo-96.png" fetchpriority="high" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0f172a" />
 
@@ -72,6 +74,67 @@
     </style>
     <!-- Preload the latin font file for instant text rendering -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/outfit-latin.woff2" crossorigin />
+
+    <!-- Elite Global Schema: Organization & Sitelinks Search Box -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://mytenant.me/#organization",
+            "name": "MyTenant",
+            "url": "https://mytenant.me",
+            "logo": "https://mytenant.me/logo-96.png",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "email": "support@mytenant.me",
+              "contactType": "customer support"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://mytenant.me/#website",
+            "url": "https://mytenant.me",
+            "name": "MyTenant",
+            "publisher": {
+              "@id": "https://mytenant.me/#organization"
+            },
+            "speakable": {
+              "@type": "SpeakableSpecification",
+              "cssSelector": [".speakable-summary", "#bluf-summary"]
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://mytenant.me/?q={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
+    
+    <!-- Speculation Rules API: Zero-Millisecond Prerendering -->
+    <script type="speculationrules">
+      {
+        "prerender": [
+          {
+            "source": "document",
+            "where": {
+              "and": [
+                { "href_matches": "/*" },
+                { "not": { "href_matches": "/dashboard/*" } },
+                { "not": { "href_matches": "/login" } }
+              ]
+            },
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root">
@@ -84,10 +147,10 @@
         </style>
         <!-- Left branding skeleton with real text for instant FCP -->
         <div style="width:40%;padding:48px;display:flex;flex-direction:column;justify-content:space-between" class="ld-hide-mobile">
-          <div style="width:64px;height:64px;border-radius:50%;overflow:hidden"><img src="/logo-96.png" alt="MyTenant" width="64" height="64" style="width:100%;height:100%;object-fit:cover" /></div>
+          <div style="width:64px;height:64px;border-radius:50%;overflow:hidden"><img src="/logo-96.png" alt="MyTenant Logo" fetchpriority="high" width="64" height="64" style="width:100%;height:100%;object-fit:cover" /></div>
           <div>
             <h1 style="font-size:2.8rem;font-weight:700;color:#fff;line-height:1.2;margin:0 0 16px">Manage your<br><span style="color:#3b82f6">properties</span> with<br>absolute ease.</h1>
-            <p style="font-size:1.1rem;color:#94a3b8;margin:0 0 32px;max-width:28rem">Everything you need to track tenants, payments, and maintenance in one professional portal.</p>
+            <p id="bluf-summary" class="speakable-summary" style="font-size:1.1rem;color:#94a3b8;margin:0 0 32px;max-width:28rem">MyTenant is the ultimate property management software. It reduces onboarding time by 90% and cuts overhead costs by up to 41%. Track tenants, payments, and maintenance in one professional portal without complex setup.</p>
             <div style="display:flex;gap:12px">
               <div class="ld-pulse" style="height:48px;width:140px;border-radius:12px"></div>
               <div class="ld-pulse" style="height:48px;width:160px;border-radius:12px"></div>

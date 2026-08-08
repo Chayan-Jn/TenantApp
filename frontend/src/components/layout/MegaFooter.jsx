@@ -8,21 +8,22 @@ export default function MegaFooter() {
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Features</h3>
           <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="/features/rent-ledger" className="hover:text-[#0ea5e9] transition-colors">Automated Rent Ledger</Link></li>
-            <li><Link to="/features/bill-splitting" className="hover:text-[#0ea5e9] transition-colors">Utility Bill Splitting</Link></li>
-            <li><Link to="/features/tenant-tracking" className="hover:text-[#0ea5e9] transition-colors">Tenant Tracking Portal</Link></li>
-            <li><Link to="/pricing" className="hover:text-[#0ea5e9] transition-colors">Pricing & Plans</Link></li>
+            <li><Link prefetch="intent" to="/features/rent-ledger" className="hover:text-[#0ea5e9] transition-colors">Automated Rent Ledger</Link></li>
+            <li><Link prefetch="intent" to="/features/bill-splitting" className="hover:text-[#0ea5e9] transition-colors">Utility Bill Splitting</Link></li>
+            <li><Link prefetch="intent" to="/features/tenant-tracking" className="hover:text-[#0ea5e9] transition-colors">Tenant Tracking Portal</Link></li>
+            <li><Link prefetch="intent" to="/tools/rent-calculator" className="hover:text-[#0ea5e9] transition-colors">Prorated Rent Calculator</Link></li>
+            <li><Link prefetch="intent" to="/pricing" className="hover:text-[#0ea5e9] transition-colors">Pricing & Plans</Link></li>
           </ul>
         </div>
         
         {/* Column 2 */}
         <div>
-          <h3 className="text-white font-bold mb-4 tracking-tight">Solutions</h3>
+          <h3 className="text-white font-bold mb-4 tracking-tight">Compare Alternatives</h3>
           <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="/solutions/landlords" className="hover:text-[#0ea5e9] transition-colors">For Independent Landlords</Link></li>
-            <li><Link to="/solutions/property-managers" className="hover:text-[#0ea5e9] transition-colors">For Property Managers</Link></li>
-            <li><Link to="/solutions/residential" className="hover:text-[#0ea5e9] transition-colors">Residential Real Estate</Link></li>
-            <li><Link to="/solutions/commercial" className="hover:text-[#0ea5e9] transition-colors">Commercial Real Estate</Link></li>
+            <li><Link prefetch="intent" to="/compare/mytenant-vs-buildium" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs Buildium</Link></li>
+            <li><Link prefetch="intent" to="/compare/mytenant-vs-appfolio" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs AppFolio</Link></li>
+            <li><Link prefetch="intent" to="/compare/mytenant-vs-turbotenant" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs TurboTenant</Link></li>
+            <li><Link prefetch="intent" to="/compare/mytenant-vs-doorloop" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs DoorLoop</Link></li>
           </ul>
         </div>
 
@@ -30,9 +31,9 @@ export default function MegaFooter() {
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Legal</h3>
           <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="/privacy-policy" className="hover:text-[#0ea5e9] transition-colors">Privacy Policy</Link></li>
-            <li><Link to="/terms" className="hover:text-[#0ea5e9] transition-colors">Terms of Service</Link></li>
-            <li><Link to="/refund-policy" className="hover:text-[#0ea5e9] transition-colors">Refund & Cancellation</Link></li>
+            <li><Link prefetch="intent" to="/privacy-policy" className="hover:text-[#0ea5e9] transition-colors">Privacy Policy</Link></li>
+            <li><Link prefetch="intent" to="/terms" className="hover:text-[#0ea5e9] transition-colors">Terms of Service</Link></li>
+            <li><Link prefetch="intent" to="/refund-policy" className="hover:text-[#0ea5e9] transition-colors">Refund & Cancellation</Link></li>
           </ul>
         </div>
 
@@ -40,7 +41,7 @@ export default function MegaFooter() {
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Company</h3>
           <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="/contact" className="hover:text-[#0ea5e9] transition-colors">Contact Support</Link></li>
+            <li><Link prefetch="intent" to="/contact" className="hover:text-[#0ea5e9] transition-colors">Contact Support</Link></li>
             <li><a href="mailto:support@mytenant.me" className="hover:text-[#0ea5e9] transition-colors">support@mytenant.me</a></li>
           </ul>
         </div>
