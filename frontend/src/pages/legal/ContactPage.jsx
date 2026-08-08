@@ -1,4 +1,6 @@
+import React from 'react'
 import { MdOutlineEmail, MdOutlineAccessTime, MdArrowForward, MdOutlineLocationOn } from 'react-icons/md'
+import SEO from '../../components/seo/SEO.jsx'
 
 const Card = ({ icon, label, value, link }) => (
   <a
@@ -23,6 +25,12 @@ const Card = ({ icon, label, value, link }) => (
 export default function ContactPage() {
   return (
     <article>
+      <SEO 
+        title="Contact Us"
+        description="Get in touch with MyTenant support for billing, platform assistance, and technical questions."
+        keywords="Contact MyTenant, Support, Help Desk, Property Management Support"
+        canonical="/contact"
+      />
       {/* Hero */}
       <div className="mb-10">
         <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-[#0ea5e9] bg-[#e0f2fe] dark:bg-[#0ea5e9]/10 px-3 py-1 rounded-full mb-3">

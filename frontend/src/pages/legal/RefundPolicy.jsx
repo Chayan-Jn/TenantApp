@@ -1,3 +1,6 @@
+import React from 'react'
+import SEO from '../../components/seo/SEO.jsx'
+
 const LAST_UPDATED = 'April 22, 2025'
 
 const Section = ({ title, children }) => (
@@ -16,6 +19,12 @@ const AlertBox = ({ children }) => (
 export default function RefundPolicy() {
   return (
     <article>
+      <SEO 
+        title="Refund Policy"
+        description="Refund and Cancellation Policy for MyTenant property management platform."
+        keywords="Refund Policy, Cancellation, MyTenant Subscriptions"
+        canonical="/refund-policy"
+      />
       {/* Hero */}
       <div className="mb-10">
         <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-[#0ea5e9] bg-[#e0f2fe] dark:bg-[#0ea5e9]/10 px-3 py-1 rounded-full mb-3">

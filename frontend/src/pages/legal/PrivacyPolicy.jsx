@@ -1,3 +1,6 @@
+import React from 'react'
+import SEO from '../../components/seo/SEO.jsx'
+
 const LAST_UPDATED = 'April 22, 2025'
 
 const Section = ({ title, children }) => (
@@ -9,7 +12,13 @@ const Section = ({ title, children }) => (
 
 export default function PrivacyPolicy() {
   return (
-    <article>
+    <article className="space-y-8 text-slate-700 dark:text-slate-300">
+      <SEO 
+        title="Privacy Policy"
+        description="Privacy Policy for MyTenant property management software. Read about how we collect, use, and protect your data."
+        keywords="Privacy Policy, MyTenant Data Protection, Property Management Privacy"
+        canonical="/privacy-policy"
+      />
       {/* Hero */}
       <div className="mb-10">
         <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-[#0ea5e9] bg-[#e0f2fe] dark:bg-[#0ea5e9]/10 px-3 py-1 rounded-full mb-3">

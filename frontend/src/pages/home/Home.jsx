@@ -9,6 +9,7 @@ import {
     MdOutlineAssessment, MdOutlineFileDownload, MdOutlineCardMembership,
     MdLogin, MdPersonAdd, MdAutoAwesome
 } from 'react-icons/md'
+import SEO from '../../components/seo/SEO.jsx'
 
 const FEATURES = [
     {
@@ -137,10 +138,28 @@ export default function Home() {
     const Icon = feature.icon
 
     return (
-        <div className="min-h-screen flex flex-col lg:flex-row bg-white dark:bg-slate-950 transition-colors">
+        <main className="min-h-screen flex flex-col lg:flex-row bg-white dark:bg-slate-950 transition-colors">
+            <SEO 
+                title="Property & Tenant Management Platform"
+                description="MyTenant is a modern real estate property and tenant management platform offering automated rent ledgers, bill management, document storage, and easy PDF reporting."
+                keywords="Property Management Software, Tenant Management Platform, Automated Rent Ledger, Real Estate, Bill Management, Rental Software, Apartment Management"
+                canonical="/"
+                schema={{
+                    "@context": "https://schema.org",
+                    "@type": "SoftwareApplication",
+                    "name": "MyTenant",
+                    "applicationCategory": "BusinessApplication",
+                    "operatingSystem": "Web",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "9.99",
+                        "priceCurrency": "USD"
+                    }
+                }}
+            />
 
             {/* ═══ LEFT PANEL — Branding + CTAs ═══ */}
-            <div className="relative lg:w-[45%] xl:w-[40%] overflow-hidden bg-slate-900 flex flex-col">
+            <section className="relative lg:w-[45%] xl:w-[40%] overflow-hidden bg-slate-900 flex flex-col">
                 {/* Geometric BG */}
                 <div className="absolute inset-0 z-0 opacity-40">
                     <svg className="w-full h-full" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
@@ -165,7 +184,7 @@ export default function Home() {
                     </div>
 
                     {/* Headline */}
-                    <div className="my-8 lg:my-0">
+                    <header className="my-8 lg:my-0">
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6 leading-tight">
                             Manage your<br/>
                             <span className="text-blue-500">properties</span> with<br/>
@@ -195,7 +214,7 @@ export default function Home() {
                                 Create Account
                             </Link>
                         </div>
-                    </div>
+                    </header>
 
                     {/* Footer */}
                     <div className="flex items-center gap-4 text-sm text-slate-500 mt-8 lg:mt-0">
@@ -204,10 +223,10 @@ export default function Home() {
                         <span>Premium Property Management</span>
                     </div>
                 </div>
-            </div>
+            </section>
 
             {/* ═══ RIGHT PANEL — Feature Carousel ═══ */}
-            <div className="flex-1 flex flex-col bg-gray-50 dark:bg-slate-900 relative overflow-hidden">
+            <section className="flex-1 flex flex-col bg-gray-50 dark:bg-slate-900 relative overflow-hidden">
                 {/* Title bar */}
                 <div className="px-6 sm:px-10 pt-6 sm:pt-8 pb-3 flex items-center gap-3">
                     <div className={`p-2 rounded-xl bg-gradient-to-br ${feature.color} text-white transition-all duration-500`}>
@@ -260,7 +279,7 @@ export default function Home() {
                             </div>
 
                             {/* Feature info */}
-                            <div className="mt-3 sm:mt-4 flex items-start gap-3">
+                            <article className="mt-3 sm:mt-4 flex items-start gap-3">
                                 <div className={`shrink-0 p-2 rounded-xl bg-gradient-to-br ${feature.color} text-white transition-all duration-500`}>
                                     <Icon size={22} />
                                 </div>
@@ -272,7 +291,7 @@ export default function Home() {
                                         {feature.description}
                                     </p>
                                 </div>
-                            </div>
+                            </article>
                         </div>
                     </div>
                 </div>
@@ -334,7 +353,7 @@ export default function Home() {
                         <a key={to} href={to} className="text-[11px] text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400 transition-colors">{label}</a>
                     ))}
                 </div>
-            </div>
+            </section>
 
             {/* Keyframe animation */}
             <style>{`
@@ -357,6 +376,6 @@ export default function Home() {
                     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
                 }
             `}</style>
-        </div>
+        </main>
     )
 }

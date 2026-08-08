@@ -1,3 +1,6 @@
+import React from 'react'
+import SEO from '../../components/seo/SEO.jsx'
+
 const LAST_UPDATED = 'April 22, 2025'
 
 const Section = ({ title, children }) => (
@@ -10,6 +13,12 @@ const Section = ({ title, children }) => (
 export default function TermsOfService() {
   return (
     <article>
+      <SEO 
+        title="Terms of Service"
+        description="Terms of Service for MyTenant property management platform. Understand our user agreement and platform rules."
+        keywords="Terms of Service, User Agreement, MyTenant Legal"
+        canonical="/terms"
+      />
       {/* Hero */}
       <div className="mb-10">
         <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-[#0ea5e9] bg-[#e0f2fe] dark:bg-[#0ea5e9]/10 px-3 py-1 rounded-full mb-3">

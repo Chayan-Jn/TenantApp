@@ -5,6 +5,7 @@ import { loadRazorpay } from '../../utils/razorpay.js'
 import { formatCurrency, APP_CURRENCY } from '../../utils/currency.js'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
+import SEO from '../../components/seo/SEO.jsx'
 
 const features = [
   'Unlimited Properties & Units',
@@ -93,10 +94,30 @@ export default function PricingPage() {
   }
 
   return (
-    <div
+    <main
       className="relative flex flex-col items-center px-4 py-8 w-full max-w-4xl mx-auto overflow-hidden"
       style={{ fontFamily: "'Outfit', sans-serif" }}
     >
+      <SEO 
+        title="Pricing & Plans"
+        description="Simple, honest pricing for MyTenant property management software. No hidden fees. Get unlimited properties, units, and automated rent ledgers."
+        keywords="Property Management Pricing, Rent Ledger Software Cost, Landlord Software Subscription"
+        canonical="/pricing"
+        schema={{
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": "MyTenant Property Management Software",
+            "description": "Premium property management and tenant tracking platform.",
+            "offers": {
+                "@type": "Offer",
+                "url": "https://mytenant.me/pricing",
+                "priceCurrency": "USD",
+                "price": "9.99",
+                "availability": "https://schema.org/InStock"
+            }
+        }}
+      />
+
       {/* Gradient blobs behind everything so glassmorphism has something to catch */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full opacity-30" style={{ background: '#F5A623', filter: 'blur(80px)' }} />
@@ -105,8 +126,10 @@ export default function PricingPage() {
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Pricing</h1>
-      <p className="text-sm text-slate-500 dark:text-slate-400 italic mb-7">Simple, honest pricing. No hidden fees.</p>
+      <header className="text-center mb-7">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Pricing</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 italic">Simple, honest pricing. No hidden fees.</p>
+      </header>
 
       {/* Toggle */}
       <div className="flex items-center rounded-full p-1 mb-10 gap-1" style={{ background: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.6)' }}>
@@ -328,6 +351,6 @@ export default function PricingPage() {
         message={alertConfig.message}
         onClose={() => setAlertConfig({ ...alertConfig, open: false })}
       />
-    </div>
+    </main>
   )
 }
