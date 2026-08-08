@@ -8,6 +8,7 @@ import PhotoManagerModal from '../../components/photos/PhotoManagerModal.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import Button from '../../components/ui/Button.jsx'
 import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
+import { formatCurrency } from '../../utils/currency'
 
 export default function PropertyDetail() {
   const { units: initialUnits, property_id, property } = useLoaderData()

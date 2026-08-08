@@ -24,6 +24,7 @@ export default function PropertyTenants() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState(() => sessionStorage.getItem(`pt_filter_${property_id}`) || 'active')
   const [alertInfo, setAlertInfo] = useState({ open: false, message: '' })
+  const [filterLoading, setFilterLoading] = useState(false)
   const [removeModal, setRemoveModal] = useState({ open: false, tenant: null })
   const [refundForm, setRefundForm] = useState({ deposit_refunded: '', deposit_note: '', leave_date: getLocalISODate() })
   const [removingId, setRemovingId] = useState(null)

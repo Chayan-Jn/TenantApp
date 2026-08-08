@@ -26,7 +26,7 @@ export default function GlobalError() {
         </p>
 
         {/* If in dev mode and it's a real crash, show a snippet of the error to developers safely */}
-        {!is404 && error?.message && process.env.NODE_ENV !== 'production' && (
+        {!is404 && error?.message && import.meta.env.MODE !== 'production' && (
            <div className="w-full bg-slate-100 dark:bg-slate-950 rounded bg-opacity-50 p-3 text-left mb-6 overflow-x-auto text-xs font-mono text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900">
              {error.message}
            </div>

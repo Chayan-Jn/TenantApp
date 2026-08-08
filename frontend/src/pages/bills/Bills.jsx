@@ -99,6 +99,7 @@ export default function Bills() {
 
   useEffect(() => {
     if (!selectedProperty || selectedProperty === 'all') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUnits([])
       return
     }

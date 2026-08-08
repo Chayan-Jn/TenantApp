@@ -456,7 +456,7 @@ export default function Reports() {
             <select
               className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 min-w-48 cursor-pointer transition-colors"
               value={reportType}
-              onChange={(e) => { setReportType(e.target.value); setSelectedRent('') }}
+              onChange={(e) => { setReportType(e.target.value) }}
             >
               <option value="rent_receipt">Rent Receipt</option>
               <option value="monthly_collection">Monthly Collection Report</option>
@@ -488,7 +488,7 @@ export default function Reports() {
             <select
               className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 w-full cursor-pointer transition-colors"
               value={selectedProperty}
-              onChange={(e) => { setSelectedProperty(e.target.value); setSelectedTenant(''); setSelectedRent('') }}
+              onChange={(e) => { setSelectedProperty(e.target.value); setSelectedTenant('') }}
             >
               {needsTenant ? <option value="all">Select a property...</option> : <option value="all">All Properties</option>}
               {properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}

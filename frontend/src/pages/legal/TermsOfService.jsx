@@ -1,5 +1,7 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import SEO from '../../components/seo/SEO.jsx'
+import { APP_CURRENCY } from '../../utils/currency'
 
 const LAST_UPDATED = 'April 22, 2025'
 

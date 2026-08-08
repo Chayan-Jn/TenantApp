@@ -255,7 +255,7 @@ const router = createBrowserRouter([
   // ── Public legal pages (no auth required) ──
   {
     path: '/',
-    Component: LegalLayout,
+    Component: PublicLayout,
     errorElement: <GlobalError />,
     children: [
       { path: 'privacy-policy', lazy: () => import('./pages/legal/PrivacyPolicy.jsx').then(m => ({ Component: m.default })) },
