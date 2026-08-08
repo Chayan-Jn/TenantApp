@@ -11,9 +11,24 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://mytenant.me/features/rent-ledger</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/features/bill-splitting</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/features/tenant-tracking</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mytenant.me/login</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mytenant.me/register</loc>

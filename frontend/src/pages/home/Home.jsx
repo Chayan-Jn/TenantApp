@@ -10,6 +10,7 @@ import {
     MdLogin, MdPersonAdd, MdAutoAwesome
 } from 'react-icons/md'
 import SEO from '../../components/seo/SEO.jsx'
+import MegaFooter from '../../components/layout/MegaFooter.jsx'
 
 const FEATURES = [
     {
@@ -137,8 +138,24 @@ export default function Home() {
     const feature = FEATURES[current]
     const Icon = feature.icon
 
+    const faqs = [
+        {
+            question: "How does the rent ledger work?",
+            answer: "Our automated rent ledger tracks all payments, overdue rents, and balances across your entire portfolio. When a tenant makes a payment, it instantly updates their balance and your global revenue dashboard."
+        },
+        {
+            question: "Can I split utility bills among tenants?",
+            answer: "Yes! You can log a master utility bill (like water or electricity) and our software will automatically divide it among your tenants equally, by custom percentage, or by fixed amounts."
+        },
+        {
+            question: "Is this suitable for commercial real estate?",
+            answer: "Absolutely. MyTenant handles unlimited properties and units, making it perfect for both residential apartments and commercial real estate portfolios."
+        }
+    ]
+
     return (
-        <main className="min-h-screen flex flex-col lg:flex-row bg-white dark:bg-slate-950 transition-colors">
+        <div className="flex flex-col bg-white dark:bg-slate-950 transition-colors">
+            <main className="min-h-screen flex flex-col lg:flex-row w-full">
             <SEO 
                 title="Property & Tenant Management Platform"
                 description="MyTenant is a modern real estate property and tenant management platform offering automated rent ledgers, bill management, document storage, and easy PDF reporting."
@@ -157,6 +174,21 @@ export default function Home() {
                     }
                 }}
             />
+            
+            <script type="application/ld+json">
+                {JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "FAQPage",
+                    "mainEntity": faqs.map(faq => ({
+                        "@type": "Question",
+                        "name": faq.question,
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": faq.answer
+                        }
+                    }))
+                })}
+            </script>
 
             {/* ═══ LEFT PANEL — Branding + CTAs ═══ */}
             <section className="relative lg:w-[45%] xl:w-[40%] overflow-hidden bg-slate-900 flex flex-col">
@@ -354,6 +386,29 @@ export default function Home() {
                     ))}
                 </div>
             </section>
+            </main>
+
+            {/* ═══ FAQ SECTION ═══ */}
+            <section className="w-full max-w-4xl mx-auto px-6 py-20">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-12">Frequently Asked Questions</h2>
+                <div className="space-y-4">
+                    {faqs.map((faq, idx) => (
+                        <details key={idx} className="group bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl cursor-pointer">
+                            <summary className="flex items-center justify-between p-6 font-semibold text-slate-800 dark:text-slate-200 list-none">
+                                {faq.question}
+                                <span className="transition group-open:rotate-180">
+                                    <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                                </span>
+                            </summary>
+                            <p className="px-6 pb-6 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                {faq.answer}
+                            </p>
+                        </details>
+                    ))}
+                </div>
+            </section>
+
+            <MegaFooter />
 
             {/* Keyframe animation */}
             <style>{`
@@ -375,7 +430,10 @@ export default function Home() {
                 .dark .shimmer-bg::after {
                     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
                 }
+                details > summary::-webkit-details-marker {
+                    display: none;
+                }
             `}</style>
-        </main>
+        </div>
     )
 }

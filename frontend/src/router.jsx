@@ -2,7 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router'
 import { getMe } from './api/owner.api.js'
 import Layout from './components/layout/Layout.jsx'
 import GlobalError from './components/ui/GlobalError.jsx'
-import LegalLayout from './pages/legal/LegalLayout.jsx'
+import PublicLayout from './pages/legal/PublicLayout.jsx'
 
 
 
@@ -262,6 +262,9 @@ const router = createBrowserRouter([
       { path: 'terms', lazy: () => import('./pages/legal/TermsOfService.jsx').then(m => ({ Component: m.default })) },
       { path: 'refund-policy', lazy: () => import('./pages/legal/RefundPolicy.jsx').then(m => ({ Component: m.default })) },
       { path: 'contact', lazy: () => import('./pages/legal/ContactPage.jsx').then(m => ({ Component: m.default })) },
+      { path: 'features/rent-ledger', lazy: () => import('./pages/features/RentLedger.jsx').then(m => ({ Component: m.default })) },
+      { path: 'features/bill-splitting', lazy: () => import('./pages/features/BillSplitting.jsx').then(m => ({ Component: m.default })) },
+      { path: 'features/tenant-tracking', lazy: () => import('./pages/features/TenantTracking.jsx').then(m => ({ Component: m.default })) },
     ]
   }
 ])
