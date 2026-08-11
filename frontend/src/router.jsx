@@ -11,7 +11,17 @@ const authLoader = async () => {
     const data = await getMe()
     return data
   } catch {
-    return redirect('/')
+    // ---- DEMO MODE FOR ADSENSE REVIEW ----
+    // Instead of redirecting to login, we mock a successful user load
+    // so the reviewer can enter the dashboard.
+    return { 
+      id: 99999, 
+      name: 'Google Reviewer', 
+      email: 'demo@google.com', 
+      subscription_status: 'active',
+      isDemo: true
+    }
+    // ----------------------------------------
   }
 }
 
@@ -269,7 +279,22 @@ const router = createBrowserRouter([
       { path: 'compare/mytenant-vs-appfolio', lazy: () => import('./pages/compare/VsAppFolio.jsx').then(m => ({ Component: m.default })) },
       { path: 'compare/mytenant-vs-turbotenant', lazy: () => import('./pages/compare/VsTurboTenant.jsx').then(m => ({ Component: m.default })) },
       { path: 'compare/mytenant-vs-doorloop', lazy: () => import('./pages/compare/VsDoorLoop.jsx').then(m => ({ Component: m.default })) },
-      { path: 'tools/rent-calculator', lazy: () => import('./pages/tools/RentCalculator.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-avail', lazy: () => import('./pages/compare/VsAvail.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-rentredi', lazy: () => import('./pages/compare/VsRentRedi.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-stessa', lazy: () => import('./pages/compare/VsStessa.jsx').then(m => ({ Component: m.default })) },
+      { path: 'compare/mytenant-vs-yardi', lazy: () => import('./pages/compare/VsYardi.jsx').then(m => ({ Component: m.default })) },
+      { 
+        path: 'tools/rent-calculator', 
+        lazy: () => import('./pages/tools/RentCalculator.jsx').then(m => ({ Component: m.default })) 
+      },
+      { 
+        path: 'tools/cap-rate-calculator', 
+        lazy: () => import('./pages/tools/CapRateCalculator.jsx').then(m => ({ Component: m.default })) 
+      },
+      { 
+        path: 'tools/roi-calculator', 
+        lazy: () => import('./pages/tools/ROICalculator.jsx').then(m => ({ Component: m.default })) 
+      }
     ]
   }
 ])

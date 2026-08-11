@@ -6,6 +6,7 @@ import { formatCurrency, APP_CURRENCY } from '../../utils/currency.js'
 import AlertModal from '../../components/ui/AlertModal.jsx'
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import SEO from '../../components/seo/SEO.jsx'
+import { useRouteLoaderData, useNavigate } from 'react-router'
 
 const features = [
   'Unlimited Properties & Units',
@@ -20,6 +21,9 @@ export default function PricingPage() {
   const [alertConfig, setAlertConfig] = useState({ open: false, message: '', title: 'Notice' })
   const [currency, setCurrency] = useState(APP_CURRENCY)
   const [paypalClientId, setPaypalClientId] = useState(null)
+  
+  const user = useRouteLoaderData('root')
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (currency === 'USD') {
@@ -37,6 +41,10 @@ export default function PricingPage() {
 
   const handleSubscribe = async (planId, e) => {
     e.stopPropagation()
+    if (user?.isDemo) {
+      return navigate('/register')
+    }
+    
     try {
       setProcessingPlan(planId)
       const isLoaded = await loadRazorpay()

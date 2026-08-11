@@ -5,7 +5,17 @@ import pool from '../../config/db.js'
 export const protect = async (req, res, next) => {
   const token = req.cookies?.token
   if (!token) {
-    return res.status(401).json({ success: false, message: 'Not authenticated' })
+    // ---- DEMO MODE FOR ADSENSE REVIEW ----
+    // If no token is provided, drop them into the Demo Account.
+    // We block destructive actions (POST, PUT, PATCH, DELETE) for the demo user
+    // to prevent randos from trashing the dummy data.
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+      return res.status(403).json({ success: false, message: 'Read-only Demo Mode active' })
+    }
+    
+    req.owner = { id: 99999, name: 'Google Reviewer', isDemo: true }
+    return next()
+    // ----------------------------------------
   }
 
   try {

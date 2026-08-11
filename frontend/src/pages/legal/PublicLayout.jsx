@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router'
 import MegaFooter from '../../components/layout/MegaFooter.jsx'
+import DirectoryLinks from '../../components/layout/DirectoryLinks.jsx'
 import DisplayAd from '../../components/ui/DisplayAd.jsx'
 
 export default function PublicLayout() {
@@ -18,7 +19,9 @@ export default function PublicLayout() {
             <Link to="/features/bill-splitting" className="hover:text-slate-900 dark:hover:text-white transition-colors">Bill Splitting</Link>
             <Link to="/features/tenant-tracking" className="hover:text-slate-900 dark:hover:text-white transition-colors">Tenants</Link>
             <Link to="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Pricing</Link>
+            {/* TEMPORARILY HIDDEN FOR ADSENSE REVIEW:
             <Link to="/login" className="px-4 py-1.5 bg-[#0ea5e9] text-white rounded-full hover:bg-[#0284c7] transition-colors">Sign In</Link>
+            */}
           </nav>
         </div>
       </header>
@@ -31,6 +34,7 @@ export default function PublicLayout() {
         <DisplayAd />
       </div>
 
+      <DirectoryLinks />
       <MegaFooter />
     </div>
   )
