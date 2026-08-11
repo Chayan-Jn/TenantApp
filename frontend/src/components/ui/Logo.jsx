@@ -50,10 +50,11 @@ export default function Logo({ size = 'md', className = '' }) {
         <img 
           src="/logo.png" 
           alt="MyTenant Logo" 
+          width="40"
+          height="40"
           className={`${dimValue} object-contain transition-transform duration-500 group-hover:scale-105`}
         />
       </div>
     </div>
   )
 }
-
