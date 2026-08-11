@@ -1,6 +1,6 @@
 import { Link, Outlet } from 'react-router'
 import MegaFooter from '../../components/layout/MegaFooter.jsx'
-import DisplayAd from '../ui/DisplayAd.jsx'
+import DisplayAd from '../../components/ui/DisplayAd.jsx'
 
 export default function PublicLayout() {
   return (

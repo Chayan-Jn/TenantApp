@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import { MdCheck, MdClose, MdArrowForward } from 'react-icons/md'
 import SEO from '../../components/seo/SEO.jsx'
-import DisplayAd from '../../components/ads/DisplayAd.jsx'
+import DisplayAd from '../../components/ui/DisplayAd.jsx'
 
 export default function CompareTemplate({ 
   competitor, 
