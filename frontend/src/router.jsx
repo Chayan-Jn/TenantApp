@@ -16,8 +16,8 @@ const authLoader = async () => {
     // so the reviewer can enter the dashboard.
     return { 
       id: 99999, 
-      name: 'Google Reviewer', 
-      email: 'demo@google.com', 
+      name: 'Demo Guest', 
+      email: 'demo@mytenant.me', 
       subscription_status: 'active',
       isDemo: true
     }
@@ -35,11 +35,9 @@ const guestLoader = async () => {
 }
 
 const router = createBrowserRouter([
-  // ── Homepage at root — no auth required, no redirect ──
   {
     path: '/',
-    lazy: () => import('./pages/home/Home.jsx').then(m => ({ Component: m.default })),
-    errorElement: <GlobalError />,
+    loader: () => redirect('/dashboard'),
   },
   // ── Redirect old /home bookmarks to root ──
   {

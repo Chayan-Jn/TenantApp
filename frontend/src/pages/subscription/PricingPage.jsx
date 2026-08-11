@@ -41,7 +41,8 @@ export default function PricingPage() {
 
   const handleSubscribe = async (planId, e) => {
     e.stopPropagation()
-    if (user?.isDemo) {
+    const isDemoAccount = user?.isDemo || user?.data?.isDemo
+    if (isDemoAccount) {
       return navigate('/register')
     }
     
