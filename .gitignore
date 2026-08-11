@@ -21,3 +21,5 @@ yarn-error.log
 .antigravityignore
 .geminiignore
 
+# Demo Mode Docs
+DEMO_MODE_REVERT_GUIDE.md

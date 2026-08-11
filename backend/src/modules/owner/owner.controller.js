@@ -29,6 +29,10 @@ export const updatePassword = async (req, res) => {
 
 export const deleteMe = async (req, res) => {
   try {
+    if (req.owner.id === 99999) {
+      return res.status(403).json({ success: false, message: 'Cannot delete the Demo Account.' })
+    }
+    
     await ownerService.deleteAccount(req.owner.id)
     // Clear the auth cookie manually as well to sign them out
     res.clearCookie('token', {

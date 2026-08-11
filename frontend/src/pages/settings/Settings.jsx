@@ -10,6 +10,7 @@ import SignatureModal, { getSavedSignature, clearSavedSignature } from '../../co
 export default function Settings() {
     const { data: owner } = useLoaderData()
     const navigate = useNavigate()
+    const isDemoAccount = owner?.id === 99999
 
     const [nameForm, setNameForm] = useState({ name: owner?.name || '' })
     const [passForm, setPassForm] = useState({ current_password: '', new_password: '' })
@@ -186,7 +187,7 @@ export default function Settings() {
                     Once you delete your account, there is no going back. Please be certain.
                 </p>
                 {deleteError && <p className="text-sm text-red-500 mb-4">{deleteError}</p>}
-                <Button variant="danger" onClick={() => setDeleteModalOpen(true)} className="self-start font-bold">
+                <Button variant="danger" disabled={isDemoAccount} onClick={() => setDeleteModalOpen(true)} className="self-start font-bold">
                     Delete Account
                 </Button>
             </Card>
