@@ -4,12 +4,21 @@ import SEO from '../../components/seo/SEO.jsx'
 import { MdCalculate, MdArrowForward } from 'react-icons/md'
 
 export default function RentCalculator() {
-  const [monthlyRent, setMonthlyRent] = useState(1500)
-  const [daysInMonth, setDaysInMonth] = useState(30)
-  const [daysOccupied, setDaysOccupied] = useState(15)
+  const [monthlyRent, setMonthlyRent] = useState('1500')
+  const [daysInMonth, setDaysInMonth] = useState('30')
+  const [daysOccupied, setDaysOccupied] = useState('15')
+  const [results, setResults] = useState(null)
 
-  const dailyRate = monthlyRent / daysInMonth
-  const proratedRent = dailyRate * daysOccupied
+  const handleCalculate = () => {
+    const mRent = parseFloat(monthlyRent) || 0
+    const dMonth = parseFloat(daysInMonth) || 30
+    const dOccupied = parseFloat(daysOccupied) || 0
+
+    const dailyRate = mRent / dMonth
+    const proratedRent = dailyRate * dOccupied
+
+    setResults({ dailyRate, proratedRent })
+  }
 
   return (
     <article className="relative w-full max-w-3xl mx-auto overflow-hidden">
@@ -39,7 +48,7 @@ export default function RentCalculator() {
             <input 
               type="number" 
               value={monthlyRent}
-              onChange={e => setMonthlyRent(Number(e.target.value) || 0)}
+              onChange={e => setMonthlyRent(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 text-slate-900 dark:text-white"
             />
           </div>
@@ -47,14 +56,14 @@ export default function RentCalculator() {
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Total Days in Month</label>
             <select 
               value={daysInMonth}
-              onChange={e => setDaysInMonth(Number(e.target.value))}
+              onChange={e => setDaysInMonth(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-emerald-500 text-slate-900 dark:text-white"
             >
-              <option value={28}>28 Days (February)</option>
-              <option value={29}>29 Days (Leap Year)</option>
-              <option value={30}>30 Days</option>
-              <option value={31}>31 Days</option>
-              <option value={365}>Banker's Year (365/12)</option>
+              <option value="28">28 Days (February)</option>
+              <option value="29">29 Days (Leap Year)</option>
+              <option value="30">30 Days</option>
+              <option value="31">31 Days</option>
+              <option value="30.416">Banker's Year (365/12)</option>
             </select>
           </div>
         </div>
@@ -63,23 +72,32 @@ export default function RentCalculator() {
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Days Occupied</label>
           <input 
             type="range" 
-            min="1" max={daysInMonth} 
+            min="1" max={Math.floor(Number(daysInMonth))} 
             value={daysOccupied}
-            onChange={e => setDaysOccupied(Number(e.target.value))}
+            onChange={e => setDaysOccupied(e.target.value)}
             className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
           <div className="text-center mt-3 font-bold text-emerald-500">{daysOccupied} Days</div>
         </div>
 
-        <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
-          <p className="text-sm text-slate-500 mb-2">Prorated Rent Due</p>
-          <p className="text-5xl font-bold text-slate-900 dark:text-white mb-2">
-            ${proratedRent.toFixed(2)}
-          </p>
-          <p className="text-xs text-slate-400">
-            Daily rate: ${(dailyRate).toFixed(2)} / day
-          </p>
-        </div>
+        <button 
+          onClick={handleCalculate}
+          className="w-full mb-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98]"
+        >
+          Calculate Prorated Rent
+        </button>
+
+        {results && (
+          <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <p className="text-sm text-slate-500 mb-2">Prorated Rent Due</p>
+            <p className="text-5xl font-bold text-slate-900 dark:text-white mb-2">
+              ${results.proratedRent.toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-400">
+              Daily rate: ${(results.dailyRate).toFixed(2)} / day
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl mb-16 mt-16">

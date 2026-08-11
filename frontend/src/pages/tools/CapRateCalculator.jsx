@@ -4,12 +4,21 @@ import SEO from '../../components/seo/SEO.jsx'
 import { MdTrendingUp, MdArrowForward } from 'react-icons/md'
 
 export default function CapRateCalculator() {
-  const [propertyValue, setPropertyValue] = useState(500000)
-  const [grossIncome, setGrossIncome] = useState(48000)
-  const [operatingExpenses, setOperatingExpenses] = useState(12000)
+  const [propertyValue, setPropertyValue] = useState('500000')
+  const [grossIncome, setGrossIncome] = useState('48000')
+  const [operatingExpenses, setOperatingExpenses] = useState('12000')
+  const [results, setResults] = useState(null)
 
-  const noi = grossIncome - operatingExpenses
-  const capRate = propertyValue > 0 ? (noi / propertyValue) * 100 : 0
+  const handleCalculate = () => {
+    const pValue = parseFloat(propertyValue) || 0
+    const gIncome = parseFloat(grossIncome) || 0
+    const oExpenses = parseFloat(operatingExpenses) || 0
+    
+    const noi = gIncome - oExpenses
+    const capRate = pValue > 0 ? (noi / pValue) * 100 : 0
+    
+    setResults({ noi, capRate })
+  }
 
   return (
     <article className="relative w-full max-w-3xl mx-auto overflow-hidden">
@@ -39,7 +48,7 @@ export default function CapRateCalculator() {
             <input 
               type="number" 
               value={propertyValue}
-              onChange={e => setPropertyValue(Number(e.target.value) || 0)}
+              onChange={e => setPropertyValue(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-white"
             />
           </div>
@@ -48,7 +57,7 @@ export default function CapRateCalculator() {
             <input 
               type="number" 
               value={grossIncome}
-              onChange={e => setGrossIncome(Number(e.target.value) || 0)}
+              onChange={e => setGrossIncome(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-white"
             />
           </div>
@@ -57,21 +66,30 @@ export default function CapRateCalculator() {
             <input 
               type="number" 
               value={operatingExpenses}
-              onChange={e => setOperatingExpenses(Number(e.target.value) || 0)}
+              onChange={e => setOperatingExpenses(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-slate-900 dark:text-white"
             />
           </div>
         </div>
 
-        <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
-          <p className="text-sm text-slate-500 mb-2">Capitalization Rate (Cap Rate)</p>
-          <p className="text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
-            {capRate.toFixed(2)}%
-          </p>
-          <p className="text-xs text-slate-400">
-            Net Operating Income (NOI): ${(noi).toLocaleString()} / year
-          </p>
-        </div>
+        <button 
+          onClick={handleCalculate}
+          className="w-full mb-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/25 active:scale-[0.98]"
+        >
+          Calculate Cap Rate
+        </button>
+
+        {results && (
+          <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <p className="text-sm text-slate-500 mb-2">Capitalization Rate (Cap Rate)</p>
+            <p className="text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
+              {results.capRate.toFixed(2)}%
+            </p>
+            <p className="text-xs text-slate-400">
+              Net Operating Income (NOI): ${(results.noi).toLocaleString()} / year
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl mb-16 mt-16">

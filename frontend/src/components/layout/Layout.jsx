@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, Link } from 'react-router'
+import { Outlet, Link, ScrollRestoration } from 'react-router'
 import Sidebar from './Sidebar.jsx'
 import Navbar from './Navbar.jsx'
 import TrialBanner from '../subscription/TrialBanner.jsx'
@@ -48,6 +48,7 @@ export default function Layout() {
                     )}
                 </main>
             </div>
+            <ScrollRestoration />
         </div>
     )
 }

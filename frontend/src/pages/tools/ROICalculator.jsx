@@ -4,14 +4,24 @@ import SEO from '../../components/seo/SEO.jsx'
 import { MdAttachMoney, MdArrowForward } from 'react-icons/md'
 
 export default function ROICalculator() {
-  const [purchasePrice, setPurchasePrice] = useState(300000)
-  const [downPayment, setDownPayment] = useState(60000)
-  const [annualRentalIncome, setAnnualRentalIncome] = useState(36000)
-  const [annualExpenses, setAnnualExpenses] = useState(15000)
+  const [purchasePrice, setPurchasePrice] = useState('300000')
+  const [downPayment, setDownPayment] = useState('60000')
+  const [annualRentalIncome, setAnnualRentalIncome] = useState('36000')
+  const [annualExpenses, setAnnualExpenses] = useState('15000')
+  const [results, setResults] = useState(null)
 
-  const totalInvestment = downPayment
-  const annualCashFlow = annualRentalIncome - annualExpenses
-  const roi = totalInvestment > 0 ? (annualCashFlow / totalInvestment) * 100 : 0
+  const handleCalculate = () => {
+    const pPrice = parseFloat(purchasePrice) || 0
+    const dPayment = parseFloat(downPayment) || 0
+    const aIncome = parseFloat(annualRentalIncome) || 0
+    const aExpenses = parseFloat(annualExpenses) || 0
+
+    const totalInvestment = dPayment
+    const annualCashFlow = aIncome - aExpenses
+    const roi = totalInvestment > 0 ? (annualCashFlow / totalInvestment) * 100 : 0
+
+    setResults({ annualCashFlow, roi })
+  }
 
   return (
     <article className="relative w-full max-w-3xl mx-auto overflow-hidden">
@@ -41,7 +51,7 @@ export default function ROICalculator() {
             <input 
               type="number" 
               value={purchasePrice}
-              onChange={e => setPurchasePrice(Number(e.target.value) || 0)}
+              onChange={e => setPurchasePrice(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 dark:text-white"
             />
           </div>
@@ -50,7 +60,7 @@ export default function ROICalculator() {
             <input 
               type="number" 
               value={downPayment}
-              onChange={e => setDownPayment(Number(e.target.value) || 0)}
+              onChange={e => setDownPayment(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 dark:text-white"
             />
           </div>
@@ -59,7 +69,7 @@ export default function ROICalculator() {
             <input 
               type="number" 
               value={annualRentalIncome}
-              onChange={e => setAnnualRentalIncome(Number(e.target.value) || 0)}
+              onChange={e => setAnnualRentalIncome(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 dark:text-white"
             />
           </div>
@@ -68,26 +78,35 @@ export default function ROICalculator() {
             <input 
               type="number" 
               value={annualExpenses}
-              onChange={e => setAnnualExpenses(Number(e.target.value) || 0)}
+              onChange={e => setAnnualExpenses(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 dark:text-white"
             />
           </div>
         </div>
 
-        <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
-          <p className="text-sm text-slate-500 mb-2">Cash on Cash Return (ROI)</p>
-          <p className="text-5xl font-bold text-amber-500 dark:text-amber-400 mb-2">
-            {roi.toFixed(2)}%
-          </p>
-          <p className="text-xs text-slate-400">
-            Annual Cash Flow: ${(annualCashFlow).toLocaleString()}
-          </p>
-        </div>
+        <button 
+          onClick={handleCalculate}
+          className="w-full mb-8 py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-amber-500/25 active:scale-[0.98]"
+        >
+          Calculate ROI
+        </button>
+
+        {results && (
+          <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <p className="text-sm text-slate-500 mb-2">Cash on Cash Return (ROI)</p>
+            <p className="text-5xl font-bold text-amber-500 dark:text-amber-400 mb-2">
+              {results.roi.toFixed(2)}%
+            </p>
+            <p className="text-xs text-slate-400">
+              Annual Cash Flow: ${(results.annualCashFlow).toLocaleString()}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl mb-16 mt-16">
-        <h2 className="text-xl font-bold text-white mb-4">Track ROI automatically</h2>
-        <p className="text-slate-400 text-sm mb-6">Connect your bank and let MyTenant automatically calculate cash flow and ROI across your entire portfolio in real-time.</p>
+        <h2 className="text-xl font-bold text-white mb-4">Track Cash Flow Professionally</h2>
+        <p className="text-slate-400 text-sm mb-6">Use MyTenant to log rent payments, split utility bills, and track your property ledgers so you always know your exact cash flow.</p>
         <Link 
           to="/register" 
           className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#0ea5e9]/25"

@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router'
+import { Link, Outlet, ScrollRestoration } from 'react-router'
 import MegaFooter from '../../components/layout/MegaFooter.jsx'
 import DirectoryLinks from '../../components/layout/DirectoryLinks.jsx'
 import DisplayAd from '../../components/ui/DisplayAd.jsx'
@@ -36,6 +36,7 @@ export default function PublicLayout() {
 
       <DirectoryLinks />
       <MegaFooter />
+      <ScrollRestoration />
     </div>
   )
 }
