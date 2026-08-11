@@ -14,6 +14,10 @@ export default function MegaFooter() {
             <li><Link prefetch="intent" to="/features/auto-signatures" className="hover:text-[#0ea5e9] transition-colors">Auto-Sign Documents</Link></li>
             <li><Link prefetch="intent" to="/tools/rent-calculator" className="hover:text-[#0ea5e9] transition-colors">Prorated Rent Calculator</Link></li>
             <li><Link prefetch="intent" to="/pricing" className="hover:text-[#0ea5e9] transition-colors">Pricing & Plans</Link></li>
+            <li><Link prefetch="intent" to="/tools/cap-rate-calculator" className="hover:text-[#0ea5e9] transition-colors">Cap Rate Calculator</Link></li>
+            <li><Link prefetch="intent" to="/tools/roi-calculator" className="hover:text-[#0ea5e9] transition-colors">ROI Calculator</Link></li>
+            <li><Link prefetch="intent" to="/tools/cost-segregation" className="hover:text-[#0ea5e9] transition-colors">Cost Segregation Estimator</Link></li>
+            <li><Link prefetch="intent" to="/tools/1031-exchange" className="hover:text-[#0ea5e9] transition-colors">1031 Exchange Tax Shield</Link></li>
           </ul>
         </div>
         

@@ -301,6 +301,14 @@ const router = createBrowserRouter([
       { 
         path: 'tools/roi-calculator', 
         lazy: () => import('./pages/tools/ROICalculator.jsx').then(m => ({ Component: m.default })) 
+      },
+      { 
+        path: 'tools/cost-segregation', 
+        lazy: () => import('./pages/tools/CostSegregation.jsx').then(m => ({ Component: m.default })) 
+      },
+      { 
+        path: 'tools/1031-exchange', 
+        lazy: () => import('./pages/tools/1031Exchange.jsx').then(m => ({ Component: m.default })) 
       }
     ]
   }
