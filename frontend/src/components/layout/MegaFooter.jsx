@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 export default function MegaFooter() {
   return (
     <footer className="bg-slate-900 border-t border-slate-800 w-full pt-16 pb-8">
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
         {/* Column 1 */}
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Features</h3>
@@ -24,8 +24,25 @@ export default function MegaFooter() {
             <li><Link prefetch="intent" to="/compare/alternatives" className="hover:text-[#0ea5e9] transition-colors font-semibold">MyTenant vs Competitors</Link></li>
           </ul>
         </div>
+        
+        {/* Column 3: Research & Data */}
+        <div>
+          <h3 className="text-white font-bold mb-4 tracking-tight">Research Hub</h3>
+          <ul className="space-y-2 text-sm text-slate-400">
+            <li><Link prefetch="intent" to="/research/green-premiums" className="hover:text-[#0ea5e9] transition-colors">Low-Carbon Rent Premium</Link></li>
+            <li><Link prefetch="intent" to="/research/tenant-retention" className="hover:text-[#0ea5e9] transition-colors">Vacancy Rate Paradox</Link></li>
+            <li><Link prefetch="intent" to="/research/smart-management" className="hover:text-[#0ea5e9] transition-colors">IoT Property Management</Link></li>
+            <li><Link prefetch="intent" to="/research/behavioral-rent" className="hover:text-[#0ea5e9] transition-colors">Behavioral Rent Collection</Link></li>
+            <li><Link prefetch="intent" to="/research/maintenance-roi" className="hover:text-[#0ea5e9] transition-colors">Maintenance & Renewals</Link></li>
+            <li><Link prefetch="intent" to="/research/utility-billing" className="hover:text-[#0ea5e9] transition-colors">RUBS vs Submetering</Link></li>
+            <li><Link prefetch="intent" to="/research/rent-determinants" className="hover:text-[#0ea5e9] transition-colors">Hedonic Pricing Models</Link></li>
+            <li><Link prefetch="intent" to="/research/landlord-economics" className="hover:text-[#0ea5e9] transition-colors">Institutional vs Independent</Link></li>
+            <li><Link prefetch="intent" to="/research/eviction-costs" className="hover:text-[#0ea5e9] transition-colors">The Cost of Eviction</Link></li>
+            <li><Link prefetch="intent" to="/research/digital-transformation" className="hover:text-[#0ea5e9] transition-colors">Digital Audit Liabilities</Link></li>
+          </ul>
+        </div>
 
-        {/* Column 3 */}
+        {/* Column 4 */}
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Legal</h3>
           <ul className="space-y-2 text-sm text-slate-400">

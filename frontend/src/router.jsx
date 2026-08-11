@@ -278,6 +278,18 @@ const router = createBrowserRouter([
       { path: 'features/tenant-tracking', lazy: () => import('./pages/features/TenantTracking.jsx').then(m => ({ Component: m.default })) },
       { path: 'features/auto-signatures', lazy: () => import('./pages/features/AutoSignatures.jsx').then(m => ({ Component: m.default })) },
       { path: 'compare/alternatives', lazy: () => import('./pages/compare/Alternatives.jsx').then(m => ({ Component: m.default })) },
+      
+      { path: 'research/green-premiums', lazy: () => import('./pages/research/GreenPremiums.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/tenant-retention', lazy: () => import('./pages/research/TenantRetention.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/smart-management', lazy: () => import('./pages/research/SmartManagement.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/behavioral-rent', lazy: () => import('./pages/research/BehavioralRent.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/maintenance-roi', lazy: () => import('./pages/research/MaintenanceROI.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/utility-billing', lazy: () => import('./pages/research/UtilityBilling.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/rent-determinants', lazy: () => import('./pages/research/RentDeterminants.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/landlord-economics', lazy: () => import('./pages/research/LandlordEconomics.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/eviction-costs', lazy: () => import('./pages/research/EvictionCosts.jsx').then(m => ({ Component: m.default })) },
+      { path: 'research/digital-transformation', lazy: () => import('./pages/research/DigitalTransformation.jsx').then(m => ({ Component: m.default })) },
+      
       { 
         path: 'tools/rent-calculator', 
         lazy: () => import('./pages/tools/RentCalculator.jsx').then(m => ({ Component: m.default })) 
