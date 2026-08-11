@@ -276,6 +276,7 @@ const router = createBrowserRouter([
       { path: 'features/rent-ledger', lazy: () => import('./pages/features/RentLedger.jsx').then(m => ({ Component: m.default })) },
       { path: 'features/bill-splitting', lazy: () => import('./pages/features/BillSplitting.jsx').then(m => ({ Component: m.default })) },
       { path: 'features/tenant-tracking', lazy: () => import('./pages/features/TenantTracking.jsx').then(m => ({ Component: m.default })) },
+      { path: 'features/auto-signatures', lazy: () => import('./pages/features/AutoSignatures.jsx').then(m => ({ Component: m.default })) },
       { path: 'compare/alternatives', lazy: () => import('./pages/compare/Alternatives.jsx').then(m => ({ Component: m.default })) },
       { 
         path: 'tools/rent-calculator', 

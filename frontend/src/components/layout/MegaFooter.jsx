@@ -11,6 +11,7 @@ export default function MegaFooter() {
             <li><Link prefetch="intent" to="/features/rent-ledger" className="hover:text-[#0ea5e9] transition-colors">Automated Rent Ledger</Link></li>
             <li><Link prefetch="intent" to="/features/bill-splitting" className="hover:text-[#0ea5e9] transition-colors">Utility Bill Splitting</Link></li>
             <li><Link prefetch="intent" to="/features/tenant-tracking" className="hover:text-[#0ea5e9] transition-colors">Tenant Tracking Portal</Link></li>
+            <li><Link prefetch="intent" to="/features/auto-signatures" className="hover:text-[#0ea5e9] transition-colors">Auto-Sign Documents</Link></li>
             <li><Link prefetch="intent" to="/tools/rent-calculator" className="hover:text-[#0ea5e9] transition-colors">Prorated Rent Calculator</Link></li>
             <li><Link prefetch="intent" to="/pricing" className="hover:text-[#0ea5e9] transition-colors">Pricing & Plans</Link></li>
           </ul>
@@ -20,10 +21,7 @@ export default function MegaFooter() {
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Compare Alternatives</h3>
           <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link prefetch="intent" to="/compare/mytenant-vs-buildium" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs Buildium</Link></li>
-            <li><Link prefetch="intent" to="/compare/mytenant-vs-appfolio" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs AppFolio</Link></li>
-            <li><Link prefetch="intent" to="/compare/mytenant-vs-turbotenant" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs TurboTenant</Link></li>
-            <li><Link prefetch="intent" to="/compare/mytenant-vs-doorloop" className="hover:text-[#0ea5e9] transition-colors">MyTenant vs DoorLoop</Link></li>
+            <li><Link prefetch="intent" to="/compare/alternatives" className="hover:text-[#0ea5e9] transition-colors font-semibold">MyTenant vs Competitors</Link></li>
           </ul>
         </div>
 
