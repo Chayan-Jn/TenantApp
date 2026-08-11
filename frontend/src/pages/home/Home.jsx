@@ -104,21 +104,16 @@ export default function Home() {
     const [current, setCurrent] = useState(0)
     const [isTransitioning, setIsTransitioning] = useState(false)
     const [imageLoaded, setImageLoaded] = useState({})
-    const authChecked = useRef(false)
+    const [dashboardLoading, setDashboardLoading] = useState(false)
 
-    // Non-blocking auth check — redirect logged-in users after 5 seconds
-    useEffect(() => {
-        if (authChecked.current) return
-        authChecked.current = true
+    const handleGoToDashboard = () => {
+        setDashboardLoading(true)
+        setTimeout(() => {
+            navigate('/dashboard')
+        }, 800)
+    }
 
-        const timer = setTimeout(() => {
-            import('../../api/owner.api.js').then(({ getMe }) =>
-                getMe().then(() => navigate('/dashboard', { replace: true })).catch(() => {})
-            )
-        }, 5000)
 
-        return () => clearTimeout(timer)
-    }, [navigate])
 
     const handleImageLoad = useCallback((idx) => {
         setImageLoaded(prev => ({ ...prev, [idx]: true }))
@@ -233,14 +228,22 @@ export default function Home() {
 
                         {/* CTA Buttons - Temporary Demo Mode */}
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                            <Link
-                                to="/dashboard"
-                                className="group flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] text-base"
+                            <button
+                                onClick={handleGoToDashboard}
+                                disabled={dashboardLoading}
+                                className="group flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] text-base disabled:opacity-75 disabled:cursor-wait"
                             >
-                                <MdOutlineCardMembership size={20} />
-                                Go to Dashboard
-                                <MdArrowForward size={18} className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                            </Link>
+                                {dashboardLoading ? (
+                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                ) : (
+                                    <MdOutlineCardMembership size={20} />
+                                )}
+                                {dashboardLoading ? 'Loading Dashboard...' : 'Go to Dashboard'}
+                                {!dashboardLoading && <MdArrowForward size={18} className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />}
+                            </button>
                         </div>
                     </header>
 
