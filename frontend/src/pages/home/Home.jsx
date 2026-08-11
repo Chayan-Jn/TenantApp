@@ -226,24 +226,15 @@ export default function Home() {
                             Everything you need to track tenants, payments, and maintenance in one professional portal.
                         </p>
 
-                        {/* CTA Buttons */}
+                        {/* CTA Buttons - Temporary Demo Mode */}
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                             <Link
-                                to="/login"
-                                id="home-signin-btn"
+                                to="/dashboard"
                                 className="group flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] text-base"
                             >
-                                <MdLogin size={20} />
-                                Sign In
+                                <MdOutlineCardMembership size={20} />
+                                Go to Dashboard
                                 <MdArrowForward size={18} className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                            </Link>
-                            <Link
-                                to="/register"
-                                id="home-register-btn"
-                                className="group flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all border border-white/20 hover:border-white/40 active:scale-[0.98] text-base backdrop-blur-sm"
-                            >
-                                <MdPersonAdd size={20} />
-                                Create Account
                             </Link>
                         </div>
                     </header>

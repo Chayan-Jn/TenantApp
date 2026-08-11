@@ -27,7 +27,8 @@ const authLoader = async () => {
 
 const guestLoader = async () => {
   try {
-    await getMe()
+    const data = await getMe()
+    if (data.data?.id === 99999) return null
     return redirect('/dashboard')
   } catch {
     return null
@@ -35,9 +36,11 @@ const guestLoader = async () => {
 }
 
 const router = createBrowserRouter([
+  // ── Homepage at root — no auth required, no redirect ──
   {
     path: '/',
-    loader: () => redirect('/dashboard'),
+    lazy: () => import('./pages/home/Home.jsx').then(m => ({ Component: m.default })),
+    errorElement: <GlobalError />,
   },
   // ── Redirect old /home bookmarks to root ──
   {
