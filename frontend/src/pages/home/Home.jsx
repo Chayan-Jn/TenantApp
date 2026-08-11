@@ -106,13 +106,18 @@ export default function Home() {
     const [imageLoaded, setImageLoaded] = useState({})
     const authChecked = useRef(false)
 
-    // Non-blocking auth check — redirect logged-in users after paint
+    // Non-blocking auth check — redirect logged-in users after 5 seconds
     useEffect(() => {
         if (authChecked.current) return
         authChecked.current = true
-        import('../../api/owner.api.js').then(({ getMe }) =>
-            getMe().then(() => navigate('/dashboard', { replace: true })).catch(() => {})
-        )
+
+        const timer = setTimeout(() => {
+            import('../../api/owner.api.js').then(({ getMe }) =>
+                getMe().then(() => navigate('/dashboard', { replace: true })).catch(() => {})
+            )
+        }, 5000)
+
+        return () => clearTimeout(timer)
     }, [navigate])
 
     const handleImageLoad = useCallback((idx) => {
