@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { 
     MdClose, MdArrowForward, MdArrowBack, 
     MdOutlineDomain, MdOutlineMeetingRoom, MdOutlineGroups, 
@@ -148,7 +149,9 @@ export default function QuickGuideModal({ isOpen, onClose }) {
     const step = GUIDE_STEPS[currentStep]
     const Icon = step.icon
 
-    return (
+    if (!document.body) return null;
+
+    return createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div 
                 className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300"
@@ -240,6 +243,7 @@ export default function QuickGuideModal({ isOpen, onClose }) {
                 </div>
 
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }
