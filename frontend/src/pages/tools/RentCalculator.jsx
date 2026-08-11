@@ -82,7 +82,7 @@ export default function RentCalculator() {
         </div>
       </div>
 
-      <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl">
+      <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl mb-16 mt-16">
         <h2 className="text-xl font-bold text-white mb-4">Tired of manual calculations?</h2>
         <p className="text-slate-400 text-sm mb-6">MyTenant automates prorated rent, late fees, and split utility bills effortlessly.</p>
         <Link 
@@ -92,6 +92,39 @@ export default function RentCalculator() {
           Automate Your Ledgers <MdArrowForward />
         </Link>
       </div>
+
+      {/* EEAT High-Value Content Section */}
+      <section className="mt-16 bg-white dark:bg-slate-800/50 rounded-3xl p-8 sm:p-12 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div className="prose prose-slate dark:prose-invert max-w-none">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-4 mb-8">
+            The Landlord's Guide to Prorating Rent
+          </h2>
+          
+          <h3 className="text-xl font-semibold mt-8 mb-4">What is Prorated Rent?</h3>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            Prorated rent is the exact, proportionate amount of rent a tenant owes when they occupy a property for only a fraction of a rental cycle (usually a month). Whether a tenant moves in on the 12th or moves out on the 23rd, landlords use proration to ensure the tenant is only billed for the exact days they had possession of the unit.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">The Math: 30-Day vs. Exact Days Method</h3>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            There are two primary methods landlords and property managers use to calculate daily rent rates:
+          </p>
+          <ul className="list-disc pl-6 space-y-4 text-slate-600 dark:text-slate-300 mb-8">
+            <li><strong>The "Banker's" or 30-Day Method:</strong> This method assumes every month has exactly 30 days, or that a year has 360 days. This makes calculations incredibly consistent, but it slightly overcharges tenants in 31-day months, and undercharges them in February. Some state jurisdictions legally mandate this method for consistency.</li>
+            <li><strong>The Exact Days Method (Recommended):</strong> You divide the monthly rent by the <em>actual</em> number of days in that specific month (e.g., 31 for August, 28 for February). This is generally considered the most fair and legally defensible approach for precise daily accounting.</li>
+            <li><strong>The 365-Day Method:</strong> Multiply monthly rent by 12, then divide by 365 to get an exact daily rate that applies year-round regardless of the month.</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">When Should You Prorate?</h3>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            Always detail your proration rules in the lease agreement. Standard industry practice is to charge a full month's rent upfront at move-in (regardless of the day), and then apply the <em>prorated amount to the second month</em>. This ensures you collect substantial funds upfront to cover potential early damages or flight risks.
+          </p>
+
+          <div className="mt-12 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+            <strong>Disclaimer for Educational Purposes:</strong> This prorated rent calculator and guide are designed for estimation and educational purposes. State and local landlord-tenant laws vary significantly regarding exactly how rent must be prorated and collected. MyTenant is not a law firm and this content does not constitute legal advice. Always refer to your signed lease agreement and consult with a local real estate attorney to ensure compliance with your jurisdiction's laws.
+          </div>
+        </div>
+      </section>
     </article>
   )
 }

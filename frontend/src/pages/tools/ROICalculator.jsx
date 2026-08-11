@@ -85,7 +85,7 @@ export default function ROICalculator() {
         </div>
       </div>
 
-      <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl mb-12">
+      <div className="text-center bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl mb-16 mt-16">
         <h2 className="text-xl font-bold text-white mb-4">Track ROI automatically</h2>
         <p className="text-slate-400 text-sm mb-6">Connect your bank and let MyTenant automatically calculate cash flow and ROI across your entire portfolio in real-time.</p>
         <Link 
@@ -95,6 +95,43 @@ export default function ROICalculator() {
           Start Free Trial <MdArrowForward />
         </Link>
       </div>
+
+      {/* EEAT High-Value Content Section */}
+      <section className="mt-16 bg-white dark:bg-slate-800/50 rounded-3xl p-8 sm:p-12 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div className="prose prose-slate dark:prose-invert max-w-none">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-4 mb-8">
+            The Complete Guide to Rental ROI & Cash-on-Cash Return
+          </h2>
+          
+          <h3 className="text-xl font-semibold mt-8 mb-4">Cash-on-Cash Return vs Overall ROI</h3>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            When real estate investors talk about "ROI," they are usually referring specifically to <strong>Cash-on-Cash (CoC) Return</strong>. This metric measures the annual pre-tax cash flow produced by a property relative to the actual amount of cash invested out-of-pocket (your down payment, closing costs, and rehab costs).
+          </p>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            Overall ROI, conversely, also includes factors like loan paydown (principal reduction), property appreciation over time, and tax benefits (like depreciation). While Overall ROI gives a holistic picture of wealth generation, Cash-on-Cash Return is the absolute best metric for understanding your day-to-day liquidity and cash generation.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">Hidden Expenses Amateur Landlords Forget</h3>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            A common mistake when using basic ROI calculators is underestimating <strong>Annual Expenses</strong>. To get an accurate, professional calculation, ensure your expense figure includes:
+          </p>
+          <ul className="list-disc pl-6 space-y-3 text-slate-600 dark:text-slate-300 mb-8">
+            <li><strong>Vacancy Rate:</strong> Always assume the property will sit empty for at least 5-8% of the year.</li>
+            <li><strong>Capital Expenditures (CapEx):</strong> Setting aside money for major future repairs (roofs, HVAC replacements).</li>
+            <li><strong>Property Management:</strong> Even if you self-manage using software like MyTenant, your time has value. Typically 8-10% of gross rents.</li>
+            <li><strong>Property Taxes & Insurance:</strong> These fluctuate annually and can severely impact cash flow.</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">What is a "Good" ROI?</h3>
+          <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            While it varies heavily by market, a standard benchmark for a strong Cash-on-Cash return on a long-term rental property ranges between <strong>8% and 12%</strong>. Returns above 12% are often found in higher-risk or turn-around neighborhoods, while safer, Class-A neighborhoods might yield closer to 5-7%.
+          </p>
+
+          <div className="mt-12 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+            <strong>Disclaimer for Educational Purposes:</strong> This calculator and the accompanying guide are provided for illustrative and educational purposes only. Return on Investment (ROI) and Cash Flow calculations rely on numerous assumptions, including tax rates, exact loan terms, and unforeseen maintenance variables that cannot be fully predicted. This tool does not constitute financial, investment, accounting, or tax advice. We highly recommend consulting with a licensed CPA and financial advisor regarding your specific real estate investments.
+          </div>
+        </div>
+      </section>
     </article>
   )
 }
