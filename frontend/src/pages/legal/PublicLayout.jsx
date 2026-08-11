@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router'
 import MegaFooter from '../../components/layout/MegaFooter.jsx'
+import DisplayAd from '../ui/DisplayAd.jsx'
 
 export default function PublicLayout() {
   return (
@@ -25,6 +26,10 @@ export default function PublicLayout() {
       <main className="flex-1 w-full max-w-4xl mx-auto px-6 py-12">
         <Outlet />
       </main>
+
+      <div className="w-full max-w-5xl mx-auto px-4 mb-8">
+        <DisplayAd />
+      </div>
 
       <MegaFooter />
     </div>

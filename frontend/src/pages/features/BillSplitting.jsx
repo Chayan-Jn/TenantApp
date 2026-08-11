@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import { MdOutlinePieChart, MdCheck, MdArrowForward } from 'react-icons/md'
 import SEO from '../../components/seo/SEO.jsx'
+import DisplayAd from '../../components/ui/DisplayAd'
 
 export default function BillSplitting() {
   return (

@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import { MdCheck, MdClose, MdArrowForward } from 'react-icons/md'
 import SEO from '../../components/seo/SEO.jsx'
+import DisplayAd from '../../components/ads/DisplayAd.jsx'
 
 export default function CompareTemplate({ 
   competitor, 
@@ -86,6 +87,10 @@ export default function CompareTemplate({
         >
           Start Your Free Trial <MdArrowForward />
         </Link>
+      </div>
+      
+      <div className="mt-8 mb-4">
+        <DisplayAd className="max-w-4xl mx-auto" />
       </div>
 
       <p className="text-xs text-slate-400 text-center mt-8 pb-8 opacity-60">
