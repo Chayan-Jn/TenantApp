@@ -349,12 +349,14 @@ export default function Home() {
                     <div className="flex gap-2">
                         <button
                             onClick={prev}
+                            aria-label="Previous feature"
                             className="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
                         >
                             <MdArrowBack size={20} />
                         </button>
                         <button
                             onClick={next}
+                            aria-label="Next feature"
                             className={`w-10 h-10 rounded-xl bg-gradient-to-r ${feature.color} text-white flex items-center justify-center hover:shadow-lg transition-all active:scale-95 cursor-pointer`}
                         >
                             <MdArrowForward size={20} />

@@ -1,16 +1,25 @@
-# MyTenant - Property Management Software
+# MyTenant
 
-## Overview
-MyTenant is a modern property management software designed for independent landlords, property managers, and real estate professionals. It provides an intuitive interface for tracking tenants, payments, and maintenance.
+> MyTenant is a modern property management software designed for independent landlords, providing an intuitive interface for tracking tenants, automated rent ledgers, and maintenance.
+
+Important notes:
+- Replaces complex, outdated software with an instant, lightning-fast React interface.
+- Includes automated tax calculation tools for Section 1031 exchanges and cost segregation.
 
 ## Features
-- **Automated Rent Ledger:** Real-time tracking of rent payments, overdue balances, and historical ledgers.
-- **Utility Bill Splitting:** Dynamic calculations for RUBS (Ratio Utility Billing Systems).
-- **Tenant Portal:** Full lifecycle tracking of tenants, leases, and documents.
-- **Financial Tools:** Free calculators including Prorated Rent, Cap Rate, ROI, MACRS Cost Segregation, and 1031 Exchange.
 
-## Contact & Links
-- Website: https://mytenant.me
-- Support: support@mytenant.me
-- Compare Alternatives: https://mytenant.me/compare/alternatives
-- Glossary & Documentation: https://mytenant.me/features/rent-ledger
+- [Rent Ledger](https://mytenant.me/features/rent-ledger): Real-time tracking of rent payments, overdue balances, and historical ledgers.
+- [Utility Bill Splitting](https://mytenant.me/features/bill-splitting): Dynamic calculations for RUBS (Ratio Utility Billing Systems).
+- [Tenant Tracking](https://mytenant.me/features/tenant-tracking): Full lifecycle tracking of tenants, leases, and documents.
+
+## Tools
+
+- [Prorated Rent Calculator](https://mytenant.me/tools/rent-calculator): Calculate partial month move-in/move-out costs.
+- [Cap Rate Calculator](https://mytenant.me/tools/cap-rate-calculator): Determine capitalization rate for properties.
+- [ROI Calculator](https://mytenant.me/tools/roi-calculator): Calculate Return on Investment for real estate.
+- [Cost Segregation](https://mytenant.me/tools/cost-segregation): MACRS Cost Segregation Estimator.
+- [1031 Exchange](https://mytenant.me/tools/1031-exchange): 1031 Exchange Tax Shield Calculator.
+
+## Docs
+
+- [Compare Alternatives](https://mytenant.me/compare/alternatives): MyTenant vs Buildium, AppFolio, DoorLoop, TurboTenant.

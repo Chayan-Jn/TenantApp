@@ -2,13 +2,13 @@ import React from 'react'
 
 export default function Logo({ size = 'md', className = '' }) {
   const dimensions = {
-    sm: 'h-10',
-    md: 'h-16',
-    lg: 'h-28',
-    xl: 'h-48'
+    sm: { cls: 'h-10', px: 40 },
+    md: { cls: 'h-16', px: 64 },
+    lg: { cls: 'h-28', px: 112 },
+    xl: { cls: 'h-48', px: 192 }
   }
 
-  const dimValue = dimensions[size] || dimensions.md
+  const dim = dimensions[size] || dimensions.md
 
   return (
     <div className={`relative flex items-center justify-center p-2 group ${className}`} style={{ perspective: '800px' }}>
@@ -50,9 +50,9 @@ export default function Logo({ size = 'md', className = '' }) {
         <img 
           src="/logo.png" 
           alt="MyTenant Logo" 
-          width="40"
-          height="40"
-          className={`${dimValue} object-contain transition-transform duration-500 group-hover:scale-105`}
+          width={dim.px}
+          height={dim.px}
+          className={`${dim.cls} object-contain transition-transform duration-500 group-hover:scale-105`}
         />
       </div>
     </div>
