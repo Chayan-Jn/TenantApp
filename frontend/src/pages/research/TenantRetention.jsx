@@ -31,6 +31,7 @@ export default function TenantRetention() {
       </div>
 
       <section className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-3xl p-8 sm:p-12 mb-12 shadow-xl shadow-slate-200/20 dark:shadow-none prose prose-slate dark:prose-invert max-w-none">
+        <img src="/images/smart_lock.jpg" alt="Modern smart lock on a pristine white front door" className="w-full h-64 sm:h-96 object-cover rounded-2xl mb-8 shadow-lg" />
         <h2 className="text-2xl font-bold">Abstract & Academic Context</h2>
         <p>
           Research published by the National Bureau of Economic Research (NBER) frequently highlights a structural puzzle in real estate economics: the "Vacancy Rate-Rent Paradox." Traditional supply-and-demand models suggest rents should fall immediately when vacancies rise. However, landlords often exhibit "sticky" pricing behavior, preferring to hold units vacant rather than drop rents, driven by search frictions and asymmetric information.

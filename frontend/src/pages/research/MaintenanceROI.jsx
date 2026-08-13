@@ -31,6 +31,7 @@ export default function MaintenanceROI() {
       </div>
 
       <section className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-3xl p-8 sm:p-12 mb-12 shadow-xl shadow-slate-200/20 dark:shadow-none prose prose-slate dark:prose-invert max-w-none">
+        <img src="/images/calc_blueprint.jpg" alt="Architectural blueprint and financial calculator flat lay" className="w-full h-64 sm:h-96 object-cover rounded-2xl mb-8 shadow-lg" />
         <h2 className="text-2xl font-bold">Abstract & Academic Context</h2>
         <p>
           In property management literature, researchers frequently apply the <strong>SERVQUAL</strong> (Service Quality) framework to measure tenant satisfaction. Across multiple studies, one metric consistently dwarfs all others in predicting whether a tenant will renew their lease: the speed and efficacy of maintenance responses.
