@@ -385,6 +385,20 @@ const router = createBrowserRouter([
             Component: m.default,
           })),
       },
+      {
+        path: "insights",
+        lazy: () =>
+          import("./pages/insights/Insights.jsx").then((m) => ({
+            Component: m.default,
+          })),
+      },
+      {
+        path: "insights/:slug",
+        lazy: () =>
+          import("./pages/insights/InsightDetail.jsx").then((m) => ({
+            Component: m.default,
+          })),
+      },
 
       {
         path: "research/green-premiums",

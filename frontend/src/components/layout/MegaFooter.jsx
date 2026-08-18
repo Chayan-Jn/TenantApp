@@ -58,8 +58,9 @@ export default function MegaFooter() {
 
         {/* Column 4 */}
         <div>
-          <h3 className="text-white font-bold mb-4 tracking-tight">Company</h3>
+          <h3 className="text-white font-bold mb-4 tracking-tight">Resources & Company</h3>
           <ul className="space-y-2 text-sm text-slate-400">
+            <li><Link prefetch="intent" to="/insights" className="hover:text-[#0ea5e9] transition-colors py-1 block">Daily Insights</Link></li>
             <li><Link prefetch="intent" to="/contact" className="hover:text-[#0ea5e9] transition-colors py-1 block">Contact Support</Link></li>
             <li><a href="mailto:support@mytenant.me" className="hover:text-[#0ea5e9] transition-colors py-1 block">support@mytenant.me</a></li>
           </ul>
