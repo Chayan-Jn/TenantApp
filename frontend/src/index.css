@@ -1,5 +1,6 @@
 /* Font is loaded non-blocking from index.html — do NOT use @import here */
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 

@@ -4,6 +4,8 @@ import { insights } from '../../data/insights';
 import SEO from '../../components/seo/SEO';
 
 export default function Insights() {
+  const sortedInsights = [...insights].sort((a, b) => new Date(b.date) - new Date(a.date));
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors pt-24 pb-12">
       <SEO 
@@ -24,7 +26,7 @@ export default function Insights() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {insights.map((insight) => (
+          {sortedInsights.map((insight) => (
             <Link 
               key={insight.id} 
               to={`/insights/${insight.slug}`}
