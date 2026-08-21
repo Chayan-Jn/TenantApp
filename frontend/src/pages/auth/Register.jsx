@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom'
 import { register, googleLogin } from '../../api/auth.api.js'
 import { GoogleLogin } from '@react-oauth/google'
 import Logo from '../../components/ui/Logo.jsx'
-import DisplayAd from '../../components/ui/DisplayAd.jsx'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -208,8 +207,6 @@ export default function Register() {
             Already a member?{' '}
             <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">Sign in here</Link>
           </p>
-
-          <DisplayAd className="mt-6 mb-2" />
 
           {/* Legal links */}
           <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800 flex flex-wrap justify-center gap-x-4 gap-y-1">

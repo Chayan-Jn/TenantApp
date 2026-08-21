@@ -168,11 +168,6 @@ export default function Home() {
                     "applicationCategory": "BusinessApplication",
                     "operatingSystem": "Web",
                     "image": "https://mytenant.me/logo.png",
-                    "aggregateRating": {
-                        "@type": "AggregateRating",
-                        "ratingValue": "4.9",
-                        "ratingCount": "128"
-                    },
                     "offers": {
                         "@type": "Offer",
                         "price": "9.99",

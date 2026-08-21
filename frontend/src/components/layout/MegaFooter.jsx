@@ -50,6 +50,7 @@ export default function MegaFooter() {
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Legal</h3>
           <ul className="space-y-2 text-sm text-slate-400">
+            <li><Link prefetch="intent" to="/about" className="hover:text-[#0ea5e9] transition-colors py-1 block">About & Editorial Standards</Link></li>
             <li><Link prefetch="intent" to="/privacy-policy" className="hover:text-[#0ea5e9] transition-colors py-1 block">Privacy Policy</Link></li>
             <li><Link prefetch="intent" to="/terms" className="hover:text-[#0ea5e9] transition-colors py-1 block">Terms of Service</Link></li>
             <li><Link prefetch="intent" to="/refund-policy" className="hover:text-[#0ea5e9] transition-colors py-1 block">Refund & Cancellation</Link></li>

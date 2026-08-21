@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom'
 import { login, googleLogin } from '../../api/auth.api.js' 
 import { GoogleLogin } from '@react-oauth/google'
 import Logo from '../../components/ui/Logo.jsx'
-import DisplayAd from '../../components/ui/DisplayAd.jsx'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -158,8 +157,6 @@ export default function Login() {
             New to MyTenant?{' '}
             <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">Create an account</Link>
           </p>
-
-          <DisplayAd className="mt-6 mb-2" />
 
           {/* Legal links */}
           <div className="mt-6 pt-5 border-t border-gray-100 dark:border-slate-800 flex flex-wrap justify-center gap-x-4 gap-y-1">

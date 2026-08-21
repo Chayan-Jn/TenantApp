@@ -6,6 +6,7 @@ Allow: /privacy-policy
 Allow: /terms
 Allow: /refund-policy
 Allow: /contact
+Allow: /about
 
 Disallow: /dashboard
 Disallow: /properties

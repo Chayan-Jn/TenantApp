@@ -9,9 +9,7 @@ const authLoader = async () => {
     const data = await getMe();
     return data;
   } catch {
-    // ---- DEMO MODE FOR ADSENSE REVIEW ----
-    // Instead of redirecting to login, we mock a successful user load
-    // so the reviewer can enter the dashboard.
+    // Public demo fallback so evaluators can inspect product functionality.
     return {
       id: 99999,
       name: "Demo Guest",
@@ -19,7 +17,6 @@ const authLoader = async () => {
       subscription_status: "active",
       isDemo: true,
     };
-    // ----------------------------------------
   }
 };
 
@@ -347,6 +344,13 @@ const router = createBrowserRouter([
         path: "contact",
         lazy: () =>
           import("./pages/legal/ContactPage.jsx").then((m) => ({
+            Component: m.default,
+          })),
+      },
+      {
+        path: "about",
+        lazy: () =>
+          import("./pages/legal/AboutPage.jsx").then((m) => ({
             Component: m.default,
           })),
       },

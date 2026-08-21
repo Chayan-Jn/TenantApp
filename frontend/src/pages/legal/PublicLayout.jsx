@@ -1,7 +1,6 @@
 import { Link, Outlet, ScrollRestoration } from 'react-router'
 import MegaFooter from '../../components/layout/MegaFooter.jsx'
 import DirectoryLinks from '../../components/layout/DirectoryLinks.jsx'
-import DisplayAd from '../../components/ui/DisplayAd.jsx'
 
 export default function PublicLayout() {
   return (
@@ -18,10 +17,9 @@ export default function PublicLayout() {
             <Link to="/features/rent-ledger" className="hover:text-slate-900 dark:hover:text-white transition-colors">Rent Ledger</Link>
             <Link to="/features/bill-splitting" className="hover:text-slate-900 dark:hover:text-white transition-colors">Bill Splitting</Link>
             <Link to="/features/tenant-tracking" className="hover:text-slate-900 dark:hover:text-white transition-colors">Tenants</Link>
+            <Link to="/about" className="hover:text-slate-900 dark:hover:text-white transition-colors">About</Link>
             <Link to="/pricing" className="hover:text-slate-900 dark:hover:text-white transition-colors">Pricing</Link>
-            {/* TEMPORARILY HIDDEN FOR ADSENSE REVIEW:
-            <Link to="/login" className="px-4 py-1.5 bg-[#0ea5e9] text-white rounded-full hover:bg-[#0284c7] transition-colors">Sign In</Link>
-            */}
+            <Link to="/dashboard" className="px-4 py-1.5 bg-[#0ea5e9] text-white rounded-full hover:bg-[#0284c7] transition-colors">Open Live Demo</Link>
           </nav>
         </div>
       </header>
@@ -29,10 +27,6 @@ export default function PublicLayout() {
       <main className="flex-1 w-full max-w-4xl mx-auto px-6 py-12">
         <Outlet />
       </main>
-
-      <div className="w-full max-w-5xl mx-auto px-4 mb-8">
-        <DisplayAd />
-      </div>
 
       <DirectoryLinks />
       <MegaFooter />
