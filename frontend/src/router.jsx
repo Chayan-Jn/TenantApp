@@ -89,7 +89,6 @@ const router = createBrowserRouter([
           import("./pages/properties/Properties.jsx").then((m) => ({
             Component: m.default,
           })),
-        loader: authLoader,
       },
       {
         path: "properties/:id",
@@ -195,7 +194,6 @@ const router = createBrowserRouter([
           import("./pages/settings/Settings.jsx").then((m) => ({
             Component: m.default,
           })),
-        loader: authLoader,
       },
       {
         path: "payments",
@@ -293,7 +291,6 @@ const router = createBrowserRouter([
           import("./pages/subscription/SubscriptionPage.jsx").then((m) => ({
             Component: m.default,
           })),
-        loader: authLoader,
       },
       {
         path: "pricing",
@@ -301,7 +298,6 @@ const router = createBrowserRouter([
           import("./pages/subscription/PricingPage.jsx").then((m) => ({
             Component: m.default,
           })),
-        loader: authLoader,
       },
       {
         path: "subscription/expired",
@@ -309,7 +305,6 @@ const router = createBrowserRouter([
           import("./pages/subscription/SubscriptionExpired.jsx").then((m) => ({
             Component: m.default,
           })),
-        loader: authLoader,
       },
     ],
   },

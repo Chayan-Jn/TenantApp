@@ -13,6 +13,7 @@ import {
 } from 'react-icons/md'
 import { getSubscriptionStatus, getSubscriptionHistory } from '../../api/subscription.api.js'
 import { formatCurrency, APP_CURRENCY } from '../../utils/currency.js'
+import { SubscriptionGhost } from '../../components/ui/GhostLoader.jsx'
 
 const PLAN_FEATURES = [
   'Unlimited Properties & Units',
@@ -35,11 +36,7 @@ export default function SubscriptionPage() {
   })
 
   if (isLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="animate-spin h-9 w-9 border-[3px] border-slate-300 border-t-slate-800 dark:border-slate-600 dark:border-t-white rounded-full" />
-      </div>
-    )
+    return <SubscriptionGhost />
   }
 
   if (isError || !res?.data) {

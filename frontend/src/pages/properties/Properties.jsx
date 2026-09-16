@@ -13,6 +13,7 @@ import {
 import AlertModal from '../../components/ui/AlertModal.jsx'
 import Modal from '../../components/ui/Modal.jsx'
 import Button from '../../components/ui/Button.jsx'
+import { PropertiesGhost } from '../../components/ui/GhostLoader.jsx'
 
 // Softened the colors significantly for a cleaner look
 const TYPE_CONFIG = {
@@ -106,12 +107,7 @@ export default function Properties() {
 
       {/* --- CONTENT AREA --- */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-pulse flex flex-col items-center gap-4">
-            <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-full"></div>
-            <p className="text-gray-400 dark:text-slate-500 font-medium">Loading properties...</p>
-          </div>
-        </div>
+        <PropertiesGhost />
       ) : properties.length === 0 ? (
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-gray-300 dark:border-slate-600 p-16 text-center flex flex-col items-center justify-center transition-colors">
           <div className="w-20 h-20 bg-gray-50 dark:bg-slate-700 rounded-full flex items-center justify-center mb-5">

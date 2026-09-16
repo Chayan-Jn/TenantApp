@@ -186,7 +186,7 @@ export default function PricingPage() {
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-5">Monthly</p>
 
           <div className="mb-1 flex items-baseline gap-1">
-            <span className="text-5xl font-bold text-slate-900 tracking-tight">{formatCurrency(currency === 'USD' ? 9.99 : 199, currency)}</span>
+            <span className="text-5xl font-bold text-slate-900 tracking-tight">{formatCurrency(currency === 'USD' ? 0.99 : 9, currency)}</span>
             <span className="text-sm text-slate-400 ml-1">/ month</span>
           </div>
           <p className="text-[11px] text-slate-400 italic mb-7">Valid for 30 days</p>

@@ -11,6 +11,7 @@ import {
   FiCircle
 } from 'react-icons/fi'
 import { formatCurrency } from '../../utils/currency.js'
+import { DashboardGhost } from '../../components/ui/GhostLoader.jsx'
 
 const TYPE_LABELS = { flat: 'Flats', pg: 'PGs', commercial: 'Commercial' }
 
@@ -66,7 +67,7 @@ export default function Dashboard() {
 
   // Fallback while loading or if no data
   if (!loaderData) {
-    return <div className="p-6 text-gray-500 dark:text-slate-400">Loading dashboard data...</div>
+    return <DashboardGhost />
   }
 
   const isOnboardingComplete = stats?.total_properties > 0 && stats?.total_units > 0 && stats?.occupied_units > 0;

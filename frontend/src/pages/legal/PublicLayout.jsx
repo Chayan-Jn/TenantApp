@@ -1,10 +1,15 @@
-import { Link, Outlet, ScrollRestoration } from 'react-router'
+import { Link, Outlet, ScrollRestoration, useNavigation } from 'react-router'
 import MegaFooter from '../../components/layout/MegaFooter.jsx'
 import DirectoryLinks from '../../components/layout/DirectoryLinks.jsx'
+import { TopProgressBar, PublicPageGhost } from '../../components/ui/GhostLoader.jsx'
 
 export default function PublicLayout() {
+  const navigation = useNavigation()
+  const isNavigating = navigation.state === 'loading'
+
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f172a] flex flex-col" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      {isNavigating && <TopProgressBar />}
       {/* Top Navigation Bar - Fulfills Google AdSense Clear Navigation Requirement */}
       <header className="sticky top-0 z-50 bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 min-h-[4rem] flex flex-col md:flex-row items-center justify-between gap-4">
@@ -39,7 +44,7 @@ export default function PublicLayout() {
       </header>
 
       <main className="flex-1 w-full">
-        <Outlet />
+        {isNavigating ? <PublicPageGhost /> : <Outlet />}
       </main>
 
       <DirectoryLinks />

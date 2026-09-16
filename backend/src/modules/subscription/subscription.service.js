@@ -46,9 +46,9 @@ export const createOrder = async (planId, currency = 'INR') => {
 
   let amount;
   if (currency === 'USD') {
-    amount = planId === 'plan_monthly' ? 9.99 : 99.00;
+    amount = planId === 'plan_monthly' ? 0.99 : 99.00;
   } else {
-    amount = planId === 'plan_monthly' ? 199 : 1199;
+    amount = planId === 'plan_monthly' ? 9 : 1199;
   }
   
   const options = {
@@ -110,9 +110,9 @@ export const verifyPayment = async (ownerId, paymentData) => {
   // Record the purchase in payment history
   let amount;
   if (currency === 'USD') {
-    amount = planId === 'plan_monthly' ? 9.99 : 99.00;
+    amount = planId === 'plan_monthly' ? 0.99 : 99.00;
   } else {
-    amount = planId === 'plan_monthly' ? 199 : 1199;
+    amount = planId === 'plan_monthly' ? 9 : 1199;
   }
 
   await pool.query(
@@ -165,7 +165,7 @@ const getPaypalAccessToken = async () => {
 };
 
 export const createPaypalOrder = async (planId) => {
-  const amount = planId === 'plan_monthly' ? '9.99' : '99.00';
+  const amount = planId === 'plan_monthly' ? '0.99' : '99.00';
   const token = await getPaypalAccessToken();
 
   const response = await fetch('https://api-m.paypal.com/v2/checkout/orders', {
@@ -243,7 +243,7 @@ export const verifyPaypalPayment = async (ownerId, paymentData) => {
     [planName, newEndDate, ownerId]
   );
 
-  const amount = planId === 'plan_monthly' ? 9.99 : 99.00;
+  const amount = planId === 'plan_monthly' ? 0.99 : 99.00;
 
   await pool.query(
     `INSERT INTO subscription_payments (owner_id, payment_gateway, paypal_order_id, paypal_capture_id, plan, amount, currency)

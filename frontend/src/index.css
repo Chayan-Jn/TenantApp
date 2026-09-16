@@ -35,7 +35,7 @@
   .text-crimson {
     color: #991b1b !important; /* Professional High-Contrast Crimson */
   }
-  
+
   .bg-crimson {
     background-color: #991b1b !important;
   }
@@ -62,5 +62,43 @@
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+    animation: skeleton-shimmer 1.5s infinite;
+  }
+  .dark .skeleton-shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
   }
 }

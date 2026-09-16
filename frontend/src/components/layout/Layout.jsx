@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Outlet, Link, ScrollRestoration } from 'react-router'
+import { Outlet, Link, ScrollRestoration, useNavigation, useRouteLoaderData } from 'react-router'
 import Sidebar from './Sidebar.jsx'
 import Navbar from './Navbar.jsx'
 import TrialBanner from '../subscription/TrialBanner.jsx'
-import { useRouteLoaderData } from 'react-router'
+import { TopProgressBar, DashboardGhost, PropertiesGhost, TableGhost, DetailGhost, SettingsGhost, SubscriptionGhost, BillsGhost, PaymentsGhost } from '../ui/GhostLoader.jsx'
 
 export default function Layout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -11,6 +11,25 @@ export default function Layout() {
     const { data: owner } = useRouteLoaderData('root') || { data: {} }
     const demoId = owner?.id || owner?.data?.id
     const isDemoAccount = demoId === 99999 || owner?.isDemo || owner?.data?.isDemo
+
+    const navigation = useNavigation()
+    const isNavigating = navigation.state === 'loading'
+    const nextPath = navigation.location?.pathname || ''
+
+    const renderGhost = () => {
+        if (nextPath.includes('/dashboard')) return <DashboardGhost />
+        if (nextPath.includes('/properties')) {
+            const parts = nextPath.split('/').filter(Boolean)
+            return parts.length > 1 ? <DetailGhost /> : <PropertiesGhost />
+        }
+        if (nextPath.includes('/units') || nextPath.includes('/tenants')) return <DetailGhost />
+        if (nextPath.includes('/bills')) return <BillsGhost />
+        if (nextPath.includes('/payments')) return <PaymentsGhost />
+        if (nextPath.includes('/rent') || nextPath.includes('/reports')) return <TableGhost />
+        if (nextPath.includes('/subscription') || nextPath.includes('/pricing')) return <SubscriptionGhost />
+        if (nextPath.includes('/settings')) return <SettingsGhost />
+        return <TableGhost />
+    }
 
     useEffect(() => {
         if (!isDemoAccount) return
@@ -68,9 +87,10 @@ export default function Layout() {
                             </div>
                         </div>
                     )}
-                    <Outlet />
+                    {isNavigating ? renderGhost() : <Outlet />}
                 </main>
             </div>
+            {isNavigating && <TopProgressBar />}
             <ScrollRestoration />
         </div>
     )

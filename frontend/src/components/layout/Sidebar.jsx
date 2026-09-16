@@ -1,104 +1,134 @@
-import { NavLink } from 'react-router'
+import { NavLink, useLocation, useNavigation } from "react-router";
 
 import {
-    MdOutlineSpaceDashboard,
-    MdOutlineDomain,
-    MdOutlineWarningAmber,
-    MdOutlineCreditCard,
-    MdOutlineSettings,
-    MdDomain,
-    MdOutlineReceiptLong,
-    MdOutlineDescription,
-    MdOutlineCardMembership,
-    MdClose,
-    MdInstallMobile
-} from 'react-icons/md'
-import { usePWAInstall } from '../../hooks/usePWAInstall.js'
+  MdOutlineSpaceDashboard,
+  MdOutlineDomain,
+  MdOutlineWarningAmber,
+  MdOutlineCreditCard,
+  MdOutlineSettings,
+  MdDomain,
+  MdOutlineReceiptLong,
+  MdOutlineDescription,
+  MdOutlineCardMembership,
+  MdClose,
+  MdInstallMobile,
+} from "react-icons/md";
+import { usePWAInstall } from "../../hooks/usePWAInstall.js";
 
 const links = [
-    { to: '/dashboard', label: 'Dashboard', icon: MdOutlineSpaceDashboard },
-    { to: '/properties', label: 'Properties', icon: MdOutlineDomain },
-    { to: '/bills', label: 'Bills', icon: MdOutlineReceiptLong },
-    { to: '/rent/overdue', label: 'Overdue Rent', icon: MdOutlineWarningAmber },
-    { to: '/payments', label: 'Payments', icon: MdOutlineCreditCard },
-    { to: '/reports', label: 'Reports', icon: MdOutlineDescription },
-    { to: '/subscription', label: 'Subscription', icon: MdOutlineCardMembership },
-    { to: '/settings', label: 'Settings', icon: MdOutlineSettings }
-]
+  { to: "/dashboard", label: "Dashboard", icon: MdOutlineSpaceDashboard },
+  { to: "/properties", label: "Properties", icon: MdOutlineDomain },
+  { to: "/bills", label: "Bills", icon: MdOutlineReceiptLong },
+  { to: "/rent/overdue", label: "Overdue Rent", icon: MdOutlineWarningAmber },
+  { to: "/payments", label: "Payments", icon: MdOutlineCreditCard },
+  { to: "/reports", label: "Reports", icon: MdOutlineDescription },
+  { to: "/subscription", label: "Subscription", icon: MdOutlineCardMembership },
+  { to: "/settings", label: "Settings", icon: MdOutlineSettings },
+];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
-    const { isInstallable, promptInstall } = usePWAInstall();
+  const { isInstallable, promptInstall } = usePWAInstall();
+  const location = useLocation();
+  const navigation = useNavigation();
 
-    return (
-        <aside className={`fixed inset-y-0 left-0 z-50 w-64 h-full bg-[#1e293b] flex flex-col text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+  // Instant active tab switch: During pending navigation, highlight clicked link immediately (0ms)
+  const pendingPath =
+    navigation.state === "loading" && navigation.location
+      ? navigation.location.pathname
+      : null;
+  const currentPath = pendingPath || location.pathname;
 
-            <div className="h-20 px-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="bg-[#0ea5e9] p-2.5 rounded-lg flex items-center justify-center">
-                        <MdDomain className="w-6 h-6 text-white" />
-                    </div>
-                    <h1 className="text-xl font-bold tracking-wide text-white">TenantApp</h1>
-                </div>
-                <button 
-                    onClick={() => setIsOpen(false)}
-                    className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                >
-                    <MdClose size={24} />
-                </button>
+  const isLinkActive = (to) => {
+    if (to === "/dashboard") return currentPath === "/dashboard";
+    return currentPath === to || currentPath.startsWith(to + "/");
+  };
+
+  return (
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 w-64 h-full bg-[#1e293b] flex flex-col text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+    >
+      <div className="h-20 px-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="bg-[#0ea5e9] p-2.5 rounded-lg flex items-center justify-center">
+            <MdDomain className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-xl font-bold tracking-wide text-white">
+            TenantApp
+          </h1>
+        </div>
+        <button
+          onClick={() => setIsOpen(false)}
+          className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <MdClose size={24} />
+        </button>
+      </div>
+
+      <nav className="flex-1 px-4 py-4 flex flex-col gap-2">
+        {links.map((link, index) => {
+          const Icon = link.icon;
+          const isSystemLink =
+            link.to === "/subscription" || link.to === "/settings";
+          const showDivider = link.to === "/subscription";
+          const active = isLinkActive(link.to);
+
+          return (
+            <div key={link.to}>
+              {showDivider && (
+                <div className="h-px bg-slate-700/50 my-2 mx-2"></div>
+              )}
+              <NavLink
+                to={link.to}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
+                  active
+                    ? "bg-[#0ea5e9] text-white shadow-md shadow-sky-500/20 font-semibold"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                {link.label}
+              </NavLink>
             </div>
+          );
+        })}
+      </nav>
 
+      {/* Install App Banner (Only visible on Android when installable) */}
+      {isInstallable && /android/i.test(navigator.userAgent) && (
+        <div className="px-4 mb-4">
+          <button
+            onClick={promptInstall}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
+          >
+            <MdInstallMobile size={20} />
+            Install App
+          </button>
+        </div>
+      )}
 
-            <nav className="flex-1 px-4 py-4 flex flex-col gap-2">
-                {links.map((link, index) => {
-                    const Icon = link.icon
-                    const isSystemLink = link.to === '/subscription' || link.to === '/settings';
-                    const showDivider = link.to === '/subscription'; 
-
-                    return (
-                        <div key={link.to}>
-                            {showDivider && (
-                                <div className="h-px bg-slate-700/50 my-2 mx-2"></div>
-                            )}
-                            <NavLink
-                                to={link.to}
-                                onClick={() => setIsOpen(false)}
-                                className={({ isActive }) =>
-                                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
-                                        ? 'bg-[#0ea5e9] text-white shadow-md'
-                                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                                    }`
-                                }
-                            >
-                                <Icon className="w-5 h-5" />
-                                {link.label}
-                            </NavLink>
-                        </div>
-                    )
-                })}
-            </nav>
-
-            {/* Install App Banner (Only visible on Android when installable) */}
-            {isInstallable && /android/i.test(navigator.userAgent) && (
-                <div className="px-4 mb-4">
-                    <button
-                        onClick={promptInstall}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
-                    >
-                        <MdInstallMobile size={20} />
-                        Install App
-                    </button>
-                </div>
-            )}
-
-            {/* Legal footer */}
-            <div className="px-5 pb-5 pt-3 border-t border-slate-700/60">
-                <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    {[['Privacy', '/privacy-policy'], ['Terms', '/terms'], ['Refund', '/refund-policy'], ['Contact', '/contact']].map(([label, to]) => (
-                        <a key={to} href={to} className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors">{label}</a>
-                    ))}
-                </div>
-                <p className="text-[10px] text-slate-600 mt-2">© {new Date().getFullYear()} MyTenant</p>
-            </div>
-        </aside>
-    )
+      {/* Legal footer */}
+      <div className="px-5 pb-5 pt-3 border-t border-slate-700/60">
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          {[
+            ["Privacy", "/privacy-policy"],
+            ["Terms", "/terms"],
+            ["Refund", "/refund-policy"],
+            ["Contact", "/contact"],
+          ].map(([label, to]) => (
+            <a
+              key={to}
+              href={to}
+              className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+        <p className="text-[10px] text-slate-600 mt-2">
+          © {new Date().getFullYear()} MyTenant
+        </p>
+      </div>
+    </aside>
+  );
 }

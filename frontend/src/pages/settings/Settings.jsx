@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLoaderData, useNavigate } from 'react-router'
+import { useLoaderData, useNavigate, useRouteLoaderData } from 'react-router'
 import { updateMe, updatePassword, deleteAccount } from '../../api/owner.api.js'
 import Card from '../../components/ui/Card.jsx'
 import Button from '../../components/ui/Button.jsx'
@@ -8,7 +8,9 @@ import ConfirmModal from '../../components/ui/ConfirmModal.jsx'
 import SignatureModal, { getSavedSignature, clearSavedSignature } from '../../components/ui/SignatureModal.jsx'
 
 export default function Settings() {
-    const { data: owner } = useLoaderData()
+    const rootData = useRouteLoaderData('root')
+    const loaderData = useLoaderData()
+    const owner = rootData?.data || rootData || loaderData?.data || loaderData || {}
     const navigate = useNavigate()
     const isDemoAccount = owner?.id === 99999
 
