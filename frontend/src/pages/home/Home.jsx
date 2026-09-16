@@ -155,6 +155,43 @@ export default function Home() {
 
     return (
         <div className="flex flex-col bg-white dark:bg-slate-950 transition-colors">
+            {/* Global Sticky Public Navigation Bar */}
+            <header className="w-full bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 backdrop-blur-md">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-8">
+                        <Link to="/" className="flex items-center gap-2 group" aria-label="MyTenant Home">
+                            <span className="text-xl font-bold tracking-tight text-white">
+                                My<span className="text-blue-500">Tenant</span><span className="text-slate-400 font-normal">.me</span>
+                            </span>
+                        </Link>
+                        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-300">
+                            <Link to="/features/rent-ledger" className="hover:text-blue-400 transition-colors">Features</Link>
+                            <Link to="/tools/1031-exchange" className="hover:text-blue-400 transition-colors">1031 Calculator</Link>
+                            <Link to="/tools/cap-rate-calculator" className="hover:text-blue-400 transition-colors">Cap Rate Tool</Link>
+                            <Link to="/insights" className="hover:text-blue-400 transition-colors flex items-center gap-1.5">
+                                <span>Research & Insights</span>
+                                <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">New</span>
+                            </Link>
+                            <Link to="/pricing" className="hover:text-blue-400 transition-colors">Pricing</Link>
+                            <Link to="/about" className="hover:text-blue-400 transition-colors">About</Link>
+                            <Link to="/contact" className="hover:text-blue-400 transition-colors">Contact</Link>
+                        </nav>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Link to="/login" className="text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-1.5">
+                            Log In
+                        </Link>
+                        <button
+                            onClick={handleGoToDashboard}
+                            disabled={dashboardLoading}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                        >
+                            {dashboardLoading ? 'Loading...' : 'Open Live Demo'}
+                        </button>
+                    </div>
+                </div>
+            </header>
+
             <main className="min-h-screen flex flex-col lg:flex-row w-full">
             <SEO 
                 title="Property & Tenant Management Platform"
