@@ -1,181 +1,230 @@
-import { useState, useEffect } from 'react'
-import { MdCheck, MdArrowForward } from 'react-icons/md'
-import { createSubscription, verifyPayment, getPaypalConfig, createPaypalOrder, verifyPaypalPayment } from '../../api/subscription.api.js'
-import { loadRazorpay } from '../../utils/razorpay.js'
-import { formatCurrency, APP_CURRENCY } from '../../utils/currency.js'
-import AlertModal from '../../components/ui/AlertModal.jsx'
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
-import SEO from '../../components/seo/SEO.jsx'
-import { useRouteLoaderData, useNavigate } from 'react-router'
+import { useState, useEffect } from "react";
+import { MdCheck, MdArrowForward } from "react-icons/md";
+import {
+  createSubscription,
+  verifyPayment,
+  getPaypalConfig,
+  createPaypalOrder,
+  verifyPaypalPayment,
+} from "../../api/subscription.api.js";
+import { loadRazorpay } from "../../utils/razorpay.js";
+import { formatCurrency, APP_CURRENCY } from "../../utils/currency.js";
+import AlertModal from "../../components/ui/AlertModal.jsx";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import SEO from "../../components/seo/SEO.jsx";
+import { useRouteLoaderData, useNavigate } from "react-router";
 
 const features = [
-  'Unlimited Properties & Units',
-  'Automated Rent Ledgers',
-  'Bill & Document Management',
-  'Export PDF Reports',
-]
+  "Unlimited Properties & Units",
+  "Automated Rent Ledgers",
+  "Bill & Document Management",
+  "Export PDF Reports",
+];
 
 export default function PricingPage() {
-  const [billing, setBilling] = useState('annual')
-  const [processingPlan, setProcessingPlan] = useState(null)
-  const [alertConfig, setAlertConfig] = useState({ open: false, message: '', title: 'Notice' })
-  const [currency, setCurrency] = useState(APP_CURRENCY)
-  const [paypalClientId, setPaypalClientId] = useState(null)
-  
-  const user = useRouteLoaderData('root')
-  const navigate = useNavigate()
+  const [billing, setBilling] = useState("annual");
+  const [processingPlan, setProcessingPlan] = useState(null);
+  const [alertConfig, setAlertConfig] = useState({
+    open: false,
+    message: "",
+    title: "Notice",
+  });
+  const [currency, setCurrency] = useState(APP_CURRENCY);
+  const [paypalClientId, setPaypalClientId] = useState(null);
+
+  const user = useRouteLoaderData("root");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (currency === 'USD') {
+    if (currency === "USD") {
       getPaypalConfig()
-        .then(res => {
+        .then((res) => {
           if (res.data?.clientId) setPaypalClientId(res.data.clientId);
         })
         .catch(console.error);
     }
   }, [currency]);
 
-  const showAlert = (message, title = 'Notice') => {
-    setAlertConfig({ open: true, message, title })
-  }
+  const showAlert = (message, title = "Notice") => {
+    setAlertConfig({ open: true, message, title });
+  };
 
   const handleSubscribe = async (planId, e) => {
-    e.stopPropagation()
-    const demoId = user?.id || user?.data?.id
-    const isDemoAccount = demoId === 99999 || user?.isDemo || user?.data?.isDemo
+    e.stopPropagation();
+    const demoId = user?.id || user?.data?.id;
+    const isDemoAccount =
+      demoId === 99999 || user?.isDemo || user?.data?.isDemo;
     if (isDemoAccount) {
-      return navigate('/register')
+      return navigate("/register");
     }
-    
+
     try {
-      setProcessingPlan(planId)
-      const isLoaded = await loadRazorpay()
+      setProcessingPlan(planId);
+      const isLoaded = await loadRazorpay();
       if (!isLoaded) {
-        setProcessingPlan(null)
-        return showAlert('Failed to load payment gateway.', 'Error')
+        setProcessingPlan(null);
+        return showAlert("Failed to load payment gateway.", "Error");
       }
-      const res = await createSubscription(planId, currency)
+      const res = await createSubscription(planId, currency);
       const rzp = new window.Razorpay({
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: Math.round(res.data.original_amount * 100),
         currency: currency,
-        name: 'MyTenant',
-        description: 'App Subscription',
+        name: "MyTenant",
+        description: "App Subscription",
         order_id: res.data.id,
         handler: async (response) => {
           try {
-            setAlertConfig({ open: false, message: '', title: '' });
+            setAlertConfig({ open: false, message: "", title: "" });
             setProcessingPlan(planId);
             await verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               planId: planId,
-              currency: currency
+              currency: currency,
             });
-            window.location.reload();
+            window.location.href = "/subscription";
           } catch (err) {
-            showAlert('Verification failed. Contact support.', 'Payment Error');
+            showAlert("Verification failed. Contact support.", "Payment Error");
             setProcessingPlan(null);
           }
         },
         modal: {
           ondismiss: function () {
             setProcessingPlan(null);
-          }
+          },
         },
-        theme: { color: '#F5A623' },
-      })
-      rzp.on('payment.failed', function (response) {
-        showAlert(response.error.description || 'Payment failed', 'Payment Failed');
+        theme: { color: "#F5A623" },
+      });
+      rzp.on("payment.failed", function (response) {
+        showAlert(
+          response.error.description || "Payment failed",
+          "Payment Failed",
+        );
         setProcessingPlan(null);
       });
-      
+
       try {
-        rzp.open()
+        rzp.open();
       } catch (razorpayErr) {
-        setProcessingPlan(null)
-        showAlert(razorpayErr.message || 'Failed to open Razorpay checkout.', 'Error')
+        setProcessingPlan(null);
+        showAlert(
+          razorpayErr.message || "Failed to open Razorpay checkout.",
+          "Error",
+        );
       }
     } catch (err) {
-      setProcessingPlan(null)
-      showAlert(err?.response?.data?.message || err.message || 'Something went wrong.', 'Error')
+      setProcessingPlan(null);
+      showAlert(
+        err?.response?.data?.message || err.message || "Something went wrong.",
+        "Error",
+      );
     }
-  }
+  };
 
   return (
     <main
       className="relative flex flex-col items-center px-4 py-8 w-full max-w-4xl mx-auto overflow-hidden"
       style={{ fontFamily: "'Outfit', sans-serif" }}
     >
-      <SEO 
+      <SEO
         title="Pricing & Plans"
         description="Simple, honest pricing for MyTenant property management software. No hidden fees. Get unlimited properties, units, and automated rent ledgers."
         keywords="Property Management Pricing, Rent Ledger Software Cost, Landlord Software Subscription"
         canonical="/pricing"
         schema={{
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": "MyTenant Property Management Software",
-            "description": "Premium property management and tenant tracking platform.",
-            "offers": {
-                "@type": "Offer",
-                "url": "https://mytenant.me/pricing",
-                "priceCurrency": "USD",
-                "price": "9.99",
-                "availability": "https://schema.org/InStock"
-            }
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: "MyTenant Property Management Software",
+          description:
+            "Premium property management and tenant tracking platform.",
+          offers: {
+            "@type": "Offer",
+            url: "https://mytenant.me/pricing",
+            priceCurrency: "USD",
+            price: "9.99",
+            availability: "https://schema.org/InStock",
+          },
         }}
       />
 
       {/* Gradient blobs behind everything so glassmorphism has something to catch */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full opacity-30" style={{ background: '#F5A623', filter: 'blur(80px)' }} />
-        <div className="absolute -bottom-10 -right-10 w-72 h-72 rounded-full opacity-20" style={{ background: '#FADF63', filter: 'blur(70px)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-40 rounded-full opacity-10" style={{ background: '#F5A623', filter: 'blur(60px)' }} />
+        <div
+          className="absolute -top-20 -left-20 w-80 h-80 rounded-full opacity-30"
+          style={{ background: "#F5A623", filter: "blur(80px)" }}
+        />
+        <div
+          className="absolute -bottom-10 -right-10 w-72 h-72 rounded-full opacity-20"
+          style={{ background: "#FADF63", filter: "blur(70px)" }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-40 rounded-full opacity-10"
+          style={{ background: "#F5A623", filter: "blur(60px)" }}
+        />
       </div>
 
       {/* Title */}
       <header className="text-center mb-7">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Pricing</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 italic">Simple, honest pricing. No hidden fees.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">
+          Pricing
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 italic">
+          Simple, honest pricing. No hidden fees.
+        </p>
       </header>
 
       {/* Toggle */}
-      <div className="flex items-center rounded-full p-1 mb-10 gap-1" style={{ background: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.6)' }}>
-        {['monthly', 'annual'].map(b => (
+      <div
+        className="flex items-center rounded-full p-1 mb-10 gap-1"
+        style={{
+          background: "rgba(255,255,255,0.4)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255,255,255,0.6)",
+        }}
+      >
+        {["monthly", "annual"].map((b) => (
           <button
             key={b}
             onClick={() => setBilling(b)}
             className="px-5 py-1.5 rounded-full text-xs font-bold transition-all capitalize"
-            style={billing === b
-              ? { background: '#000', color: '#fff', cursor: 'pointer' }
-              : { background: 'transparent', color: '#64748b', cursor: 'pointer' }
+            style={
+              billing === b
+                ? { background: "#000", color: "#fff", cursor: "pointer" }
+                : {
+                    background: "transparent",
+                    color: "#64748b",
+                    cursor: "pointer",
+                  }
             }
           >
-            {b === 'annual' ? 'Annual' : 'Monthly'}
+            {b === "annual" ? "Annual" : "Monthly"}
           </button>
         ))}
       </div>
 
       {/* Cards */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl items-end">
-
         {/* ── Monthly — Light Glass ── */}
         <div
-          onClick={() => setBilling('monthly')}
+          onClick={() => setBilling("monthly")}
           className="relative rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300"
           style={{
-            background: 'rgba(255,255,255,0.55)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: billing === 'monthly' ? '3px solid #111' : '3px solid rgba(0,0,0,0.10)',
-            boxShadow: billing === 'monthly'
-              ? '0 12px 40px -8px rgba(0,0,0,0.2)'
-              : '0 4px 16px rgba(0,0,0,0.06)',
+            background: "rgba(255,255,255,0.55)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border:
+              billing === "monthly"
+                ? "3px solid #111"
+                : "3px solid rgba(0,0,0,0.10)",
+            boxShadow:
+              billing === "monthly"
+                ? "0 12px 40px -8px rgba(0,0,0,0.2)"
+                : "0 4px 16px rgba(0,0,0,0.06)",
           }}
         >
-          {billing === 'monthly' && (
+          {billing === "monthly" && (
             <div className="absolute -top-3.5 left-5">
               <span className="bg-black text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                 Selected
@@ -183,17 +232,26 @@ export default function PricingPage() {
             </div>
           )}
 
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-5">Monthly</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-5">
+            Monthly
+          </p>
 
           <div className="mb-1 flex items-baseline gap-1">
-            <span className="text-5xl font-bold text-slate-900 tracking-tight">{formatCurrency(currency === 'USD' ? 0.99 : 9, currency)}</span>
+            <span className="text-5xl font-bold text-slate-900 tracking-tight">
+              {formatCurrency(currency === "USD" ? 0.99 : 9, currency)}
+            </span>
             <span className="text-sm text-slate-400 ml-1">/ month</span>
           </div>
-          <p className="text-[11px] text-slate-400 italic mb-7">Valid for 30 days</p>
+          <p className="text-[11px] text-slate-400 italic mb-7">
+            Valid for 30 days
+          </p>
 
           <ul className="space-y-3 mb-8 flex-1">
-            {features.map(f => (
-              <li key={f} className="flex items-center gap-3 text-[13px] text-slate-700">
+            {features.map((f) => (
+              <li
+                key={f}
+                className="flex items-center gap-3 text-[13px] text-slate-700"
+              >
                 <span className="w-5 h-5 rounded-full bg-black flex items-center justify-center flex-shrink-0">
                   <MdCheck size={12} className="text-white" />
                 </span>
@@ -204,41 +262,74 @@ export default function PricingPage() {
 
           <button
             disabled={!!processingPlan}
-            onClick={e => handleSubscribe('plan_monthly', e)}
+            onClick={(e) => handleSubscribe("plan_monthly", e)}
             className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95"
-            style={{ border: '2.5px solid #111', color: '#111', background: 'transparent', cursor: 'pointer' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            style={{
+              border: "2.5px solid #111",
+              color: "#111",
+              background: "transparent",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "rgba(0,0,0,0.06)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
           >
-            {processingPlan === 'plan_monthly' ? 'Please wait…' : (currency === 'USD' ? 'Choose Monthly (Card)' : 'Choose Monthly')}
+            {processingPlan === "plan_monthly"
+              ? "Please wait…"
+              : currency === "USD"
+                ? "Choose Monthly (Card)"
+                : "Choose Monthly"}
           </button>
 
-          {currency === 'USD' && paypalClientId && (
+          {currency === "USD" && paypalClientId && (
             <div className="mt-3 w-full z-10 relative">
-              <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "USD", intent: "capture" }}>
+              <PayPalScriptProvider
+                options={{
+                  "client-id": paypalClientId,
+                  currency: "USD",
+                  intent: "capture",
+                }}
+              >
                 <PayPalButtons
-                  style={{ layout: "horizontal", height: 45, color: "gold", shape: "pill", label: "paypal" }}
+                  style={{
+                    layout: "horizontal",
+                    height: 45,
+                    color: "gold",
+                    shape: "pill",
+                    label: "paypal",
+                  }}
                   disabled={!!processingPlan}
                   createOrder={async () => {
                     try {
-                      setProcessingPlan('plan_monthly')
-                      const res = await createPaypalOrder('plan_monthly');
-                      setProcessingPlan(null)
+                      setProcessingPlan("plan_monthly");
+                      const res = await createPaypalOrder("plan_monthly");
+                      setProcessingPlan(null);
                       return res.data.id;
                     } catch (err) {
-                      setProcessingPlan(null)
-                      showAlert(err?.response?.data?.message || 'Failed to create PayPal order', 'Error');
+                      setProcessingPlan(null);
+                      showAlert(
+                        err?.response?.data?.message ||
+                          "Failed to create PayPal order",
+                        "Error",
+                      );
                       throw err;
                     }
                   }}
                   onApprove={async (data) => {
                     try {
-                      setProcessingPlan('plan_monthly');
-                      await verifyPaypalPayment(data.orderID, 'plan_monthly');
-                      window.location.reload();
+                      setProcessingPlan("plan_monthly");
+                      await verifyPaypalPayment(data.orderID, "plan_monthly");
+                      window.location.href = "/subscription";
                     } catch (err) {
                       setProcessingPlan(null);
-                      showAlert(err?.response?.data?.message || 'PayPal verification failed.', 'Error');
+                      showAlert(
+                        err?.response?.data?.message ||
+                          "PayPal verification failed.",
+                        "Error",
+                      );
                     }
                   }}
                   onError={(err) => {
@@ -252,45 +343,84 @@ export default function PricingPage() {
 
         {/* ── Annual — Dark Glass ── */}
         <div
-          onClick={() => setBilling('annual')}
+          onClick={() => setBilling("annual")}
           className="relative rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 sm:-translate-y-2.5"
           style={{
-            background: 'rgba(0,0,0,0.78)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            border: billing === 'annual' ? '3px solid rgba(255,255,255,0.55)' : '3px solid rgba(255,255,255,0.12)',
-            boxShadow: billing === 'annual'
-              ? '0 24px 60px -12px rgba(0,0,0,0.55)'
-              : '0 8px 24px rgba(0,0,0,0.3)',
+            background: "rgba(0,0,0,0.78)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border:
+              billing === "annual"
+                ? "3px solid rgba(255,255,255,0.55)"
+                : "3px solid rgba(255,255,255,0.12)",
+            boxShadow:
+              billing === "annual"
+                ? "0 24px 60px -12px rgba(0,0,0,0.55)"
+                : "0 8px 24px rgba(0,0,0,0.3)",
           }}
         >
           {/* Gloss top shimmer */}
-          <div className="absolute top-0 left-0 right-0 h-px rounded-t-3xl" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }} />
+          <div
+            className="absolute top-0 left-0 right-0 h-px rounded-t-3xl"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+            }}
+          />
 
           <div className="absolute -top-3.5 right-5">
-            <span className="text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wide" style={{ background: '#F5A623', color: '#000' }}>
+            <span
+              className="text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wide"
+              style={{ background: "#F5A623", color: "#000" }}
+            >
               Best Value
             </span>
           </div>
 
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-5" style={{ color: '#F5A623' }}>Annual</p>
+          <p
+            className="text-[10px] font-bold uppercase tracking-widest mb-5"
+            style={{ color: "#F5A623" }}
+          >
+            Annual
+          </p>
 
           <div className="mb-1 flex items-baseline gap-1">
-            <span className="text-5xl font-bold text-white tracking-tight">{formatCurrency(currency === 'USD' ? 99 : 1199, currency)}</span>
+            <span className="text-5xl font-bold text-white tracking-tight">
+              {formatCurrency(currency === "USD" ? 99 : 1199, currency)}
+            </span>
             <span className="text-sm text-slate-400 ml-1">/ year</span>
           </div>
           <p className="text-[11px] italic mb-7 text-slate-400">
-            {currency === 'USD' 
-              ? <>Just &nbsp; <strong className="not-italic text-white">{formatCurrency(8.25, currency)}/mo</strong> - Save 17%</>
-              : <>Just &nbsp; <strong className="not-italic text-white">{formatCurrency(99, currency)}/mo</strong> - half the monthly rate</>
-            }
+            {currency === "USD" ? (
+              <>
+                Just &nbsp;{" "}
+                <strong className="not-italic text-white">
+                  {formatCurrency(8.25, currency)}/mo
+                </strong>{" "}
+                - Save 17%
+              </>
+            ) : (
+              <>
+                Just &nbsp;{" "}
+                <strong className="not-italic text-white">
+                  {formatCurrency(99, currency)}/mo
+                </strong>{" "}
+                - half the monthly rate
+              </>
+            )}
           </p>
 
           <ul className="space-y-3 mb-8 flex-1">
-            {features.map(f => (
-              <li key={f} className="flex items-center gap-3 text-[13px] text-slate-200">
-                <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#F5A623' }}>
-                  <MdCheck size={12} style={{ color: '#000' }} />
+            {features.map((f) => (
+              <li
+                key={f}
+                className="flex items-center gap-3 text-[13px] text-slate-200"
+              >
+                <span
+                  className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: "#F5A623" }}
+                >
+                  <MdCheck size={12} style={{ color: "#000" }} />
                 </span>
                 {f}
               </li>
@@ -299,40 +429,69 @@ export default function PricingPage() {
 
           <button
             disabled={!!processingPlan}
-            onClick={e => handleSubscribe('plan_annual', e)}
+            onClick={(e) => handleSubscribe("plan_annual", e)}
             className="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
-            style={{ background: '#fff', color: '#000', border: '2.5px solid rgba(255,255,255,0.4)', cursor: 'pointer' }}
+            style={{
+              background: "#fff",
+              color: "#000",
+              border: "2.5px solid rgba(255,255,255,0.4)",
+              cursor: "pointer",
+            }}
           >
-            {processingPlan === 'plan_annual' ? 'Please wait…' : (currency === 'USD' ? 'Choose Annual (Card)' : 'Choose Annual')}
+            {processingPlan === "plan_annual"
+              ? "Please wait…"
+              : currency === "USD"
+                ? "Choose Annual (Card)"
+                : "Choose Annual"}
             <MdArrowForward size={15} />
           </button>
 
-          {currency === 'USD' && paypalClientId && (
+          {currency === "USD" && paypalClientId && (
             <div className="mt-3 w-full z-10 relative">
-              <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "USD", intent: "capture" }}>
+              <PayPalScriptProvider
+                options={{
+                  "client-id": paypalClientId,
+                  currency: "USD",
+                  intent: "capture",
+                }}
+              >
                 <PayPalButtons
-                  style={{ layout: "horizontal", height: 45, color: "gold", shape: "pill", label: "paypal" }}
+                  style={{
+                    layout: "horizontal",
+                    height: 45,
+                    color: "gold",
+                    shape: "pill",
+                    label: "paypal",
+                  }}
                   disabled={!!processingPlan}
                   createOrder={async () => {
                     try {
-                      setProcessingPlan('plan_annual')
-                      const res = await createPaypalOrder('plan_annual');
-                      setProcessingPlan(null)
+                      setProcessingPlan("plan_annual");
+                      const res = await createPaypalOrder("plan_annual");
+                      setProcessingPlan(null);
                       return res.data.id;
                     } catch (err) {
-                      setProcessingPlan(null)
-                      showAlert(err?.response?.data?.message || 'Failed to create PayPal order', 'Error');
+                      setProcessingPlan(null);
+                      showAlert(
+                        err?.response?.data?.message ||
+                          "Failed to create PayPal order",
+                        "Error",
+                      );
                       throw err;
                     }
                   }}
                   onApprove={async (data) => {
                     try {
-                      setProcessingPlan('plan_annual');
-                      await verifyPaypalPayment(data.orderID, 'plan_annual');
-                      window.location.reload();
+                      setProcessingPlan("plan_annual");
+                      await verifyPaypalPayment(data.orderID, "plan_annual");
+                      window.location.href = "/subscription";
                     } catch (err) {
                       setProcessingPlan(null);
-                      showAlert(err?.response?.data?.message || 'PayPal verification failed.', 'Error');
+                      showAlert(
+                        err?.response?.data?.message ||
+                          "PayPal verification failed.",
+                        "Error",
+                      );
                     }
                   }}
                   onError={(err) => {
@@ -347,12 +506,24 @@ export default function PricingPage() {
 
       {/* Legal links — required by Razorpay near payment */}
       <div className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-1.5">
-        {[['Terms of Service', '/terms'], ['Refund Policy', '/refund-policy'], ['Privacy Policy', '/privacy-policy'], ['Contact', '/contact']].map(([label, to]) => (
-          <a key={to} href={to} className="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors underline-offset-2 hover:underline">{label}</a>
+        {[
+          ["Terms of Service", "/terms"],
+          ["Refund Policy", "/refund-policy"],
+          ["Privacy Policy", "/privacy-policy"],
+          ["Contact", "/contact"],
+        ].map(([label, to]) => (
+          <a
+            key={to}
+            href={to}
+            className="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors underline-offset-2 hover:underline"
+          >
+            {label}
+          </a>
         ))}
       </div>
       <p className="mt-4 text-[9px] uppercase tracking-widest text-slate-400 italic">
-        Powered by {currency === 'USD' ? 'Razorpay & PayPal' : 'Razorpay'} &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
+        Powered by {currency === "USD" ? "Razorpay & PayPal" : "Razorpay"}{" "}
+        &nbsp;·&nbsp; Secure &nbsp;·&nbsp; No Refunds
       </p>
 
       <AlertModal
@@ -362,5 +533,5 @@ export default function PricingPage() {
         onClose={() => setAlertConfig({ ...alertConfig, open: false })}
       />
     </main>
-  )
+  );
 }
