@@ -76,7 +76,7 @@ To ensure deposit reconciliations survive legal challenge, operators should inst
     category: "Operations",
     readTime: "6 min read",
     date: "September 11, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-prism.svg",
     content: `
 ## The High Cost of the Traditional 30-Day Renewal Notice
 
@@ -137,7 +137,7 @@ When implementing structured renewal cadences, operators must comply with local 
     category: "Finance",
     readTime: "7 min read",
     date: "September 7, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-isometric.svg",
     content: `
 ## The Operational Divide: Preventative Maintenance vs. Reactive Crisis
 
@@ -199,7 +199,7 @@ By depositing this reserve allocation monthly into a dedicated high-yield saving
     category: "Economics",
     readTime: "6 min read",
     date: "September 3, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-radar.svg",
     content: `
 ## The Legal Foundation of Late Rent Fees
 

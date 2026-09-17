@@ -10,7 +10,7 @@ export const part2 = [
     category: "Operations",
     readTime: "6 min read",
     date: "August 09, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-mesh.svg",
     content: `
 ## The Actuarial Problem of Pet Ownership in Rental Housing
 
@@ -67,7 +67,7 @@ Navigating this boundary requires standardized, objective digital screening to e
     category: "Finance",
     readTime: "7 min read",
     date: "August 08, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-isometric.svg",
     content: `
 ## The Stigma vs. The Quantitative Reality of Section 8
 
@@ -129,7 +129,7 @@ To institutionalize HQS compliance, operators must implement a pre-inspection ch
     category: "Operations",
     readTime: "6 min read",
     date: "August 07, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-prism.svg",
     content: `
 ## The Economics of Deferred Maintenance
 
@@ -191,7 +191,7 @@ Track your operational maintenance schedules and expense allocations seamlessly 
     category: "Economics",
     readTime: "7 min read",
     date: "August 06, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-radar.svg",
     content: `
 ## Cognitive Heuristics and Lease Renewals
 
@@ -259,7 +259,7 @@ Strategic landlords use transparent, respectful communication, offer modest mult
     category: "Asset Valuation",
     readTime: "7 min read",
     date: "August 05, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-mesh.svg",
     content: `
 ## The Transition from ESG Slogans to Hard Asset Valuation
 
@@ -324,7 +324,7 @@ Prominently advertising specific metrics—such as *"100% LED fixtures, Energy S
     category: "Taxation",
     readTime: "8 min read",
     date: "August 04, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-origami.svg",
     content: `
 ## The Wealth-Building Engine of Real Estate
 
@@ -393,7 +393,7 @@ Model your exchange deadlines and tax deferral requirements using our interactiv
     category: "Finance",
     readTime: "8 min read",
     date: "August 03, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-strata.svg",
     content: `
 ## The Architecture of Private Equity Real Estate
 
@@ -477,7 +477,7 @@ Before signing a private placement memorandum (PPM) or operating agreement:
     category: "Risk Management",
     readTime: "7 min read",
     date: "August 02, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-hexagons.svg",
     content: `
 ## George Akerlof’s "Lemon Theory" in Property Management
 
@@ -547,7 +547,7 @@ Adhering to objective, standardized screening criteria protects property cash fl
     category: "Legal",
     readTime: "7 min read",
     date: "August 01, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-topography.svg",
     content: `
 ## The Regulatory Intersection of Algorithms and Civil Rights
 

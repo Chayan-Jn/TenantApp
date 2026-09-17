@@ -71,7 +71,7 @@ Independent operators managing 1 to 20 units can apply institutional asset manag
     category: "Operations",
     readTime: "6 min read",
     date: "August 17, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-prism.svg",
     content: `
 ## Operational Service Quality in Multifamily Management
 
@@ -145,7 +145,7 @@ To institutionalize maintenance operations, operators should implement three con
     category: "Technology",
     readTime: "7 min read",
     date: "August 16, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-radar.svg",
     content: `
 ## Decomposing Real Estate Returns: Beta vs. Operational Alpha
 
@@ -217,7 +217,7 @@ Independent portfolio owners can execute this transformation by consolidating op
     category: "Macroeconomics",
     readTime: "7 min read",
     date: "August 15, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-isometric.svg",
     content: `
 ## Capital Asset Pricing in Commercial Real Estate
 
@@ -280,7 +280,7 @@ For real estate investors and syndicators, monetary transition periods offer dis
     category: "Taxation",
     readTime: "8 min read",
     date: "August 14, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-strata.svg",
     content: `
 ## The Mechanics of Real Estate Depreciation
 
@@ -353,7 +353,7 @@ To estimate your portfolio's accelerated tax shielding potential before retainin
     category: "Operations",
     readTime: "6 min read",
     date: "August 13, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-topography.svg",
     content: `
 ## The Macroeconomic Threat of Utility Inflation
 
@@ -436,7 +436,7 @@ Calculate your portfolio's optimal rent and utility recovery structure with our 
     category: "Economics",
     readTime: "6 min read",
     date: "August 12, 2026",
-    image: "/images/smart_lock.jpg",
+    image: "/images/patterns/geo-origami.svg",
     content: `
 ## The Historical Anachronism of the 12-Month Lease
 
@@ -594,7 +594,7 @@ Model your prospective acquisitions across both metrics using our comprehensive 
     category: "Asset Valuation",
     readTime: "7 min read",
     date: "August 10, 2026",
-    image: "/images/calc_blueprint.jpg",
+    image: "/images/patterns/geo-hexagons.svg",
     content: `
 ## The Value-Add Investment Thesis
 
