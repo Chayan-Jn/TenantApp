@@ -36,11 +36,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mytenant.me/compare/alternatives</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://mytenant.me/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

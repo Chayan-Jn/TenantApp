@@ -4,7 +4,7 @@ export default function MegaFooter() {
   return (
     <footer className="bg-slate-900 border-t border-slate-800 w-full pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
-        {/* Column 1 */}
+        {/* Column 1: Features */}
         <div>
           <h3 className="text-white font-bold mb-4 tracking-tight">Features</h3>
           <ul className="space-y-2 text-sm text-slate-400">
@@ -12,20 +12,19 @@ export default function MegaFooter() {
             <li><Link prefetch="intent" to="/features/bill-splitting" className="hover:text-[#0ea5e9] transition-colors py-1 block">Utility Bill Splitting</Link></li>
             <li><Link prefetch="intent" to="/features/tenant-tracking" className="hover:text-[#0ea5e9] transition-colors py-1 block">Tenant Tracking Portal</Link></li>
             <li><Link prefetch="intent" to="/features/auto-signatures" className="hover:text-[#0ea5e9] transition-colors py-1 block">Auto-Sign Documents</Link></li>
-            <li><Link prefetch="intent" to="/tools/rent-calculator" className="hover:text-[#0ea5e9] transition-colors py-1 block">Prorated Rent Calculator</Link></li>
             <li><Link prefetch="intent" to="/pricing" className="hover:text-[#0ea5e9] transition-colors py-1 block">Pricing & Plans</Link></li>
-            <li><Link prefetch="intent" to="/tools/cap-rate-calculator" className="hover:text-[#0ea5e9] transition-colors py-1 block">Cap Rate Calculator</Link></li>
-            <li><Link prefetch="intent" to="/tools/roi-calculator" className="hover:text-[#0ea5e9] transition-colors py-1 block">ROI Calculator</Link></li>
-            <li><Link prefetch="intent" to="/tools/cost-segregation" className="hover:text-[#0ea5e9] transition-colors py-1 block">Cost Segregation Estimator</Link></li>
-            <li><Link prefetch="intent" to="/tools/1031-exchange" className="hover:text-[#0ea5e9] transition-colors py-1 block">1031 Exchange Tax Shield</Link></li>
           </ul>
         </div>
         
-        {/* Column 2 */}
+        {/* Column 2: Calculators & Tools */}
         <div>
-          <h3 className="text-white font-bold mb-4 tracking-tight">Compare Alternatives</h3>
+          <h3 className="text-white font-bold mb-4 tracking-tight">Landlord Tools</h3>
           <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link prefetch="intent" to="/compare/alternatives" className="hover:text-[#0ea5e9] transition-colors font-semibold py-1 block">MyTenant vs Competitors</Link></li>
+            <li><Link prefetch="intent" to="/tools/rent-calculator" className="hover:text-[#0ea5e9] transition-colors py-1 block">Prorated Rent Calculator</Link></li>
+            <li><Link prefetch="intent" to="/tools/cap-rate-calculator" className="hover:text-[#0ea5e9] transition-colors py-1 block">Cap Rate Calculator</Link></li>
+            <li><Link prefetch="intent" to="/tools/roi-calculator" className="hover:text-[#0ea5e9] transition-colors py-1 block">ROI Calculator</Link></li>
+            <li><Link prefetch="intent" to="/tools/cost-segregation" className="hover:text-[#0ea5e9] transition-colors py-1 block">Cost Segregation Estimator</Link></li>
+            <li><Link prefetch="intent" to="/tools/1031-exchange" className="hover:text-[#0ea5e9] transition-colors py-1 block">1031 Exchange Calculator</Link></li>
           </ul>
         </div>
         

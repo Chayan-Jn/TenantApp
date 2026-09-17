@@ -6,7 +6,7 @@ export const part2 = [
       "Pet Rent as an Actuarial Risk Premium: Replacing Refundable Deposits",
     excerpt:
       "An actuarial and operational critique of refundable pet deposits: how transitioning to non-refundable fees and monthly pet rent expands NOI while mitigating asset depreciation.",
-    author: "Marcus Sterling, CCIM, Portfolio Operations Lead",
+    author: "The MyTenant Research Team",
     category: "Operations",
     readTime: "6 min read",
     date: "August 09, 2026",
@@ -63,7 +63,7 @@ Navigating this boundary requires standardized, objective digital screening to e
       "Section 8 Housing Choice Vouchers: Counter-Cyclical Yield and Risk Optimization",
     excerpt:
       "An econometric evaluation of HUD Housing Choice Vouchers: how Small Area Fair Market Rents (SAFMR) deliver recession-proof cash flows and superior risk-adjusted yields.",
-    author: "Dr. Elena Vance, Senior Quantitative Economist",
+    author: "The MyTenant Research Team",
     category: "Finance",
     readTime: "7 min read",
     date: "August 08, 2026",
@@ -125,7 +125,7 @@ To institutionalize HQS compliance, operators must implement a pre-inspection ch
       "The Actuarial ROI of Preventative Maintenance in Residential Assets",
     excerpt:
       "Applying reliability engineering and Weibull failure distributions to property infrastructure: why every $1 deployed in proactive maintenance saves $4 in emergency CapEx.",
-    author: "Marcus Sterling, CCIM, Portfolio Operations Lead",
+    author: "The MyTenant Research Team",
     category: "Operations",
     readTime: "6 min read",
     date: "August 07, 2026",
@@ -187,7 +187,7 @@ Track your operational maintenance schedules and expense allocations seamlessly 
       "The Behavioral Economics of Rent Increases: Minimizing Friction and Churn",
     excerpt:
       "Applying Kahneman & Tversky’s Prospect Theory to lease renewals: how cognitive framing, unbundling, and timing heuristics reduce tenant attrition during rent escalations.",
-    author: "Dr. Elena Vance, Senior Quantitative Economist",
+    author: "The MyTenant Research Team",
     category: "Economics",
     readTime: "7 min read",
     date: "August 06, 2026",
@@ -255,7 +255,7 @@ Strategic landlords use transparent, respectful communication, offer modest mult
       "The Green Premium: Cap Rate Compression and Energy Efficiency in Multifamily",
     excerpt:
       "Empirical analysis from the Journal of Real Estate Finance: how LEED certification, heat pump retrofits, and smart submetering compress cap rates by 25 basis points.",
-    author: "Sarah Lin, CPA, Principal Tax Strategist",
+    author: "The MyTenant Research Team",
     category: "Asset Valuation",
     readTime: "7 min read",
     date: "August 05, 2026",
@@ -320,7 +320,7 @@ Prominently advertising specific metrics—such as *"100% LED fixtures, Energy S
       "The Velocity of Capital in IRC § 1031 Exchanges: Geometric Compounding",
     excerpt:
       "Mathematical modeling of tax-deferred wealth accumulation under 26 U.S. Code § 1031: how serial like-kind exchanges generate geometric portfolio compounding over decades.",
-    author: "Sarah Lin, CPA, Principal Tax Strategist",
+    author: "The MyTenant Research Team",
     category: "Taxation",
     readTime: "8 min read",
     date: "August 04, 2026",
@@ -389,7 +389,7 @@ Model your exchange deadlines and tax deferral requirements using our interactiv
       "Anatomy of the Real Estate Syndication Waterfall: GP/LP Distribution Mechanics",
     excerpt:
       "A financial modeling dissection of private equity real estate distributions: preferred returns, capital recovery hurdles, and promoted interest carried-interest splits.",
-    author: "Marcus Sterling, CCIM, Portfolio Operations Lead",
+    author: "The MyTenant Research Team",
     category: "Finance",
     readTime: "8 min read",
     date: "August 03, 2026",
@@ -473,7 +473,7 @@ Before signing a private placement memorandum (PPM) or operating agreement:
       "Asymmetric Information in Residential Leasing: The Adverse Selection Trap",
     excerpt:
       "Applying George Akerlof’s Nobel-Prize-winning Lemon Theory to rental markets: why flawed screening models systematically attract high-risk, defaulting tenant cohorts.",
-    author: "Julian Thorne, Principal Real Estate Systems Strategist",
+    author: "The MyTenant Research Team",
     category: "Risk Management",
     readTime: "7 min read",
     date: "August 02, 2026",
@@ -543,7 +543,7 @@ Adhering to objective, standardized screening criteria protects property cash fl
       "Algorithmic Tenant Screening and Fair Housing Compliance: Navigating Disparate Impact",
     excerpt:
       "Legal and regulatory analysis of Title VIII of the Civil Rights Act: how landlords can maintain rigorous tenant underwriting standards while adhering to HUD guidance on disparate impact.",
-    author: "Julian Thorne, JD, Real Estate Regulatory Counsel",
+    author: "The MyTenant Research Team",
     category: "Legal",
     readTime: "7 min read",
     date: "August 01, 2026",

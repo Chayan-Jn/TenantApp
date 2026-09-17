@@ -24,7 +24,7 @@ const Card = ({ icon, label, value, link }) => (
 
 export default function ContactPage() {
   return (
-    <article>
+    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
       <SEO 
         title="Contact Us"
         description="Get in touch with MyTenant support for billing, platform assistance, and technical questions."

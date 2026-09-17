@@ -19,7 +19,3 @@ Important notes:
 - [ROI Calculator](https://mytenant.me/tools/roi-calculator): Calculate Return on Investment for real estate.
 - [Cost Segregation](https://mytenant.me/tools/cost-segregation): MACRS Cost Segregation Estimator.
 - [1031 Exchange](https://mytenant.me/tools/1031-exchange): 1031 Exchange Tax Shield Calculator.
-
-## Docs
-
-- [Compare Alternatives](https://mytenant.me/compare/alternatives): MyTenant vs Buildium, AppFolio, DoorLoop, TurboTenant.

@@ -1,7 +1,7 @@
 import React from 'react'
 import SEO from '../../components/seo/SEO.jsx'
 
-const LAST_UPDATED = 'April 22, 2025'
+const LAST_UPDATED = 'September 17, 2026'
 
 const Section = ({ title, children }) => (
   <section className="mb-10">
@@ -12,7 +12,7 @@ const Section = ({ title, children }) => (
 
 export default function PrivacyPolicy() {
   return (
-    <article className="space-y-8 text-slate-700 dark:text-slate-300">
+    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 space-y-8 text-slate-700 dark:text-slate-300">
       <SEO 
         title="Privacy Policy"
         description="Privacy Policy for MyTenant property management software. Read about how we collect, use, and protect your data."
@@ -90,11 +90,59 @@ export default function PrivacyPolicy() {
         </p>
       </Section>
 
-      <Section title="6. Cookies">
+      <Section title="6. Cookies and Third-Party Advertising">
         <p>
-          We use a single authentication cookie (HTTP-only, secure) to keep you signed in. We do not use
-          third-party advertising cookies or tracking pixels.
+          We use essential first-party authentication cookies (HTTP-only, secure) to keep authenticated users signed into their dashboard.
         </p>
+        <p className="font-semibold text-slate-900 dark:text-white mt-4">
+          Google AdSense &amp; Advertising Cookies:
+        </p>
+        <p>
+          We display advertisements served by Google AdSense on public pages of our website. Google, as a third-party vendor, uses cookies to serve ads on our site:
+        </p>
+        <ul className="list-disc pl-5 space-y-2 mt-2">
+          <li>
+            Third-party vendors, including Google, use cookies (such as the DoubleClick cookie) to serve ads based on a user's prior visits to our website or other websites across the internet.
+          </li>
+          <li>
+            Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visits to our site and/or other sites on the internet.
+          </li>
+          <li>
+            These cookies allow ad networks to measure ad effectiveness, provide frequency capping, and deliver personalized advertisements where permitted.
+          </li>
+        </ul>
+        <p className="font-semibold text-slate-900 dark:text-white mt-4">
+          How to Opt Out of Personalized Advertising:
+        </p>
+        <p>
+          You have the right to control and opt out of personalized advertising at any time:
+        </p>
+        <ul className="list-disc pl-5 space-y-2 mt-2">
+          <li>
+            <strong>Google Ad Settings:</strong> Users may opt out of personalized advertising by visiting{' '}
+            <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-[#0ea5e9] hover:underline">
+              Google Ads Settings
+            </a>.
+          </li>
+          <li>
+            <strong>Digital Advertising Alliance:</strong> You can opt out of third-party vendors' use of cookies for personalized advertising by visiting the{' '}
+            <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-[#0ea5e9] hover:underline">
+              AboutAds Consumer Choice Page
+            </a>.
+          </li>
+          <li>
+            <strong>Network Advertising Initiative:</strong> Alternatively, you can opt out via the{' '}
+            <a href="https://www.networkadvertising.org/choices/" target="_blank" rel="noopener noreferrer" className="text-[#0ea5e9] hover:underline">
+              Network Advertising Initiative (NAI) Opt-Out Tool
+            </a>.
+          </li>
+          <li>
+            <strong>Google Partner Policy:</strong> For more details on how Google uses data from partner sites, visit{' '}
+            <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" className="text-[#0ea5e9] hover:underline">
+              How Google uses information from sites or apps that use our services
+            </a>.
+          </li>
+        </ul>
       </Section>
 
       <Section title="7. Data Retention">

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import zlib from "zlib";
 import { fileURLToPath } from "url";
-import { marked } from '../frontend/node_modules/marked/lib/marked.esm.js';
+import { marked } from "../frontend/node_modules/marked/lib/marked.esm.js";
 import { insights } from "../frontend/src/data/insights.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +40,7 @@ function writeStaticPage(subPath, htmlContent) {
   fs.writeFileSync(path.join(targetDir, "index.html.br"), brContent);
 
   console.log(
-    `✓ Pre-rendered: /${cleanPath ? cleanPath + '/' : ''}index.html (${Math.round(htmlContent.length / 1024)} KB)`,
+    `✓ Pre-rendered: /${cleanPath ? cleanPath + "/" : ""}index.html (${Math.round(htmlContent.length / 1024)} KB)`,
   );
 }
 
@@ -56,7 +56,6 @@ const commonNav = `
       </a>
       <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-300">
         <a href="/features/rent-ledger" class="hover:text-blue-400 transition-colors">Features</a>
-        <a href="/compare/alternatives" class="hover:text-blue-400 transition-colors">Comparison</a>
         <a href="/tools/1031-exchange" class="hover:text-blue-400 transition-colors">1031 Calculator</a>
         <a href="/tools/cap-rate-calculator" class="hover:text-blue-400 transition-colors">Cap Rate Tool</a>
         <a href="/insights" class="hover:text-blue-400 transition-colors flex items-center gap-1.5">
@@ -104,7 +103,7 @@ const commonFooter = `
         <li><a href="/features/bill-splitting" class="hover:text-blue-400 transition-colors">Intelligent Bill Splitting</a></li>
         <li><a href="/features/tenant-tracking" class="hover:text-blue-400 transition-colors">Tenant Profiles & Leases</a></li>
         <li><a href="/features/auto-signatures" class="hover:text-blue-400 transition-colors">Digital Signatures</a></li>
-        <li><a href="/compare/alternatives" class="hover:text-blue-400 transition-colors font-semibold text-blue-400">MyTenant vs Market</a></li>
+        <li><a href="/pricing" class="hover:text-blue-400 transition-colors">Pricing & Plans</a></li>
       </ul>
     </div>
     <div>
@@ -169,8 +168,8 @@ function injectPage(title, description, canonicalUrl, schemaObj, bodyHtml) {
     ${commonFooter}
   `;
 
-  const bodyStartTag = '<body>';
-  const bodyEndTag = '</body>';
+  const bodyStartTag = "<body>";
+  const bodyEndTag = "</body>";
   const bodyStartIndex = html.indexOf(bodyStartTag);
   const bodyEndIndex = html.indexOf(bodyEndTag);
 
@@ -204,13 +203,9 @@ insights.forEach((article) => {
     datePublished: `${publishDateISO}T08:00:00Z`,
     dateModified: `${publishDateISO}T10:00:00Z`,
     author: {
-      "@type": "Person",
-      name: article.author,
-      jobTitle: "Principal Real Estate & Housing Quantitative Analyst",
-      worksFor: {
-        "@type": "Organization",
-        name: "MyTenant Operations & Research Lab",
-      },
+      "@type": "Organization",
+      name: "The MyTenant Research Team",
+      url: "https://mytenant.me/about",
     },
     publisher: {
       "@type": "Organization",
@@ -229,7 +224,7 @@ insights.forEach((article) => {
           &larr; Back to Research Briefs
         </a>
         <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/50">
-          Peer-Reviewed Institutional Analysis
+          Editorial Analysis & Operational Guide
         </span>
       </div>
 
@@ -273,9 +268,9 @@ insights.forEach((article) => {
           </div>
           <div>
             <p class="font-bold text-slate-900 dark:text-white text-base">${article.author}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">MyTenant Quantitative Operations & Research Lab</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">The MyTenant Research Team</p>
             <p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
-              ✓ Verified Institutional Analysis • Reviewed August 2026
+              ✓ Operational Guide • Reviewed 2026
             </p>
           </div>
         </div>
@@ -504,7 +499,8 @@ const featurePages = [
   {
     slug: "features/rent-ledger",
     title: "Automated Rent Ledger Software for Landlords | MyTenant",
-    description: "Replace messy spreadsheets with a beautiful, automated rent ledger. Track payments, late fees, and overdue rent across your entire real estate portfolio.",
+    description:
+      "Replace messy spreadsheets with a beautiful, automated rent ledger. Track payments, late fees, and overdue rent across your entire real estate portfolio.",
     heading: "The Ultimate Automated Rent Ledger",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
@@ -528,12 +524,13 @@ const featurePages = [
           <p class="text-sm text-slate-600 dark:text-slate-400">Generate compliant rent rolls, CPA income/expense statements, and tenant receipts ready for tax filing and lenders.</p>
         </div>
       </div>
-    `
+    `,
   },
   {
     slug: "features/bill-splitting",
     title: "Utility Bill Splitting & RUBS Software for Landlords | MyTenant",
-    description: "Easily split master electricity, water, gas, and maintenance bills among tenants. Automate expense allocation and stop losing money on shared utilities.",
+    description:
+      "Easily split master electricity, water, gas, and maintenance bills among tenants. Automate expense allocation and stop losing money on shared utilities.",
     heading: "Painless Utility Bill Splitting & RUBS Allocation",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
@@ -557,12 +554,13 @@ const featurePages = [
           <p class="text-sm text-slate-600 dark:text-slate-400">Independent landlords recover thousands in previously uncaptured utility slippage, directly enhancing building capitalization value.</p>
         </div>
       </div>
-    `
+    `,
   },
   {
     slug: "features/tenant-tracking",
     title: "Tenant Onboarding & Lease Lifecycle Management | MyTenant",
-    description: "Manage tenant profiles, monitor lease renewal dates, store identification documents securely, and track lifetime payment records in one central portal.",
+    description:
+      "Manage tenant profiles, monitor lease renewal dates, store identification documents securely, and track lifetime payment records in one central portal.",
     heading: "Complete Tenant Tracking from Move-In to Move-Out",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
@@ -586,12 +584,13 @@ const featurePages = [
           <p class="text-sm text-slate-600 dark:text-slate-400">Archive departed tenants upon move-out while preserving full financial and communication records for statutory compliance.</p>
         </div>
       </div>
-    `
+    `,
   },
   {
     slug: "features/auto-signatures",
     title: "Automated E-Signatures for Landlord Leases & Notices | MyTenant",
-    description: "Upload your authorized landlord signature once and automatically sign legal leases, renewals, and official notices with legally binding ESIGN compliance.",
+    description:
+      "Upload your authorized landlord signature once and automatically sign legal leases, renewals, and official notices with legally binding ESIGN compliance.",
     heading: "Set Up Once. Auto-Sign Leases & Legal Notices.",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
@@ -615,8 +614,8 @@ const featurePages = [
           <p class="text-sm text-slate-600 dark:text-slate-400">Generated documents are sealed with cryptographic timestamps, preserving evidentiary integrity for legal and banking compliance.</p>
         </div>
       </div>
-    `
-  }
+    `,
+  },
 ];
 
 featurePages.forEach((f) => {
@@ -656,91 +655,15 @@ featurePages.forEach((f) => {
   writeStaticPage(f.slug, pageHtml);
 });
 
-// ── 5. Pre-render Software Comparison Page ──
-console.log("Pre-rendering Software Comparison Page...");
-const alternativesHtml = `
-<div class="max-w-5xl mx-auto px-6 py-16">
-  <div class="text-center mb-12">
-    <span class="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold mb-4">
-      Industry Software Comparison
-    </span>
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
-      MyTenant vs. Legacy & DIY Alternatives
-    </h1>
-    <p class="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-      Property management software is polarized between bloated legacy systems requiring mandatory weeks of training and fragile DIY spreadsheets that lack true double-entry ledgers. MyTenant provides the ideal middle ground for independent portfolio operators.
-    </p>
-  </div>
-
-  <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg mb-12">
-    <table class="w-full text-left text-sm">
-      <thead class="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <tr>
-          <th class="p-4 font-bold text-slate-900 dark:text-white">Feature Benchmark</th>
-          <th class="p-4 font-bold text-blue-600 dark:text-blue-400 text-center bg-blue-50/50 dark:bg-blue-950/20">MyTenant</th>
-          <th class="p-4 font-semibold text-slate-600 dark:text-slate-300 text-center">Legacy Systems (Buildium / AppFolio)</th>
-          <th class="p-4 font-semibold text-slate-600 dark:text-slate-300 text-center">DIY Tools (TurboTenant / Spreadsheets)</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
-        <tr>
-          <td class="p-4 font-medium">Onboarding Speed</td>
-          <td class="p-4 text-center font-bold text-emerald-600 bg-blue-50/20 dark:bg-blue-950/10">Under 3 Minutes</td>
-          <td class="p-4 text-center text-slate-500">2–4 Weeks Setup Call</td>
-          <td class="p-4 text-center text-slate-500">Immediate (Limited Scope)</td>
-        </tr>
-        <tr>
-          <td class="p-4 font-medium">Pricing Predictability</td>
-          <td class="p-4 text-center font-bold text-emerald-600 bg-blue-50/20 dark:bg-blue-950/10">Flat $9.99/mo (Unlimited)</td>
-          <td class="p-4 text-center text-slate-500">$280+/mo Minimum Tiers</td>
-          <td class="p-4 text-center text-slate-500">Hidden Per-Transaction Fees</td>
-        </tr>
-        <tr>
-          <td class="p-4 font-medium">Intelligent RUBS Bill Splitting</td>
-          <td class="p-4 text-center font-bold text-emerald-600 bg-blue-50/20 dark:bg-blue-950/10">Included Native</td>
-          <td class="p-4 text-center text-slate-500">Paid Add-on Integration</td>
-          <td class="p-4 text-center text-slate-500">Manual Calculation</td>
-        </tr>
-        <tr>
-          <td class="p-4 font-medium">Synchronized Rent Roll & Ledger</td>
-          <td class="p-4 text-center font-bold text-emerald-600 bg-blue-50/20 dark:bg-blue-950/10">Real-Time Cloud Ledger</td>
-          <td class="p-4 text-center text-slate-500">Complex Corporate Ledger</td>
-          <td class="p-4 text-center text-slate-500">Basic Transaction List</td>
-        </tr>
-        <tr>
-          <td class="p-4 font-medium">Digital Auto-Signatures</td>
-          <td class="p-4 text-center font-bold text-emerald-600 bg-blue-50/20 dark:bg-blue-950/10">Automated One-Click</td>
-          <td class="p-4 text-center text-slate-500">Tiered Per-Signature Cost</td>
-          <td class="p-4 text-center text-slate-500">Manual PDF Printing</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-`;
-
-const alternativesPage = injectPage(
-  "Best Property Management Software Alternatives | MyTenant vs The Market",
-  "Compare MyTenant with Buildium, AppFolio, and TurboTenant. Discover why independent landlords choose MyTenant for flat pricing, instant onboarding, and automated ledgers.",
-  "https://mytenant.me/compare/alternatives",
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: "MyTenant Property Management Software",
-    description: "Cloud-based property and tenant management platform for independent landlords.",
-    brand: { "@type": "Brand", name: "MyTenant" },
-  },
-  alternativesHtml,
-);
-writeStaticPage("compare/alternatives", alternativesPage);
-
-// ── 6. Pre-render Academic Research Pages ──
+// ── 5. Pre-render Academic Research Pages ──
 console.log("Pre-rendering Academic Research Pages...");
 const academicStudies = [
   {
     slug: "research/green-premiums",
-    title: "The Low-Carbon Rent Premium in Multifamily Housing | Real Estate Research",
-    description: "Empirical analysis of hedonic rent ceilings and tenant retention driven by energy-efficient building systems and low-carbon operational features.",
+    title:
+      "The Low-Carbon Rent Premium in Multifamily Housing | Real Estate Research",
+    description:
+      "Empirical analysis of hedonic rent ceilings and tenant retention driven by energy-efficient building systems and low-carbon operational features.",
     heading: "The Low-Carbon Rent Premium in Multifamily Housing",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -752,12 +675,14 @@ const academicStudies = [
         <li>Millennial and Gen-Z tenant demographics exhibit higher voluntary lease renewal retention in properties offering digital, paperless management infrastructure.</li>
         <li>Targeted retrofits—such as smart submetering and digital lease execution—deliver internal rates of return (IRR) exceeding 22% on initial capital expenditures.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/tenant-retention",
-    title: "The Vacancy Rate-Rent Paradox & Tenant Retention | Real Estate Research",
-    description: "Economic modeling of search frictions, tenant turnover costs, and optimal rent stabilization strategies for private property operators.",
+    title:
+      "The Vacancy Rate-Rent Paradox & Tenant Retention | Real Estate Research",
+    description:
+      "Economic modeling of search frictions, tenant turnover costs, and optimal rent stabilization strategies for private property operators.",
     heading: "The Vacancy Rate-Rent Paradox & Optimal Retention Strategy",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -767,14 +692,16 @@ const academicStudies = [
       <ul class="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-400 mb-6">
         <li>Unit turnover costs—including repainting, cleaning, marketing, and leasing commissions—average 1.5 to 2.5 months of gross contractual rent.</li>
         <li>A 5% renewal rent increase that triggers vacancy creates an unrecoverable 18-month payback lag compared to retaining a reliable tenant at current rent.</li>
-        <li>Predictive renewal tracking initiated 90 days before lease expiration reduces tenant churn by over 34% across empirical test portfolios.</li>
+        <li>Predictive renewal tracking initiated 90 days before lease expiration helps operators minimize last-minute vacancies and plan turnarounds well in advance.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/smart-management",
-    title: "IoT-Enabled Smart Property Management Systems | Real Estate Research",
-    description: "Analysis of operational efficiency, error reduction, and Net Operating Income expansion achieved through cloud-native property management systems.",
+    title:
+      "IoT-Enabled Smart Property Management Systems | Real Estate Research",
+    description:
+      "Analysis of operational efficiency, error reduction, and Net Operating Income expansion achieved through cloud-native property management systems.",
     heading: "IoT Integration & Cloud Ledger Operations",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -786,12 +713,14 @@ const academicStudies = [
         <li>Automating rent cycles and ledger calculations allows a single property manager to oversee up to 40% more units without increasing administrative overhead.</li>
         <li>Automated maintenance logging shortens repair cycle times, directly increasing tenant satisfaction scores.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/behavioral-rent",
-    title: "Behavioral Economics of Rent Collection & Tenant Nudges | Real Estate Research",
-    description: "Why punitive late fees trigger default cycles and how behavioral choice architecture improves on-time rental payments.",
+    title:
+      "Behavioral Economics of Rent Collection & Tenant Nudges | Real Estate Research",
+    description:
+      "Why punitive late fees trigger default cycles and how behavioral choice architecture improves on-time rental payments.",
     heading: "Behavioral Economics & Choice Architecture in Rent Collection",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -803,12 +732,14 @@ const academicStudies = [
         <li>Frictionless mobile payment portals eliminate procrastination delays associated with physical checks or manual transfers.</li>
         <li>Reporting timely payments to credit bureaus reframes rent from an operational penalty to a positive wealth-building asset.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/maintenance-roi",
-    title: "Maintenance Response Times & Lease Renewal Probabilities | Real Estate Research",
-    description: "SERVQUAL service quality modeling proving that maintenance responsiveness is the single highest predictor of tenant retention and property ROI.",
+    title:
+      "Maintenance Response Times & Lease Renewal Probabilities | Real Estate Research",
+    description:
+      "SERVQUAL service quality modeling proving that maintenance responsiveness is the single highest predictor of tenant retention and property ROI.",
     heading: "Maintenance Metrics & Tenant Retention Economics",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -820,12 +751,14 @@ const academicStudies = [
         <li>Proactive digital status updates mitigate tenant frustration during unavoidable repair parts delays.</li>
         <li>Preventative maintenance scheduling reduces catastrophic building equipment failures by over 45% over 5-year operating cycles.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/utility-billing",
-    title: "RUBS vs Submetering: Solving the Split Incentive Problem | Real Estate Research",
-    description: "Academic evaluation of Ratio Utility Billing Systems (RUBS) and submetering interventions in multifamily property operations.",
+    title:
+      "RUBS vs Submetering: Solving the Split Incentive Problem | Real Estate Research",
+    description:
+      "Academic evaluation of Ratio Utility Billing Systems (RUBS) and submetering interventions in multifamily property operations.",
     heading: "RUBS, Submetering, and Energy Conservation Economics",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -837,12 +770,14 @@ const academicStudies = [
         <li>RUBS achieves near-100% utility cost recovery for landlords with zero capital investment, immediately boosting Net Operating Income.</li>
         <li>Pairing RUBS with transparent ledger statements ensures legal compliance with municipal utility recovery statutes.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/rent-determinants",
-    title: "Hedonic Pricing Models & Apartment Rent Determinants | Real Estate Research",
-    description: "Spatial modeling and hedonic regression analysis identifying the exact monetary valuation of in-unit amenities and transit proximity.",
+    title:
+      "Hedonic Pricing Models & Apartment Rent Determinants | Real Estate Research",
+    description:
+      "Spatial modeling and hedonic regression analysis identifying the exact monetary valuation of in-unit amenities and transit proximity.",
     heading: "Hedonic Pricing Regressions in Multifamily Underwriting",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -854,12 +789,14 @@ const academicStudies = [
         <li>Proximity to transit corridors within a 0.25-mile radius generates statistically significant rent premiums compared to suburban baselines.</li>
         <li>Digital lease signing and online resident management portals serve as vital differentiators in high-density competitive submarkets.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/landlord-economics",
-    title: "Institutional vs Independent Landlord Economics | Real Estate Research",
-    description: "NBER working papers examining diverging risk profiles, yield targets, and technological democratization in private housing markets.",
+    title:
+      "Institutional vs Independent Landlord Economics | Real Estate Research",
+    description:
+      "NBER working papers examining diverging risk profiles, yield targets, and technological democratization in private housing markets.",
     heading: "The Financialization of Housing & PropTech Democratization",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -871,12 +808,14 @@ const academicStudies = [
         <li>Independent landlords prioritize stable long-term cash flows, often exchanging minor nominal rent premiums for lower vacancy volatility.</li>
         <li>Democratized cloud software gives independent operators institutional-grade ledger automation at a fraction of the cost.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/eviction-costs",
-    title: "The Financial Anatomy of Eviction Court vs Cash-for-Keys | Real Estate Research",
-    description: "Mathematical breakdown of legal fees, vacancy drag, and property damage in formal eviction proceedings versus negotiated exits.",
+    title:
+      "The Financial Anatomy of Eviction Court vs Cash-for-Keys | Real Estate Research",
+    description:
+      "Mathematical breakdown of legal fees, vacancy drag, and property damage in formal eviction proceedings versus negotiated exits.",
     heading: "The Economic Cost of Eviction & Loss Mitigation",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -888,12 +827,14 @@ const academicStudies = [
         <li>Hostile evictions dramatically elevate the risk of retaliatory property destruction before turnover.</li>
         <li>Game theory supports 'Cash-for-Keys' settlements, which resolve defaults in days and preserve overall annual portfolio yields.</li>
       </ul>
-    `
+    `,
   },
   {
     slug: "research/digital-transformation",
-    title: "Digital Transformation & Audit Liability Protection | Real Estate Research",
-    description: "How cloud-based accounting ledgers eliminate commingling penalties and provide immutable audit trails for IRS compliance.",
+    title:
+      "Digital Transformation & Audit Liability Protection | Real Estate Research",
+    description:
+      "How cloud-based accounting ledgers eliminate commingling penalties and provide immutable audit trails for IRS compliance.",
     heading: "Cloud Accounting Infrastructure & Audit Risk Elimination",
     body: `
       <p class="text-lg text-slate-600 dark:text-slate-300 mb-6">
@@ -905,8 +846,8 @@ const academicStudies = [
         <li>Automated security deposit tracking ensures strict statutory compliance with escrow reserve requirements.</li>
         <li>Cloud backups eliminate document destruction risks from localized hardware failures or office disasters.</li>
       </ul>
-    `
-  }
+    `,
+  },
 ];
 
 academicStudies.forEach((study) => {
@@ -938,11 +879,20 @@ academicStudies.forEach((study) => {
     `https://mytenant.me/${study.slug}`,
     {
       "@context": "https://schema.org",
-      "@type": "ScholarlyArticle",
+      "@type": "Article",
       headline: study.heading,
       description: study.description,
       url: `https://mytenant.me/${study.slug}`,
-      publisher: { "@type": "Organization", name: "MyTenant Operations & Research Lab" }
+      author: {
+        "@type": "Organization",
+        name: "The MyTenant Research Team",
+        url: "https://mytenant.me/about",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "MyTenant",
+        url: "https://mytenant.me",
+      },
     },
     bodyHtml,
   );
@@ -964,9 +914,9 @@ const companyPages = [
         <p class="text-lg">
           MyTenant was founded on a singular premise: independent landlords and private portfolio operators deserve access to the same sophisticated financial modeling, automated accounting ledgers, and operational tools utilized by multi-billion dollar institutional REITs.
         </p>
-        <h2>Our Quantitative Operations & Research Lab</h2>
+        <h2>Practical Research & Landlord Guides</h2>
         <p>
-          Beyond building cloud-native property management software, MyTenant maintains an active quantitative research division. We publish peer-reviewed economic briefs analyzing search frictions in rental markets, macro interest rate spreads, MACRS cost segregation depreciation structures, and regulatory compliance under the Fair Housing Act.
+          Alongside our software platform, MyTenant publishes practical guides, calculator tools, and research briefs on rental market economics, lease structuring, tax fundamentals, and property operations.
         </p>
       </div>
     `,
@@ -975,7 +925,7 @@ const companyPages = [
     slug: "contact",
     title: "Contact Customer Support & Research Team | MyTenant",
     description:
-      "Get in touch with MyTenant customer support, technical engineering, or our quantitative research editorial staff.",
+      "Get in touch with MyTenant customer support, technical engineering, or our research editorial staff.",
     heading: "Contact MyTenant Support",
     body: `
       <div class="prose prose-slate dark:prose-invert max-w-none">
@@ -1022,7 +972,8 @@ const companyPages = [
   {
     slug: "privacy-policy",
     title: "Privacy Policy | MyTenant Platform",
-    description: "Read how MyTenant collects, utilizes, and protects landlord and tenant records, authentication credentials, and transactional data.",
+    description:
+      "Read how MyTenant collects, utilizes, and protects landlord and tenant records, authentication credentials, and transactional data.",
     heading: "Privacy & Data Protection Policy",
     body: `
       <div class="prose prose-slate dark:prose-invert max-w-none space-y-6">
@@ -1035,12 +986,13 @@ const companyPages = [
         <h3>3. Data Sharing & Retention</h3>
         <p>We do not sell user data. Records are maintained during active subscriptions and can be permanently exported or expunged upon user request by contacting support@mytenant.me.</p>
       </div>
-    `
+    `,
   },
   {
     slug: "terms",
     title: "Terms of Service | MyTenant Platform",
-    description: "Understand our user agreement, subscription terms, acceptable use policies, and legal framework governing the MyTenant property management platform.",
+    description:
+      "Understand our user agreement, subscription terms, acceptable use policies, and legal framework governing the MyTenant property management platform.",
     heading: "Terms of Service & User Agreement",
     body: `
       <div class="prose prose-slate dark:prose-invert max-w-none space-y-6">
@@ -1053,12 +1005,13 @@ const companyPages = [
         <h3>3. Limitation of Liability</h3>
         <p>MyTenant provides financial calculations and automated ledgers as administrative tools. Users remain responsible for verifying calculations against local legal and municipal tax requirements.</p>
       </div>
-    `
+    `,
   },
   {
     slug: "refund-policy",
     title: "Refund & Cancellation Policy | MyTenant Platform",
-    description: "Review our transparent subscription cancellation and refund policies for independent landlords and property portfolio managers.",
+    description:
+      "Review our transparent subscription cancellation and refund policies for independent landlords and property portfolio managers.",
     heading: "Refund & Subscription Cancellation Policy",
     body: `
       <div class="prose prose-slate dark:prose-invert max-w-none space-y-6">
@@ -1071,8 +1024,8 @@ const companyPages = [
         <h3>2. Refund Review Conditions</h3>
         <p>In accordance with SaaS industry standards, completed billing periods are non-refundable. Exceptional cases involving duplicate charges or payment gateway errors are resolved within 3 to 5 business days upon receipt of transaction identifiers.</p>
       </div>
-    `
-  }
+    `,
+  },
 ];
 
 companyPages.forEach((page) => {
@@ -1099,37 +1052,73 @@ companyPages.forEach((page) => {
 // ── 8. Pre-render Complete Root Homepage (dist/index.html) ──
 console.log("Pre-rendering Root Homepage (/)...");
 const homeFeaturesList = [
-  { title: "Property Portfolio", desc: "Oversee your entire portfolio from a single intuitive dashboard. Track total assets, occupancy, and financial performance." },
-  { title: "Deep Property Insights", desc: "Analyze occupancy rates, unit distributions, and real-time tenant statistics at a glance across every property." },
-  { title: "Smart Unit Management", desc: "Add, configure, and manage units across properties. Set base rents, utility rules, and monitor vacancy status." },
-  { title: "Tenant Lifecycle Management", desc: "Full-lifecycle tenant management: digital onboarding, lease expiration tracking, and historical payment ledgers." },
-  { title: "Centralized Utility Billing", desc: "Log water, electricity, and maintenance invoices. Manage master utility costs effortlessly in one central repository." },
-  { title: "Intelligent Bill Splitting (RUBS)", desc: "Automate complex calculations. Split master bills among tenants based on occupancy, square footage, or equal share." },
-  { title: "Real-Time Overdue Tracking", desc: "Intelligent alerts highlight overdue rents and utility bills before they compound into serious delinquency." },
-  { title: "Transparent Payments Feed", desc: "A searchable, immutable history of every transaction and payment method in one synchronized real-time feed." },
-  { title: "Automated Monthly Rent Cycles", desc: "Generate rent invoices and ledger balances for your entire portfolio automatically on the first of every month." },
-  { title: "Advanced Financial Analytics", desc: "Generate comprehensive revenue reports, collection statements, Net Operating Income charts, and CPA tax summaries." },
-  { title: "One-Click PDF Exports", desc: "Export crystal-clear PDFs for receipts, rent rolls, and financial statements to share with accountants and lenders." },
-  { title: "Scale Without Artificial Limits", desc: "Grow with confidence. Manage unlimited properties and units seamlessly as your real estate syndication expands." }
+  {
+    title: "Property Portfolio",
+    desc: "Oversee your entire portfolio from a single intuitive dashboard. Track total assets, occupancy, and financial performance.",
+  },
+  {
+    title: "Deep Property Insights",
+    desc: "Analyze occupancy rates, unit distributions, and real-time tenant statistics at a glance across every property.",
+  },
+  {
+    title: "Smart Unit Management",
+    desc: "Add, configure, and manage units across properties. Set base rents, utility rules, and monitor vacancy status.",
+  },
+  {
+    title: "Tenant Lifecycle Management",
+    desc: "Full-lifecycle tenant management: digital onboarding, lease expiration tracking, and historical payment ledgers.",
+  },
+  {
+    title: "Centralized Utility Billing",
+    desc: "Log water, electricity, and maintenance invoices. Manage master utility costs effortlessly in one central repository.",
+  },
+  {
+    title: "Intelligent Bill Splitting (RUBS)",
+    desc: "Automate complex calculations. Split master bills among tenants based on occupancy, square footage, or equal share.",
+  },
+  {
+    title: "Real-Time Overdue Tracking",
+    desc: "Intelligent alerts highlight overdue rents and utility bills before they compound into serious delinquency.",
+  },
+  {
+    title: "Transparent Payments Feed",
+    desc: "A searchable, immutable history of every transaction and payment method in one synchronized real-time feed.",
+  },
+  {
+    title: "Automated Monthly Rent Cycles",
+    desc: "Generate rent invoices and ledger balances for your entire portfolio automatically on the first of every month.",
+  },
+  {
+    title: "Advanced Financial Analytics",
+    desc: "Generate comprehensive revenue reports, collection statements, Net Operating Income charts, and CPA tax summaries.",
+  },
+  {
+    title: "One-Click PDF Exports",
+    desc: "Export crystal-clear PDFs for receipts, rent rolls, and financial statements to share with accountants and lenders.",
+  },
+  {
+    title: "Scale Without Artificial Limits",
+    desc: "Grow with confidence. Manage unlimited properties and units seamlessly as your real estate syndication expands.",
+  },
 ];
 
 const homeFaqs = [
   {
     q: "How does the automated rent ledger work?",
-    a: "Our automated rent ledger tracks all payments, overdue balances, and credits across your entire portfolio. When a tenant makes a payment, it instantly updates their ledger and your global revenue dashboard without manual calculations."
+    a: "Our automated rent ledger tracks all payments, overdue balances, and credits across your entire portfolio. When a tenant makes a payment, it instantly updates their ledger and your global revenue dashboard without manual calculations.",
   },
   {
     q: "Can I split utility bills among multiple tenants?",
-    a: "Yes! You can log master utility bills (such as water, electricity, or trash) and our Ratio Utility Billing System (RUBS) engine automatically divides the invoice among tenants equally, by custom percentage, or by unit occupancy."
+    a: "Yes! You can log master utility bills (such as water, electricity, or trash) and our Ratio Utility Billing System (RUBS) engine automatically divides the invoice among tenants equally, by custom percentage, or by unit occupancy.",
   },
   {
     q: "Is MyTenant suitable for commercial and multifamily portfolios?",
-    a: "Absolutely. MyTenant handles unlimited properties and units, making it ideal for residential apartments, single-family rental syndications, and mixed-use commercial real estate."
+    a: "Absolutely. MyTenant handles unlimited properties and units, making it ideal for residential apartments, single-family rental syndications, and mixed-use commercial real estate.",
   },
   {
     q: "How does MyTenant protect landlord and tenant data?",
-    a: "All records are transmitted over TLS 1.3 encrypted connections, stored in SOC-2 compliant cloud infrastructure, and documents are securely isolated on Backblaze B2 encrypted storage."
-  }
+    a: "All records are transmitted over TLS 1.3 encrypted connections, stored in SOC-2 compliant cloud infrastructure, and documents are securely isolated on Backblaze B2 encrypted storage.",
+  },
 ];
 
 const homepageBodyHtml = `
@@ -1205,7 +1194,9 @@ const homepageBodyHtml = `
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      ${homeFeaturesList.map((item, idx) => `
+      ${homeFeaturesList
+        .map(
+          (item, idx) => `
         <div class="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 transition-all hover:shadow-xl group">
           <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-extrabold text-sm mb-5 group-hover:scale-110 transition-transform">
             ${idx + 1}
@@ -1213,7 +1204,9 @@ const homepageBodyHtml = `
           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">${item.title}</h3>
           <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">${item.desc}</p>
         </div>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   </section>
 
@@ -1260,7 +1253,9 @@ const homepageBodyHtml = `
       Frequently Asked Questions
     </h2>
     <div class="space-y-4">
-      ${homeFaqs.map(faq => `
+      ${homeFaqs
+        .map(
+          (faq) => `
         <details class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 cursor-pointer">
           <summary class="flex items-center justify-between font-bold text-slate-900 dark:text-white list-none">
             <span>${faq.q}</span>
@@ -1270,7 +1265,9 @@ const homepageBodyHtml = `
             ${faq.a}
           </p>
         </details>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   </section>
 `;
@@ -1281,39 +1278,39 @@ const rootSchema = {
     {
       "@type": "Organization",
       "@id": "https://mytenant.me/#organization",
-      "name": "MyTenant",
-      "url": "https://mytenant.me",
-      "logo": "https://mytenant.me/logo-96.png",
-      "contactPoint": {
+      name: "MyTenant",
+      url: "https://mytenant.me",
+      logo: "https://mytenant.me/logo-96.png",
+      contactPoint: {
         "@type": "ContactPoint",
-        "email": "support@mytenant.me",
-        "contactType": "customer support"
-      }
+        email: "support@mytenant.me",
+        contactType: "customer support",
+      },
     },
     {
       "@type": "WebSite",
       "@id": "https://mytenant.me/#website",
-      "url": "https://mytenant.me",
-      "name": "MyTenant",
-      "publisher": { "@id": "https://mytenant.me/#organization" }
+      url: "https://mytenant.me",
+      name: "MyTenant",
+      publisher: { "@id": "https://mytenant.me/#organization" },
     },
     {
       "@type": "SoftwareApplication",
-      "name": "MyTenant Property Management",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Web",
-      "image": "https://mytenant.me/logo-96.png",
-      "offers": { "@type": "Offer", "price": "9.99", "priceCurrency": "USD" }
+      name: "MyTenant Property Management",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      image: "https://mytenant.me/logo-96.png",
+      offers: { "@type": "Offer", price: "9.99", priceCurrency: "USD" },
     },
     {
       "@type": "FAQPage",
-      "mainEntity": homeFaqs.map(f => ({
+      mainEntity: homeFaqs.map((f) => ({
         "@type": "Question",
-        "name": f.q,
-        "acceptedAnswer": { "@type": "Answer", "text": f.a }
-      }))
-    }
-  ]
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
 };
 
 const rootPageHtml = injectPage(

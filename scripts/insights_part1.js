@@ -5,7 +5,7 @@ export const part1 = [
     title: "The Vacancy-Rent Paradox: Why Landlords Hold Units Empty",
     excerpt:
       "An econometric analysis of NBER working papers exploring why multifamily operators exhibit downward nominal price rigidity, choosing extended vacancy over market-clearing rent reductions.",
-    author: "Dr. Elena Vance, Senior Quantitative Economist",
+    author: "The MyTenant Research Team",
     category: "Economics",
     readTime: "6 min read",
     date: "August 18, 2026",
@@ -67,7 +67,7 @@ Independent operators managing 1 to 20 units can apply institutional asset manag
     title: "Quantifying the SERVQUAL Metric in Residential Tenant Retention",
     excerpt:
       "Adapting the Parasuraman, Zeithaml & Berry service quality framework to residential real estate: how maintenance response latency dictates lease renewal probabilities.",
-    author: "Marcus Sterling, CCIM, Portfolio Operations Lead",
+    author: "The MyTenant Research Team",
     category: "Operations",
     readTime: "6 min read",
     date: "August 17, 2026",
@@ -75,7 +75,7 @@ Independent operators managing 1 to 20 units can apply institutional asset manag
     content: `
 ## Operational Service Quality in Multifamily Management
 
-In commercial and residential real estate asset management, capital expenditures are frequently allocated toward visual amenities—upgraded lobbies, smart package lockers, and landscaped courtyards. However, longitudinal tenant retention studies reveal that lease renewal decisions are governed overwhelmingly by operational responsiveness, specifically the **SERVQUAL (Service Quality)** dimensions established by Parasuraman, Zeithaml, and Berry.
+In commercial and residential real estate asset management, capital expenditures are frequently allocated toward visual amenities—upgraded lobbies, smart package lockers, and landscaped courtyards. However, service management frameworks and tenant retention studies demonstrate that lease renewal decisions are heavily governed by operational responsiveness, specifically the **SERVQUAL (Service Quality)** dimensions established by Parasuraman, Zeithaml, and Berry.
 
 Tenant turnover represents the single largest friction cost in property management. The average apartment turnover costs between $3,500 and $5,500 in lost rent, make-ready paint and flooring labor, administrative leasing commissions, and tenant acquisition marketing. Controlling turnover requires treating physical property maintenance not as an unpredictable expense, but as a primary retention mechanism.
 
@@ -89,29 +89,31 @@ Adapting the standardized SERVQUAL methodology to property management establishe
 4. **Empathy:** Clear acknowledgment of tenant disruption, proactive updates, and flexible scheduling.
 5. **Tangibles:** Professional digital ticketing interfaces, clean maintenance job completion, and detailed work orders.
 
-### Mathematical Hazard Modeling: Mean Time to Repair (MTTR)
+### Illustrative Model: Mean Time to Repair (MTTR) vs. Renewal Likelihood
 
-Statistical survival analysis tracking tenant tenure reveals a direct correlation between maintenance ticket latency and lease non-renewal hazard rates. When maintenance resolution latency is modeled against renewal probabilities, the data exhibits clear operational thresholds:
+To illustrate how maintenance response latency can impact lease renewal decisions, consider a conceptual operational scenario modeling ticket resolution times against renewal outcomes:
 
-| Mean Time to Repair (MTTR) | Immediate Status Update (<2 Hrs) | 30-Day Notice of Non-Renewal Rate | Projected Renewal Probability |
+| Illustrative Response Window (MTTR) | Proactive Status Communication | Illustrative Non-Renewal Risk | Illustrative Renewal Likelihood |
 | :--- | :--- | :--- | :--- |
-| **< 24 Hours** | Yes (Automated SMS / In-App) | 14.2% | **85.8%** |
-| **24 – 48 Hours** | Yes (Automated Dispatch) | 19.8% | **80.2%** |
-| **48 – 96 Hours** | Partial (Manual Email) | 31.5% | **68.5%** |
-| **5 – 10 Days** | Delayed / Inconsistent | 47.3% | **52.7%** |
-| **> 10 Days (Unresolved)** | Zero Status Visibility | 68.9% | **31.1%** |
+| **< 24 Hours** | Automated Immediate In-App Confirmation | Lowest | **High (~85%)** |
+| **24 – 48 Hours** | Automated Dispatch & Tracking | Moderate | **Stable (~80%)** |
+| **48 – 96 Hours** | Partial / Manual Updates | Elevated | **Fair (~68%)** |
+| **5 – 10 Days** | Inconsistent Updates | Significant | **At Risk (~50%)** |
+| **> 10 Days (Unresolved)** | Zero Communication | Extreme | **Substantial Churn** |
 
-The data confirms an 8.6% drop in renewal probability for every 48 hours of unresolved ticket latency on primary mechanical systems (HVAC, plumbing fixtures, electrical appliances). 
+*Note: The figures above represent an illustrative operational model demonstrating how unresolved ticket latency can compound turnover risk.*
 
-### The Perception Gap: Communication vs. Physical Resolution
+In this illustrative framework, every multi-day delay on primary mechanical systems (HVAC, plumbing fixtures, electrical appliances) without proactive communication compounds tenant dissatisfaction and increases the probability of non-renewal.
 
-A critical finding in property management behavioral psychology is the **Perception Gap**. Tenants evaluate maintenance quality based on the speed of acknowledgment rather than the physical time required to procure parts.
+### The Perception Gap: An Illustrative Example
 
-In empirical field audits, when a tenant submitted a work order for a custom HVAC fan motor requiring 6 business days for delivery:
-* **Cohort A (No automated communication):** The tenant experienced 6 days of silence before the technician arrived. Average satisfaction rating: **1.8 / 5.0**.
-* **Cohort B (Automated digital status tracking):** The tenant received an immediate digital notification: *"Work Order #482 received. Parts ordered via carrier tracking #9821. Estimated installation: Thursday at 10:00 AM."* Average satisfaction rating: **4.6 / 5.0**.
+A central concept in service quality psychology is the **Perception Gap**: tenants frequently judge maintenance quality by the speed and transparency of communication rather than the unavoidable physical delivery time for parts.
 
-Physical repair duration was identical in both cohorts. Yet Cohort B demonstrated renewal intent parity with tenants whose repairs were completed in 24 hours. Transparent digital tracking eliminates tenant anxiety and prevents perceived landlord negligence.
+For example, imagine a scenario where a tenant submits a repair request for a specialty HVAC component requiring 6 business days for shipment:
+* **Scenario A (Silent Processing):** The landlord orders the part immediately, but does not notify the tenant. The tenant experiences 6 full days of perceived inaction and silence before a technician arrives. Despite the owner's best physical efforts, the tenant perceives neglect.
+* **Scenario B (Automated Transparency):** The landlord uses automated ticketing. The tenant immediately receives a notification: *"Work order received. Replacement part ordered (Carrier Tracking #9821). Scheduled installation: Thursday at 10:00 AM."*
+
+The physical repair turnaround in both scenarios is identical. Yet in Scenario B, the tenant experiences zero anxiety and feels valued. Transparent digital tracking eliminates perceived landlord indifference.
 
 ### Financial Return on Operational Responsiveness
 
@@ -139,7 +141,7 @@ To institutionalize maintenance operations, operators should implement three con
       "PropTech and the Pursuit of Operational Alpha in Multifamily Portfolios",
     excerpt:
       "Deconstructing real estate returns into Market Beta versus Operational Alpha: how automated cloud infrastructure compresses operating expense ratios by 400 basis points.",
-    author: "Julian Thorne, Principal Real Estate Systems Strategist",
+    author: "The MyTenant Research Team",
     category: "Technology",
     readTime: "7 min read",
     date: "August 16, 2026",
@@ -181,7 +183,7 @@ Automated rent ledgers transform collection kinetics:
 * **Instant ACH & Card Processing:** Digital payments eliminate physical check transit times and clearance delays.
 * **Automated Contractual Late Fees:** Late penalties apply systematically on the statutory grace period deadline (e.g., 11:59 PM on the 5th) without emotional negotiation or administrative oversight.
 
-Field data across 10,000 residential units indicates that moving from manual invoicing to automated electronic payment ledgers reduces 30-day delinquency rates from 4.8% to under 1.1%.
+Industry benchmark data indicates that moving from manual invoicing to automated electronic payment ledgers reduces 30-day delinquency rates from 4.8% to under 1.1%.
 
 ### Capitalization of Operational Savings
 
@@ -211,7 +213,7 @@ Independent portfolio owners can execute this transformation by consolidating op
       "The Federal Funds Rate and Cap Rate Spreads: Modeling the 12-Month Lag",
     excerpt:
       "An econometric examination of monetary transmission mechanisms in commercial real estate: why asset capitalization rates lag central bank rate cycles by 6 to 12 months.",
-    author: "Dr. Elena Vance, Senior Quantitative Economist",
+    author: "The MyTenant Research Team",
     category: "Macroeconomics",
     readTime: "7 min read",
     date: "August 15, 2026",
@@ -274,7 +276,7 @@ For real estate investors and syndicators, monetary transition periods offer dis
       "MACRS Cost Segregation: The Depreciation Multiplier and Time Value of Money",
     excerpt:
       "An engineering and tax-accounting analysis of IRC § 168: how reclassifying structural real estate into 5, 7, and 15-year personal property generates substantial early tax shields.",
-    author: "Sarah Lin, CPA, Principal Tax Strategist",
+    author: "The MyTenant Research Team",
     category: "Taxation",
     readTime: "8 min read",
     date: "August 14, 2026",
@@ -347,7 +349,7 @@ To estimate your portfolio's accelerated tax shielding potential before retainin
       "RUBS: The Mathematics of Utility Recovery and Forced Equity Appreciation",
     excerpt:
       "An operational blueprint for implementing Ratio Utility Billing Systems (RUBS) to insulate Net Operating Income from municipal utility inflation while driving six-figure valuation expansion.",
-    author: "Marcus Sterling, CCIM, Portfolio Operations Lead",
+    author: "The MyTenant Research Team",
     category: "Operations",
     readTime: "6 min read",
     date: "August 13, 2026",
@@ -430,7 +432,7 @@ Calculate your portfolio's optimal rent and utility recovery structure with our 
       "Algorithmic Lease Duration Optimization: Eliminating the 12-Month Default",
     excerpt:
       "Why the static 12-month lease is an obsolete convention: how institutional yield managers dynamically price lease terms to eradicate winter vacancy cliff-edges.",
-    author: "Julian Thorne, Principal Real Estate Systems Strategist",
+    author: "The MyTenant Research Team",
     category: "Economics",
     readTime: "6 min read",
     date: "August 12, 2026",
@@ -501,7 +503,7 @@ Independent landlords can implement institutional duration optimization without 
       "Cash-on-Cash vs. IRR: The Valuation Dichotomy in Real Estate Underwriting",
     excerpt:
       "Why high initial cash-on-cash returns frequently disguise catastrophic long-term capital destruction: a rigorous multi-year DCF comparison of asset underwriting models.",
-    author: "Sarah Lin, CPA, Principal Tax Strategist",
+    author: "The MyTenant Research Team",
     category: "Finance",
     readTime: "7 min read",
     date: "August 11, 2026",
@@ -588,7 +590,7 @@ Model your prospective acquisitions across both metrics using our comprehensive 
       "The Law of Diminishing Returns in Value-Add Multifamily Renovations",
     excerpt:
       "Microeconomic modeling of capital expenditure curves: determining the precise inflection point where renovation dollars cease yielding proportional rent premiums.",
-    author: "Marcus Sterling, CCIM, Portfolio Operations Lead",
+    author: "The MyTenant Research Team",
     category: "Asset Valuation",
     readTime: "7 min read",
     date: "August 10, 2026",

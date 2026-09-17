@@ -378,13 +378,6 @@ const router = createBrowserRouter([
           })),
       },
       {
-        path: "compare/alternatives",
-        lazy: () =>
-          import("./pages/compare/Alternatives.jsx").then((m) => ({
-            Component: m.default,
-          })),
-      },
-      {
         path: "insights",
         lazy: () =>
           import("./pages/insights/Insights.jsx").then((m) => ({

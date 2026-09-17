@@ -10,7 +10,7 @@ const Section = ({ title, children }) => (
 
 export default function AboutPage() {
   return (
-    <article className="space-y-8 text-slate-700 dark:text-slate-300">
+    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 space-y-8 text-slate-700 dark:text-slate-300">
       <SEO
         title="About MyTenant"
         description="Learn who runs MyTenant, who we build for, and how we create practical landlord guides, tools, and research content."

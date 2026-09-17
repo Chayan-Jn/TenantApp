@@ -14,7 +14,7 @@ export default function DirectoryLinks() {
             <li><Link to="/tools/rent-calculator" className="hover:text-blue-500">Prorated Rent Calculator</Link></li>
             <li><Link to="/tools/cap-rate-calculator" className="hover:text-blue-500">Cap Rate Calculator</Link></li>
             <li><Link to="/tools/roi-calculator" className="hover:text-blue-500">Rental ROI Calculator</Link></li>
-            <li><Link to="/compare/alternatives" className="hover:text-blue-500 font-semibold">MyTenant vs Competitors</Link></li>
+            <li><Link to="/tools/cost-segregation" className="hover:text-blue-500">Cost Segregation Estimator</Link></li>
           </ul>
         </div>
       </div>

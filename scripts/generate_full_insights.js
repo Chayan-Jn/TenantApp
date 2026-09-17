@@ -23,9 +23,9 @@ console.log(`Total words: ${totalWords} | Average per article: ${avgWords} words
 
 const targetPath = path.join(__dirname, '..', 'frontend', 'src', 'data', 'insights.js');
 
-const fileHeader = `// Institutional Research Papers & Economic Briefs
-// Published by MyTenant Operations & Quantitative Research Lab
-// Audited for E-E-A-T Compliance & Mathematical Rigor
+const fileHeader = `// Practical Landlord Guides & Operational Insights
+// Published by The MyTenant Research Team
+// Focused on Real Estate Economics, Portfolio Accounting & Operations
 
 export const insights = ${JSON.stringify(allInsights, null, 2)};
 `;
