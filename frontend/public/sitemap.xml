@@ -152,6 +152,26 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://mytenant.me/insights/security-deposit-escrow-compliance</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/insights/lease-renewal-timing-opt-out-mechanics</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/insights/hvac-filter-appliance-lifecycle-depreciation</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mytenant.me/insights/late-fee-statutory-caps-rent-collection</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://mytenant.me/insights/nber-vacancy-rent-paradox</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

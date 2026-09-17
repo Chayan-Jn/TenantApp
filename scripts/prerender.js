@@ -182,8 +182,8 @@ function injectPage(title, description, canonicalUrl, schemaObj, bodyHtml) {
   return html;
 }
 
-// ── 1. Pre-render All 18 Insight Articles ──
-console.log("Pre-rendering 18 Insight Articles...");
+// ── 1. Pre-render All Insight Articles ──
+console.log(`Pre-rendering ${insights.length} Insight Articles...`);
 insights.forEach((article) => {
   const parsedContentHtml = marked.parse(article.content);
   const publishDateISO = new Date(article.date).toISOString().split("T")[0];
